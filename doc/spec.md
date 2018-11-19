@@ -22,11 +22,13 @@ the crc field to 00 00, then inserting the values swapped.  For example:
 1a0201000000a08000000000000000000000000000000000... replacing a080 with 0000
 and computing CRC-16/CCiTT-FALSE = 80a0
 
+```
 This works on another packet too:
 1a 01 88 01 00 38 aa 4b 00 00 00 00 00 00 00 00
 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 00 00 00 00 ff 00 cb 64 ff 00 cb 64 00 00 00 00
+```
 
 Generally, the driver keeps sending
 0c0000000000a70d00000000000000000000000000000000... when there's nothing to
@@ -43,6 +45,7 @@ not sure yet what the command is that really does this.
 The driver appears to send 3 lighting sequences followed by the 0c00 idle.  A
 lighting sequence looks like:
 
+```
 1a0100000038 crc ...
 1a0138000038 crc ...
 1a0170000038 crc ...
@@ -54,6 +57,7 @@ lighting sequence looks like:
 1a01c0010038 crc ...
 1a01f8010038 crc ...
 1a0200000038 crc ...    End of Sequence
+```
 
 The first 10 commands are lighting data per key. The 11th I assume is an end
 of sequence command.
@@ -69,7 +73,9 @@ For a static light pattern, all the sequences would be the same.  Dynamic
 patterns would alter the data in the light sequence to animate things.
 
 Within the data section, each group of 4 bytes seems to be:
+```
 RRGGBB64
+```
 The 0x64 seems to indicate that the key LED has been programmed, rather than
 in default state.
 
@@ -82,6 +88,7 @@ Scroll Lock.  Some likely refer to the various media control and other kinds
 of keys.  Take a look at Functions in the windows driver, and look through the
 Key base function set choices.  I counted about 140 in total.
 
+```
 1a 01 00 00 00 38 CRC16  Esc		F1
 F2			F3     	  	 F4			F5
 F6			??		 	 F7  		F8
@@ -133,7 +140,7 @@ Mshift	 	Rspc		 Ralt		??
 ??    	 ??    	     	 ??		??
 
 1a 20 00 00 00 00 crc	 ??		??
-
+```
 
 
 I think this is enough to program light patterns in the driver layer.
