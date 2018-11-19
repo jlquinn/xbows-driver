@@ -2,10 +2,12 @@ This will eventually become a spec for the keyboard driver program.
 
 What do I think I know so far?
 
-Basic USB HID tree info
+# Basic USB HID tree info
 
 Driver writes commands to 2nd interface OUT port.  IN port sends
 acknowledgement of commands.
+
+# Commands from Host to XBows
 
 I've found that what comes back from the keyboard seems pretty uninteresting,
 so all of the following is packets sent from the driver to the keyboard.
