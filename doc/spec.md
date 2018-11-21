@@ -527,3 +527,62 @@ Mshift	 	Rspc		 Ralt		??
 
 
 I think this is enough to program light patterns in the driver layer.
+
+## Modifying Key Mappings in Driver Mode
+
+I think that we have a sequence that looks like this to set the key bindings
+in driver mode.
+
+```
+0b0500000000 crc 00000000 x 14
+010900000000 crc 00000000 x 14
+160100000038 crc ffffffff ffffffff
+				 01000002 02000002 04000002 08000002	Ls Lc La Win
+	     		 10000002 20000002 40000002 ffffffff	Rc Rs Ra
+				 00040002 00050002 00060002 00070002	A B C D
+160138000038 crc 00080002 00090002						E F
+				 000a0002 000b0002 000c0002 000d0002	G H I J
+	     		 000e0002 000f0002 00100002 00110002	K L M N
+				 00120002 00130002 00140002 00150002	O P Q R
+160170000038 crc 00160002 00170002						S T
+				 00180002 00190002 001a0002 001b0002	U V W X
+	     		 001c0002 001d0002 001e0002 001f0002	Y Z 1 2
+				 00200002 00210002 00220002 00230002	3 4 5 6
+1601a8000038 crc 00240002 00250002						7 8
+				 00260002 00270002 00280002 00290002	9 0 Renter Esc
+				 002a0002 002b0002 002c0002 002d0002	BS Tab Lspc -_
+				 002e0002 002f0002 00300002 00310002	=+ [{ ]} \|
+1601e0000038 crc 00330002 00340002						;: '"
+				 00350002 00360002 00370002 00380002	`~ ,< .> /?
+				 00390002 003a0002 003b0002 003c0002	Caps F1 F2 F3
+				 003d0002 003e0002 003f0002 00400002	F4 F5 F6 F7
+160118010038 crc 00410002 00420002						F8 F9
+				 00430002 00440002 00450002 00460002	F10 F11 F12 PrtScrn
+	     		 ffffffff x 4
+				 004b0002 004c0002 ffffffff 004e0002	PgU Del ?? PgD
+160150010038 crc 004f0002 00500002						Rt Lt
+				 00510002 00520002						Dn Up
+				 ffffffff x 10
+160188010038 crc ffffffff x 14
+1601c0010020 crc 002a0002 00280002						Mbs Menter
+				 01000002 20000002 002c0002				Mc  Ms     Rspc
+	     		 ffffffff x 3
+				 00000000 x 6
+160300000038 crc ffffffff x 14
+160338000038 crc ffffffff x 14
+160370000008 crc ffffffff ffffffff 00000000 x 12
+170100000000 crc f0011203 00000000 0f000000 00000000 x 11
+0c0000000000 crc end of sequence code
+```
+
+Here, the first 2 commands 0b05 and 0109 appear to the start of the remapping
+commands.
+
+The data commands show the keys they correspond to.  Remapping involves
+putting a different key's code in that spot.  For example, to remap Esc to Q,
+the 00290002 value would be changed to 00140002.
+
+I assume that the various unlabeled ints are just part of the programming.
+Some might be the numeric keypad but I don't have one, so I can't test that
+theory for now.
+
