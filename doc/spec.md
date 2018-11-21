@@ -586,3 +586,4 @@ I assume that the various unlabeled ints are just part of the programming.
 Some might be the numeric keypad but I don't have one, so I can't test that
 theory for now.
 
+Commands 1603 and 1701 appear to just terminate the programming sequence.
