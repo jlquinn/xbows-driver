@@ -2,6 +2,40 @@ This will eventually become a spec for the keyboard driver program.
 
 What do I think I know so far?
 
+# How To Reverse Engineer
+
+The approach I'm using is running Windows 7 in a Virtual Box VM on Ubuntu 18.04,
+with Wireshark capturing USB packets between the keyboard and the host.
+
+It took a bit of fighting to get a working setup where Windows could see the
+keyboard well enough for the driver program to work.
+
+Creating a VM and installing Windows on it was easy.  That step just worked.
+However, getting Windows to see the nonstandard USB interfaces of the keyboard
+was harder.
+
+One thing I had to do was tell virtualbox to use
+/usr/share/virtualbox/VBoxGuestAdditions.iso as a storage device in Windows so
+that I could install the windows parts of the USB drivers.
+
+I also had to expose /usr/share/virtualbox-ext-pack to make VirtualBox have
+the all the USB bridge drivers necessary.
+
+To get the keyboard exposed, first I had to detach the device from linux so
+that virtualbox could expose it to windows:
+
+``
+ 1144  echo -n '3-11.3:1.1' > /sys/bus/usb/drivers/usbhid/unbind
+ 1146  echo -n '3-11.3:1.0' > /sys/bus/usb/drivers/usbhid/unbind
+ 1147  echo -n '3-11.3:1.2' > /sys/bus/usb/drivers/usbhid/unbind
+``
+
+At this point, I could install the xbows driver and it could see the keyboard
+properly.  Then I could use Wireshark to capture USB packets going back and
+forth.
+
+
+
 # Basic Device USB HID info
 
 Here is the detailed device descriptor.
@@ -417,7 +451,7 @@ Generally, the driver keeps sending
 0c0000000000a70d00000000000000000000000000000000... when there's nothing to
 do.  It does this about every 0.3 seconds.
 
-# DRIVER MODE PROGRAMMING
+# Driver Mode Programming
 
 I've made progress on the how the driver controls lights in the driver layer.
 The driver layer only does anything when the host actively controls it.
@@ -587,3 +621,9 @@ Some might be the numeric keypad but I don't have one, so I can't test that
 theory for now.
 
 Commands 1603 and 1701 appear to just terminate the programming sequence.
+
+
+# Custom Layer Programming
+
+This section contains notes on how programming the XBows custom layers works.
+
