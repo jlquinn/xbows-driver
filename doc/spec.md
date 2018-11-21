@@ -627,3 +627,110 @@ Commands 1603 and 1701 appear to just terminate the programming sequence.
 
 This section contains notes on how programming the XBows custom layers works.
 
+Here is a trace of the driver programming the lights in a custom layer.
+
+```
+010900000000 crc 00
+210301000000 crc 00
+220300003800 crc ffffffff ffffffff 01000002 02000002 04000002 08000002
+	     	 10000002 20000002 00630002 ffffffff 00040002 00050002
+		 00060002 00070002 pos 8 different
+220338003800 crc 00080002 00090002
+	     	 000a0002 000b0002 00600002 005c0002	pos 4, 5, 6, 7, 8 10,11 different
+		 005d0002 005e0002 00590002 00110002
+		 00610002 00560002 00140002 00150002	different than CUST1
+		 THIS MAY BE THE KEYPAD OVERLAY!!!!
+220370003800 crc 00160002 00170002
+	     	 005f0002 00190002 001a0002 001b0002    pos 2 is different
+		 001c0002 001d0002 001e0002 001f0002
+		 ... 00230002
+2203a8003800 crc 00240002 00540002
+	     	 00550002 00270002 thru 00310002	pos 1,2 different
+2203e0003800 crc 00570002 00340002 			pos 0,3,4 different
+	     	 00350002 005a0002 005b0002 00580002
+		 00390002 thru 00400002
+220318013800 crc 00410002 ... 00460002 (6 ints)
+	     	 ffff (4 ints) these line up with missing expected ints
+		 004b0002 004c0002 ffff 004e0002  	  SAME AS 160118...
+220350013800 crc same as 160150010038
+220388013800 crc ff x 14 same as 160188010038
+2203c0012000 crc 002a0002 00280002 01000002 20000002 00620002
+	     	 ffffffff (3 ints)
+		 00 (6 ints)  NOT same as 1601c0010020  pos 4 different
+	     	 lighting program starts here?
+210304000000 crc 0000 (14 ints)
+210305000000 crc 0000 (14 ints)
+260300003800 crc ffff (14 ints)
+260338003800 crc ffff (14 ints)
+260370000800 crc ffff ffff 00 (12 ints)
+210306000000 crc 00 x 14
+270300000038 crc 00020000 03000000
+	     	 4e020000 01000000 ff x 10
+270338000038 crc ff x 14
+270370000038 crc ff x 14
+2703a8000038 crc ff x 14
+2703e0000038 crc ff x 14	packet 467
+270318010038 crc ff x 14
+270350010038 crc ff x 14
+270388010038 crc ff x 14
+2703c0010038 crc ff x 14
+2703f8010038 crc ff ff
+	     	 03001600 ff x 3
+		 ffffffff 0f000000 00000300 1600ffff
+		 ff x 3   	   	    ffff0f00
+270330020038 crc 00000000 03001600
+	     	 ff x 4
+		 0f000000 00000020 ff x 2
+		 ff x 2	  	   0f000000 0000ff00
+270368020006 crc 00000000 79000000
+	     	 00 x 12
+0b0300000000 crc 00 x 14
+0c0000000000 	      at 3.0737sec
+```
+
+The programming sequence starts with the 0109 command.  This shows up in the
+driver layer programming as well, but here it's the first packet.
+
+Remaining packets encode the custom layer being programmed in byte 1.  For
+example:
+
+`
+270368020006
+`
+
+Here, byte 1 is 0x03.  0x02 addresses custom layer 1, 0x03 is layer 2, and
+0x04 is layer 3.
+
+Command 2 is 0x21.  This is followed by a bunch of 0x22 commands.  The 0x22
+commands affect the keyboard mapping for the custom layer.
+
+After 9 packets of 0x22 commands, there is a 6 packet sequence of 0x21 0x21
+0x26 0x26 0x26 0x21.  I don't know what this does other than separate keyboard
+from lighting.
+
+Programming the lights happens with 0x27 commands.  This sequence is variable
+length.
+
+The sequence is terminated with the 0x0b command.
+
+## Custom Layer Keyboard Programming
+
+
+
+## Custom Layer Light Programming
+
+The DIY Lights section of the driver enables writing new patterns.  The driver
+explains a few things to us.
+
+
+The driver assembles patterns from two building blocks: animation frames, and
+lighting frames.  
+
+Animation frames consist of a duration and a set of active keys.
+
+Light frames are a little more complex.  They have a duration and a set of
+active keys.  Lights can have one of three patterns: monochrome, RGB cycle,
+and breathing.  The light pattern also has a starting color.
+
+These features appear to show up in the USB programming model as well.
+
