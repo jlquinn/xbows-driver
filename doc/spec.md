@@ -632,31 +632,32 @@ Here is a trace of the driver programming the lights in a custom layer.
 ```
 010900000000 crc 00
 210301000000 crc 00
-220300003800 crc ffffffff ffffffff 01000002 02000002 04000002 08000002
-	     	 10000002 20000002 00630002 ffffffff 00040002 00050002
-		 00060002 00070002 pos 8 different
+220300003800 crc ffffffff ffffffff
+			 	 01000002 02000002 04000002 08000002
+	     	 	 10000002 20000002 00630002 ffffffff
+			 	 00040002 00050002 00060002 00070002 pos 8 different
 220338003800 crc 00080002 00090002
-	     	 000a0002 000b0002 00600002 005c0002	pos 4, 5, 6, 7, 8 10,11 different
-		 005d0002 005e0002 00590002 00110002
-		 00610002 00560002 00140002 00150002	different than CUST1
-		 THIS MAY BE THE KEYPAD OVERLAY!!!!
+	     	 	 000a0002 000b0002 00600002 005c0002	pos 4, 5, 6, 7, 8 10,11 different
+			 	 005d0002 005e0002 00590002 00110002
+			 	 00610002 00560002 00140002 00150002	different than CUST1
+			 	 THIS MAY BE THE KEYPAD OVERLAY!!!!
 220370003800 crc 00160002 00170002
-	     	 005f0002 00190002 001a0002 001b0002    pos 2 is different
-		 001c0002 001d0002 001e0002 001f0002
-		 ... 00230002
+	     	 	 005f0002 00190002 001a0002 001b0002    pos 2 is different
+			 	 001c0002 001d0002 001e0002 001f0002
+			 	 ... 00230002
 2203a8003800 crc 00240002 00540002
-	     	 00550002 00270002 thru 00310002	pos 1,2 different
+	     	 	 00550002 00270002 thru 00310002	pos 1,2 different
 2203e0003800 crc 00570002 00340002 			pos 0,3,4 different
 	     	 00350002 005a0002 005b0002 00580002
-		 00390002 thru 00400002
+			 00390002 thru 00400002
 220318013800 crc 00410002 ... 00460002 (6 ints)
 	     	 ffff (4 ints) these line up with missing expected ints
-		 004b0002 004c0002 ffff 004e0002  	  SAME AS 160118...
+			 004b0002 004c0002 ffff 004e0002  	  SAME AS 160118...
 220350013800 crc same as 160150010038
 220388013800 crc ff x 14 same as 160188010038
 2203c0012000 crc 002a0002 00280002 01000002 20000002 00620002
 	     	 ffffffff (3 ints)
-		 00 (6 ints)  NOT same as 1601c0010020  pos 4 different
+			 00 (6 ints)  NOT same as 1601c0010020  pos 4 different
 	     	 lighting program starts here?
 210304000000 crc 0000 (14 ints)
 210305000000 crc 0000 (14 ints)
@@ -676,12 +677,12 @@ Here is a trace of the driver programming the lights in a custom layer.
 2703c0010038 crc ff x 14
 2703f8010038 crc ff ff
 	     	 03001600 ff x 3
-		 ffffffff 0f000000 00000300 1600ffff
-		 ff x 3   	   	    ffff0f00
+			 ffffffff 0f000000 00000300 1600ffff
+			 ff x 3   	   	    ffff0f00
 270330020038 crc 00000000 03001600
 	     	 ff x 4
-		 0f000000 00000020 ff x 2
-		 ff x 2	  	   0f000000 0000ff00
+			 0f000000 00000020 ff x 2
+			 ff x 2	  	   0f000000 0000ff00
 270368020006 crc 00000000 79000000
 	     	 00 x 12
 0b0300000000 crc 00 x 14
@@ -713,7 +714,28 @@ length.
 
 The sequence is terminated with the 0x0b command.
 
+Question: if the keyboard were programmed with 2201 commands, would this
+permanently write to the driver layer?
+
 ## Custom Layer Keyboard Programming
+
+As mentioned above, the sequence of 0x22 commands remaps the keyboard of a
+custom layer.
+
+Bytes 2 and 3 form a 16 bit little-endian int representing the index of the
+data bytes give so far (I think).
+
+Byte 4 gives the number of valid data bytes.  Most packets will have 0x38
+here.  The last one may be less.
+
+I *think* that the 0x22 command sequence is the same as the 0x16 command
+sequence that programs the keymap in the driver layer.  I don't know for sure
+yet.
+
+
+TODO: I still haven't explored how macros are programmed.  I haven't explored
+the Fnx key.
+
 
 
 
@@ -733,4 +755,201 @@ active keys.  Lights can have one of three patterns: monochrome, RGB cycle,
 and breathing.  The light pattern also has a starting color.
 
 These features appear to show up in the USB programming model as well.
+
+One piece of information is that a lighting frame applies to a set of active
+keys using a bitmap.  The bits are 1 if the key is active, 0 otherwise.
+
+Using the Calculator light program, I get a total sequence as follows:
+
+```
+010900000000 crc  00000000 x 14
+
+210301000000 crc  00000000 x 14
+
+220300003800 crc  ffffffff ffffffff
+01000002 02000002 04000002 08000002
+10000002 20000002 00630002 ffffffff
+00040002 00050002 00060002 00070002
+
+220338003800 crc  00080002 00090002
+000a0002 000b0002 00600002 005c0002
+005d0002 005e0002 00590002 00110002
+00610002 00560002 00140002 00150002
+
+220370003800 crc  00160002 00170002
+005f0002 00190002 001a0002 001b0002
+001c0002 001d0002 001e0002 001f0002
+00200002 00210002 00220002 00230002
+
+2203a8003800 crc  00240002 00540002
+00550002 00270002 00280002 00290002
+002a0002 002b0002 002c0002 002d0002
+002e0002 002f0002 00300002 00310002
+
+2203e0003800 crc  00570002 00340002
+00350002 005a0002 005b0002 00580002
+00390002 003a0002 003b0002 003c0002
+003d0002 003e0002 003f0002 00400002
+
+220318013800 crc  00410002 00420002
+00430002 00440002 00450002 00460002
+ffffffff ffffffff ffffffff ffffffff
+004b0002 004c0002 ffffffff 004e0002
+
+220350013800 crc  004f0002 00500002
+00510002 00520002 ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+220388013800 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+2203c0012000 crc  002a0002 00280002
+01000002 20000002 00620002 ffffffff
+ffffffff ffffffff 00000000 00000000
+00000000 00000000 00000000 00000000
+
+210304000000 crc  00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+
+210305000000 crc  00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+
+260300003800 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+260338003800 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+260370000800 crc  ffffffff ffffffff
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+
+210306000000 crc  00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+
+270300000038 crc  00020000 01000000		start of lighting program, 01000000
+1a020000 01000000 ffffffff ffffffff		seems to be total animation frame count
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+270338000038 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+270370000038 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+2703a8000038 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+2703e0000038 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+270318010038 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+270350010038 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+270388010038 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+2703c0010038 crc  ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+2703f8010038 crc  ffffffff ffffffff
+03001600 00000000 05006003 00d80000
+36008001 00000000 00000020 00000000
+05006003 00d80000 36008001 00000000
+
+27033002000a crc  000000ff 00000000
+79000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+
+0b0300000000 crc  00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+```
+
+0x0109 and 0x2103 seem to always start the custom layer program.  Byte 1 of
+0x21 is the layer code 03 for custom layer 2.
+
+Lighting seems to start at command 0x27.  Based on some tests, 
+
+At 2703f801 I believe we have a bitmap of keys with lights enabled for the
+pattern.  The specific command number doesn't appear to be fixed.  This is
+just 0x01f8 bytes after the start.
+
+03001600 appears to be a prefix for the light frame key bitmap.  I think the
+0xffffffff ffffffff just has to be there as well.
+
+I copied and modified the Calculator pattern to enable a single light at a
+time to try to describe the bitmap.  Treating the first byte after the crc as
+byte 0:
+
+```
+byte 0 bits 0-7		Esc  F1   F2   F3   F4   F5   F6   ??
+byte 1 bits 0-7		F7   F8   F9   F10  F11  F12  Del  ??
+byte 2 bits 0-7     Prt  ??   ??   ??   ??   ??   ~    1
+byte 3 bits 0-7     2    ??   3    4    5    ??   6    7
+byte 4 bits 0-7     8    ??   9    0    -    =    BkSp ??
+byte 5 bits 0-7     ??   ??   ??   ??   Tab  Q    W    ??
+byte 6 bits 0-7     E    R    T    Xbow Y    U    I    ??
+byte 7 bits 0-7     O    P    [    ]    \    PgUp ??   ??
+byte 8 bits 0-7     ??   ??   Caps A    S    ??   D    ??
+byte 9 bits 0-7     ??   ??   ??   ??   K    ??   L    ;
+byte 10 bits 0-7    '    Entr ??   PgDn ??   ??   ??   ??
+byte 11 bits 0-7    LShf Z    X    ??   C    V    B    Entr
+byte 12 bits 0-7    N    M    ,    ??   .    /    RShf ??
+byte 13 bits 0-7    Up   ??   ??   ??   ??   ??   LCtl Win
+byte 14 bits 0-7    LAlt ??   ??   LSpc MCtl ??   MShf RSpc
+byte 15 bits 0-7    RAlt ??   ??   Fn   RCtl Left Down Rght
+```
+
+This is 16 bytes, 4 ints.  After this comes 0x00000000 0x00000020.  I assume
+this is a required separator.  The first int might be more keymap bits though.
+
+Command 27033002000a contains 10 bytes that are valid (see the 0x0a at the end of
+the command).
+
+000000ff 00000000 7900
+
+The 0x79 near the end always seems to show up.  The ff is the green level.  So
+in reality we have:
+
+0000RRGG BB000000 7900
+
+I don't yet know what indicates monochrome, RGB cycle, or breathing.
+
 
