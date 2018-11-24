@@ -1203,4 +1203,73 @@ The duration is the inverse of the byte value.  So x/60 = 6 gives x=360.  This
 works for 36,10.  In general, it looks like:
 
 	byte = floor(360/duration)
+
+
+### Trying breathing patterns
+
+Breathing patterns have 2 numbers for the duration: breathing change, and
+breathing stop.  The first number controls how fast or slow the brightness
+varies up and down.  The second controls gaps between patterns.
+
+Using a copy of Flow, I changed the RGB patterns to breathing patterns.  The
+animation is 22 cycles, 22 frames.
+
+0220 keymap RRGGBB00 05000100
+0220 keymap RRGGBB00 0a000200
+
+The first frame was duration 20+1.  The second was 10+2.  The second is
+obvious how it applies.  The first is not.
+
+Change 20+1 to 1+1.
+
+0220 keymap RRGGBB00 64000100
+0220 keymap RRGGBB00 0a000200
+
+There appears to be an inverse relationship here again, at least with the
+breathing change.  Breathing stop appears to be exactly the number entered.
+Breathing change relationship:
+
+	byte	duration
+	16		10
+	5		20
+	100		1
+	50		2
+	33		3
+	25		4
+	1		100
 	
+	byte = floor(100/duration)
+
+
+
+
+
+### How do animation and lighting interact?
+
+I've thought that the animation and lighting keymaps are AND'd to arrive at
+the enabled LEDs, but I'm not sure about this.
+
+After exploring the Colorful Rainbow pattern, I think a monochrome light frame
+is always on.  If two frames give the same key a light, I believe the latter
+frame takes precedence over the former.
+
+With this in mind, then, lighting frames are always running.  A monochrome
+frame lights up the specified keys with the chosen color.  Duration shouldn't
+matter.  An RGB frame cycles through colors starting with the specified one.
+Duration specifies the number of cycles it takes to return to the starting
+color.  A breathing frame has 2 durations - breathing change and breathing
+stop.  I don't know how these work yet.  But all 3 pattern types continuously
+cycle.
+
+Animation frames are masks.  When an animation frame has a key selected, any
+color patterns are allowed through.
+
+Windmill works by having each light frame use the RGB pattern starting on a
+different color.  Each successive frame is set so that the color change
+happens in order.  In other words, frame 2 will hit full red 5 cycles after
+frame 1, frame 3 hits full red 5 cycles after frame 2, and so on.
+
+Next, each frame maps to a slice of a wheel, so that the color peaks will
+happen in successive slices, giving the illusion of a turning.  In this case,
+the animation frame just allows everything through.
+
