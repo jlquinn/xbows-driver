@@ -953,3 +953,254 @@ in reality we have:
 I don't yet know what indicates monochrome, RGB cycle, or breathing.
 
 
+### Experiment on lighting
+
+I'm trying this on custom layer 2.
+
+I have 2 frames of keyboard animation:
+
+	Frame 1 Esc
+	Frame 2 F1
+	
+Also 3 frames of lights.
+
+	Frame 1 is Esc, FF00DD (pink), monochrome.
+	Frame 2 is F1, 00FFEE (cyan), RBG cycle.
+	Frame 3 is All keys, BBAADD (grayish), Breathing.
+	
+Differing frame counts and colors will hopefully let me see various packet
+distinctions.
+
+I'm including only the packets starting with 0x27.  The earlier packets appear
+unaffected by lighting changes.
+
+```
+270300000038 crc  00020000 02000000		start of lighting program, 01000000
+34020000 03000000 ffffffff ffffffff		seems to be total animation frame count
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+270338000038 crc  ffffffff ffffffff		never seems to change
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+270370000038 crc  ffffffff ffffffff		never seems to change
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+2703a8000038 crc  ffffffff ffffffff		never seems to change
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+2703e0000038 crc  ffffffff ffffffff		never seems to change
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+270318010038 crc  ffffffff ffffffff		never seems to change
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+270350010038 crc  ffffffff ffffffff		never seems to change
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+270388010038 crc  ffffffff ffffffff		never seems to change
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+2703c0010038 crc  ffffffff ffffffff		never seems to change
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+
+2703f8010038 crc  ffffffff ffffffff
+03001600 01000000 00000000 00000000
+00000000 00000000 00000300 16000200
+00000000 00000000 00000000 00000000
+
+27033002000a crc  00000000 00200100
+00000000 00000000 00000000 00000000
+00000000 ff00dd00 00007900 00200200
+00000000 00000000 00000000 00000000
+
+27036802002c crc  00000000 00ffee00
+00007900 00207f7f c1dd7d70 7f3fdcdf
+0bf777c1 d9f90000 00000000 bbaadd00
+00007900 00000000 00000000 00000000
+
+0b0300000000 crc  00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+```
+
+Packet 270300000038 by ints
+
+	00020000		start of lighting program?
+	02000000		Indicates 2 frames of animation
+	34020000		The 0x34 is 2 * 0x1a.  Seems matched to animation frame count
+	03000000		Indicates 3 frames of lighting
+	ffffffff		Remainder of packet.  I haven't seen it change.
+
+Packet 2703f8010038 by int
+
+	ffffffff		2 fixed ints
+	03001600		Start of animation key bitmap for 22 bytes
+	01000000		Esc is bit 0, byte 0.
+	00000000 00000000 00000000 00000000		No other keys set
+	00000300		2 bytes of 0.  Then start of 03001600 (key bitmap start)
+	16000200		2 bytes of 03001600.  F1 is byte 0, bit 1
+	00000000 00000000 00000000 00000000		No keys set
+
+Packet 27033002000a by int
+
+	00000000		Last 4 bytes of key bitmap
+	00200100		I think this is 0020 as start of lighting frame.  Then 0100
+					is 2 bytes of lighting keymap with Esc set 
+	00000000 00000000 00000000 00000000		16 bytes of keymap
+	00000000		last 4 bytes of lighting key bitmap
+	ff00dd00		RRGGBB00 is color for this frame
+	00007900		lighting frame terminator
+	01200200		0120 start of lighting frame #2.  01 indicating RGB cycle,
+					Then 0200 is F1 in keymap
+	00000000 00000000 00000000 00000000		16 bytes of keymap
+
+Packet 27036802002c by int
+
+	00000000		last 4 bytes of keymap
+	00ffee00		RRGGBB00 color for this frame
+	78007900		lighting frame terminator.  Is 78 related to frame length?
+	02207f7f		0220 start of lighting frame,  02 is breathing.
+					First 2 bytes of keymap is 7f7f
+	c1dd7d70 7f3fdcdf 0bf777c1 d9f90000		16 bytes of keymap
+	00000000		4 bytes of keymap
+	bbaadd00		RRGGBB00
+	10000500		frame terminator? 
+	00000000 00000000 00000000		unused bytes.  0x2c at end of command
+									ignores them
+
+Monochrome frames appear to terminate with 00007900.  I'm seeing an RGB cycle
+frame end in 78007900.  Breathing frame ending in 10000500.  However, the
+leading byte of the frame also has a different code. 
+
+The monochrome frame is duration 2.  The RGB frame is duration 3.  The
+breathing frame is 6+5.
+
+I don't understand the frame terminator.
+
+Dropping the breathing frame, I have a monochrome frame duration 4, RGB frame
+duration 3.  I repeat the capture with monochrome frame duration 7, RGB frame
+duration 2.
+
+Packet 27026802000c		duration 4/3
+
+	78 00 79 00			01111000 00 79 00
+	
+Packet 27026802000c		duration 7/2
+
+	b4 00 79 00			10110100 00 79 00
+	
+Clues but no answer yet.
+
+### Simplifying things
+
+1 frame animation, duration 20, Esc selected.
+1 frame lighting, duration 1, Esc selected, Red FF0000, monochrome
+
+```
+270300000038 crc  00020000 14000000		start of lighting program, 01000000
+08040000 01000000 ffffffff ffffffff		seems to be total animation frame count
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+```
+
+0x14 is 20.  This is the animation frame duration.
+
+Now 0804.  I normally see 1a02 when the animation is duration 1.  Here, if I
+first subtract 02 from 04, I have 0802.  Treating this as a little endian
+short, I have 0x0208.  0x0208 / 20 gives 0x1a, which is the number I see in
+duration 1 animations.
+
+So this suggests that those 2 bytes are 0x0200 + 0x1a * duration.
+
+I next see 20 copies of 03001600 followed by a 22 byte keymap.  After that is:
+
+	0020	 followed by 22 byte keymap
+	RRGGBB00
+	00007900
+	
+Now let's reverse this.  1 duration animation, 20 duration lighting.
+
+```
+270300000038 crc  00020000 01000000		start of lighting program 1 anim frame
+1a020000 01000000 ffffffff ffffffff		There's 01 here, where I was expecting 0x14
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+```
+
+I can't see the effect.  Changing to 5 duration lighting has no difference with
+20 duration lighting.  I think the animation duration has to exceed the lighting
+duration.
+
+Trying duration 20 animation, duration 20.  This is no different than duration
+20 animation, duration 1 lighting.  Perhaps the driver just figures that
+there's no need to do anything different.
+
+### Trying RGB cycle durations
+
+Windmill has 1 frame animation, 11 frames of lighting, each duration 60.  I
+tried changing the durations from 60 down to 10 by 5's.  
+
+```
+270300000038 crc  00020000 01000000		start of lighting program 1 anim frame
+1a020000 0b000000 ffffffff ffffffff		The 0x0b seems to number of light frames
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+```
+
+0x0b is 11, which is the number of light frames, not the durations.
+
+In the lighting frames, I see the RGB0 followed by a number before the 0x79
+frame terminator.
+
+The 11 sequences are:
+
+0120 keymap RRGGBB00 06007900
+0120 keymap RRGGBB00 06007900
+0120 keymap RRGGBB00 07007900
+0120 keymap RRGGBB00 08007900
+0120 keymap RRGGBB00 09007900
+0120 keymap RRGGBB00 0a007900
+0120 keymap RRGGBB00 0c007900
+0120 keymap RRGGBB00 0e007900
+0120 keymap RRGGBB00 12007900
+0120 keymap RRGGBB00 18007900
+0120 keymap RRGGBB00 24007900
+
+The first byte of the 79 int looks like an inverse of the duration.  We have
+
+	byte  duration
+	6		60
+	6		55
+	7		50
+	8		45
+	9		40
+	10		35
+	12		30
+	14		25
+	18		20
+	24		15
+	36		10
+
+The duration is the inverse of the byte value.  So x/60 = 6 gives x=360.  This
+works for 36,10.  In general, it looks like:
+
+	byte = floor(360/duration)
+	
