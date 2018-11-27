@@ -732,9 +732,283 @@ I *think* that the 0x22 command sequence is the same as the 0x16 command
 sequence that programs the keymap in the driver layer.  I don't know for sure
 yet.
 
+In the 0x2203 sequence for custom layer 2, the default configuration has a
+numeric keypad programmed in, which might explain why packet 220300003800 int
+8 is 00630002 instead of 40000002.
+
+
+```
+010900000000 crc 00
+210201000000 crc 00
+220200003800 crc ffffffff ffffffff
+			 	 01000002 02000002 04000002 08000002
+	     	 	 10000002 20000002 40000002 ffffffff
+			 	 00040002 00050002 00060002 00070002
+220238003800 crc 00080002 00090002
+	     	 	 000a0002 000b0002 000c0002 000d0002
+			 	 000e0002 000f0002 00100002 00110002
+			 	 00120002 00130002 00140002 00150002
+220270003800 crc 00160002 00170002
+	     	 	 00180002 00190002 001a0002 001b0002    pos 2 is different
+			 	 001c0002 001d0002 001e0002 001f0002
+			 	 ... 00230002
+2202a8003800 crc 00240002 00250002
+	     	 	 00260002 00270002 00280002 003a0002	3a is F1 vs 29 is Esc
+				 002a0002 002b0002 002c0002 002d0002
+				 002e0002 002f0002 00300002 00310002
+2202e0003800 crc 00330002 00340002
+	     	 	 00350002 00360002 00370002 00380002
+			 	 00390002 thru 00400002
+220218013800 crc 00410002 ... 00460002 (6 ints)
+	     	 	 ffff (4 ints) these line up with missing expected ints
+			 	 004b0002 004c0002 ffffffff 004e0002
+220250013800 crc 004f0002 00500002
+				 00510002 00520002
+	     	 	 ffff (10 ints) these line up with missing expected ints
+220288013800 crc ff x 14 same as 160188010038
+2202c0012000 crc 002a0002 00280002
+				 01000002 20000002 002c0002
+	     		 ffffffff (3 ints)
+				 00 x 6							ignored due to 0x20 in packet byte 4
+... lighting program here ...
+0b0200000000 crc 00 x 14
+0c0000000000 	      at 3.0737sec
+```
+
+### Key code mapping
+
+
+Key id mapping for driver and custom layer
+
+```
+0100   Lctrl
+0200   Lshift
+0400   Lalt
+0800   Windows
+1000   Rctrl
+2000   Rshift
+4000   Ralt
+0004   A
+0005   B
+0006   C
+0007   D
+0008   E
+0009   F
+000a   G
+000b   H
+000c   I
+000d   J
+000e   K
+000f   L
+0010   M
+0011   N
+0012   O
+0013   P
+0014   Q
+0015   R
+0016   S
+0017   T
+0018   U
+0019   V
+001a   W
+001b   X
+001c   Y
+001d   Z
+001e   1
+001f   2
+0020   3
+0021   4
+0022   5
+0023   6
+0024   7
+0025   8
+0026   9
+0027   0
+0028   Renter
+0029   Esc
+002a   Backspace
+002b   Tab
+002c   Lspace
+002d   -_
+002e   =+
+002f   [{
+0030   ]}
+0031   \|
+
+0033   ;:
+0034   '"
+0035   `~
+0036   ,<
+0037   .>
+0038   /?
+0039   Capslock
+003a   F1
+003b   F2
+003c   F3
+003d   F4
+003e   F5
+003f   F6
+0040   F7
+0041   F8
+0042   F9
+0043   F10
+0044   F11
+0045   F12
+0046   PrtScrn
+
+004b   PageUp
+004c   Delete
+
+004e   PageDown
+004f   Right
+0050   Left
+0051   Down
+0052   Up
+
+## unsure about these
+002a   Middle Backspace	(backspace)
+0028   Middle Enter	(right enter)
+0100   Middle ctrl	(left ctrl)
+2000   Middle shift	(right shift)
+002c   Right space	(left space)
+
+## numpad
+0053	NumLock
+0054	N/
+0055	N*
+0056	N-
+0057	N+
+0058	N enter
+0059	N1
+005a	N2
+005b	N3
+005c	N4
+005d	N5
+005e	N6
+005f	N7
+0060	N8
+0061	N9
+0062	N0
+0063	N.
+
+## media
+83010003	media play
+cd000003	play/pause
+b7000003	stop
+b6000003	last song
+b5000003	next song
+e9000003	vol down
+ea000003	vol up
+e2000003	mute
+
+## mouse
+01000101	left click
+02000101	right click
+04000101	middle click
+08000101	back click
+10000101	advance click
+
+## sys/net	these have 03 afterwards - different key layers of some kind?
+24020003	browser back
+25020003	browser advance
+27020003	browser refresh
+2a020003	browser collection
+23020003	browser home
+8a010003	email
+94010003	my computer
+92010003	calculator
+01060002	copy
+01190002	paste
+0046		screenshot (printscreen)
+```
+
+
+The mouse keys end in 0101.  The sys/net and media keys end in 03.  I think
+all of these keys are delivered on the 3rd USB HID interface rather than the
+standard keyboard interface.
+
+These were acquired by setting keys with new functions in the custom layer
+mapping program.
+
+
+## macros and Fnx
 
 TODO: I still haven't explored how macros are programmed.  I haven't explored
 the Fnx key.
+
+The driver allows unlimited macro sequences in driver mode.  Max 32 char
+length in custom layers.
+
+In writing a macro, it appears to record key down events, key up events, and
+time in ms between events.
+
+I programmed a macro to type 12345.  The full sequence is:
+
+```
+1 down
+112 ms
+1 up
+94 ms
+2 down
+82 ms
+2 up
+78 ms
+3 down
+73 ms
+3 up
+120 ms
+4 down
+95 ms
+4 up
+101 ms
+5 down
+79 ms
+5 up
+```
+
+I then attached it to F1, normally 00390002.  Now, the F1 spot gets 0000010a.
+I assume that 01 is the macro number and 0a indicates macro vs normal key.
+
+
+Before, there was a fixed sequence between the keymap and lighting program:
+
+```
+210204000000 crc 0000 (14 ints)
+210205000000 crc 0000 (14 ints)
+260200003800 crc ffff (14 ints)
+260238003800 crc ffff (14 ints)
+260270000800 crc ffff ffff 00 (12 ints)
+210206000000 crc 00 x 14
+```
+
+Now, we get a more complex sequence that must have the macro encoded:
+
+
+```
+210204000000 crc 0000 (14 ints)
+250200003800 crc aa557cfc 13000101
+	1e000101 70000003 1e000201 5e000003
+	1f000101 52000003 1f000201 4e000003
+	20000101 49000003 20000201 78000003
+250200003800 crc 21000101 5f000003
+	21000201 65000003 22000101 4f000003
+	22000201 0000 x 6
+250270003800 crc 0000 x 14
+2502a8003800 crc 0000 x 14
+2502e0003800 crc 0000 x 14
+250218013800 crc 0000 x 14
+250250013800 crc 0000 x 14
+250288013800 crc 0000 x 14
+2502c0013800 crc 0000 x 14
+2502f8010800 crc 0000 x 14
+210205000000 crc 0000 (14 ints)
+260200003800 crc ffff (14 ints)
+260238003800 crc ffff (14 ints)
+260270000800 crc ffff ffff 00 (12 ints)
+210206000000 crc 00 x 14
+```
+
+I don't know the mapping yet, but probably straightforward.  Keys 1-5 are 001e-0022.
 
 
 
