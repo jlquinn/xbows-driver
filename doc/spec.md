@@ -1046,7 +1046,8 @@ Setting N to 3 changes the start of the following packet:
 Here I now assume 01 is the play mode, and 03 is the count.  In theory, 3
 should make the macro play 3 times in a row.  It played twice.
 
-THIS MAY BE A FIRMWARE BUG
+THIS MAY BE A FIRMWARE BUG.  Further testing seems like a driver bug, not
+firmware.
 
 * Macro button release stop
 
@@ -1073,8 +1074,93 @@ The play mode is 03.
 When the key is pressed and released, the macro events play in a loop.
 Pressing the key again stops the replay.
 
+Q: how do media and mouse keys map?  The key code appears at the first byte of
+an int rather than the 2nd.
+
+A: The driver requires you to type the macro program with the keyboard, so you
+can't get to the media keys.
 
 
+Now I add a 2nd macro, with 3 events, i.e. pressing key 1 once.
+
+```
+210204000000 crc 0000 (14 ints)
+250200003800 crc aa557cfc 13000101
+	1e000101 70000003 1e000201 5e000003
+	1f000101 52000003 1f000201 4e000003
+	20000101 49000003 20000201 78000003
+250200003800 crc 21000101 5f000003
+	21000201 65000003 22000101 4f000003
+	22000201 0000 x 6
+250270003800 crc 0000 x 14
+2502a8003800 crc 0000 x 14
+2502e0003800 crc 0000 x 14
+250218013800 crc 0000 x 14
+250250013800 crc 0000 x 14
+250288013800 crc 0000 x 14
+2502c0013800 crc 0000 x 14
+2502f8010800 crc 00000000 00000000
+	aa551b2d 03010101 1e000101 8b000003
+	1e000201 0000 x 7
+250230023800 crc 0000 x 14
+250268023800 crc 0000 x 14
+2502a0023800 crc 0000 x 14
+2502d8023800 crc 0000 x 14
+250210033800 crc 0000 x 14
+250248033800 crc 0000 x 14
+250280033800 crc 0000 x 14
+2502b8033800 crc 0000 x 14
+2502f0031000 crc 0000 x 14
+210205000000 crc 0000 (14 ints)
+260200003800 crc ffff (14 ints)
+260238003800 crc ffff (14 ints)
+260270000800 crc ffff ffff 00 (12 ints)
+210206000000 crc 00 x 14
+```
+
+The first sequence is now 9 0x25 packets long.  The second is 10.  I suspect
+that the second sequence is also 9 packets long, and the 10th is a 0
+terminator that is there after any number of macros are defined.  This is in
+keeping with the fact that I've not found a macro definition count in the
+format.
+
+The sequence start has two 0 ints, then aa551b2d.  I don't know what this
+means yet.  I suspect the 2 ints may be part of the previous sequence.
+
+OK, the last packet of 0 is partial.  Only 16 valid bytes here.  Then, the
+first macro is 9 packets * 56 bytes + 8 bytes = 512 bytes = 128 ints.  The
+second macro is 12 * 4 + 56 * 8 + 16 = 512 bytes = 128 ints.
+
+This suggests that each macro can actually be 255 key strokes with delays.
+
+Yes, I can see a longer macro sequence than 32 keys.  My test includes 126
+events.
+
+This sequence starts with 
+
+	250200003800 crc aa556469 7e000101
+
+Again, I'm confused by the aa556469.  0x64 is 100.  0x69 is 105.  0x7e is the
+macro length.  00 is the macro id.  01 is play mode with N=01.
+
+In this sequence I used left click, left up, right click, and right up.  In
+this instance, we have:
+
+	01000102	left click
+	01000202	left mouse up
+	02000102	right click
+	02000202	right mouse up
+	
+The first 01 and 02 correspond with the mouse button codes.  I assume the 02
+indicates mouse vs keyboard.  I'm still wondering if media codes would somehow
+work as well and what they would look like.
+
+aa557cfc 0x7c is 124, 0xfc is 252.
+aa551b2d 0x1b is 27, 0x2d is 45.
+
+I still don't know how these codes after aa55 work.  They don't seem to map to
+a total duration of the macro.  Or of start and end times.  Or number of
+events.
 
 
 ## Custom Layer Light Programming
