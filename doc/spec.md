@@ -1162,6 +1162,17 @@ I still don't know how these codes after aa55 work.  They don't seem to map to
 a total duration of the macro.  Or of start and end times.  Or number of
 events.
 
+It might be a crc for the macro sequence?
+
+If I change the short macro to be:
+
+2502f8010800 crc 00000000 00000000
+	aa5520b3 03010101 00000101 8b000003
+	00000201 0000 x 7
+
+the 2 bytes after aa55 are 20b3.
+
+
 
 ## Custom Layer Light Programming
 
