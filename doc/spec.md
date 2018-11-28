@@ -942,7 +942,7 @@ length in custom layers.
 In writing a macro, it appears to record key down events, key up events, and
 time in ms between events.
 
-I programmed a macro to type 12345.  The full sequence is:
+I programmed a macro to type 12345.  The full 19 element sequence is:
 
 ```
 1 down
@@ -966,7 +966,7 @@ I programmed a macro to type 12345.  The full sequence is:
 5 up
 ```
 
-I then attached it to F1, normally 00390002.  Now, the F1 spot gets 0000010a.
+I then attached it to F1, normally 003a0002.  Now, the F1 spot gets 0000010a.
 I assume that 01 is the macro number and 0a indicates macro vs normal key.
 
 
@@ -1008,7 +1008,71 @@ Now, we get a more complex sequence that must have the macro encoded:
 210206000000 crc 00 x 14
 ```
 
-I don't know the mapping yet, but probably straightforward.  Keys 1-5 are 001e-0022.
+I don't know what aa557cfc is yet.  0x13 is 19 decimal, so likely the sequence
+length.
+
+	1e000101	1e is the code for 1
+	70000003	0x70 is 112 ms
+	1e000201    1e is 1.  I assume 02 is key up, with 01 being key down in the
+				first code
+	5e000003	0x5e is 94 ms
+	1f000101    2 key down
+	52000003    0x52 is 82 ms
+	1f000201    2 key up
+	4e000003    78 ms
+	20000101	3 key down
+	49000003	73 ms
+	20000201	3 key up
+	78000003	120 ms
+	21000101	4 key down
+	5f000003	95 ms
+	21000201	4 key up
+	65000003	101 ms
+	22000101	5 key down
+	4f000003	79 ms
+	22000201	5 key up
+
+I don't know why there are 10 0x25 packets.  Perhaps all macros need to fit
+into this space.
+
+Assigning a macro offers a play mode.  There are 3 options:
+
+* Perform N end auto stop
+
+Setting N to 3 changes the start of the following packet:
+
+	250200003800 crc aa557cfc 13000103
+
+Here I now assume 01 is the play mode, and 03 is the count.  In theory, 3
+should make the macro play 3 times in a row.  It played twice.
+
+THIS MAY BE A FIRMWARE BUG
+
+* Macro button release stop
+
+This mode gives me the following packet start:
+
+	250200003800 crc aa557cfc 13000203
+
+The play mode is 02.
+
+It keeps playing macro events in a loop while the key is pressed and stops
+immediately when the key releases.
+
+Here the 3 matches the N from the count, even though the count doesn't seem to
+apply.  This may be a driver program vagary.
+
+* Macro button again press stop
+
+This mode gives me the following packet start:
+
+	250200003800 crc aa557cfc 13000301
+
+The play mode is 03.
+
+When the key is pressed and released, the macro events play in a loop.
+Pressing the key again stops the replay.
+
 
 
 
