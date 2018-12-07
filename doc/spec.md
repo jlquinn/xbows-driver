@@ -34,6 +34,17 @@ At this point, I could install the xbows driver and it could see the keyboard
 properly.  Then I could use Wireshark to capture USB packets going back and
 forth.
 
+## Wireshark setup
+
+modprobe usbmon
+
+On ubuntu 18.04, I can't get wireshark to see usbmon3 as a regular user.  The
+faq says to run
+
+sudo setfacl -m u:$USER:r /dev/usbmon3
+
+but this doesn't change anything.  Root can see it.
+
 
 
 # Basic Device USB HID info
@@ -1155,6 +1166,8 @@ The first 01 and 02 correspond with the mouse button codes.  I assume the 02
 indicates mouse vs keyboard.  I'm still wondering if media codes would somehow
 work as well and what they would look like.
 
+### CRC for macro codes
+
 aa557cfc 0x7c is 124, 0xfc is 252.
 aa551b2d 0x1b is 27, 0x2d is 45.
 
@@ -1172,6 +1185,31 @@ If I change the short macro to be:
 
 the 2 bytes after aa55 are 20b3.
 
+key 2 down, 5ms, key 2 up
+2502f8013800 crc 00 x 2
+	aa55b0d0 03010101 00000101 05000003
+	00000201 00 x 7	
+
+key 2 down, 6ms, key 2 up
+2502f8013800 crc 00 x 2
+	aa55c518 03010101 00000101 06000003
+	00000201 00 x 7	
+
+key 2 down, 7ms, key 2 up
+2502f8013800 crc 00 x 2
+	aa55165f 03010101 00000101 07000003
+	00000201 00 x 7	
+
+Playing with the first macro and changing the repeat count doesn't affect the
+aa557cfc.  So those bytes don't appear to be included in the crc-like value.
+
+OK, installed libcrc and played with the bytes and found the answer.  Similar
+to the whole packet crc, the aa55 crc is computed with CRC-CCITT-false (or
+0xffff) on the bytes in the active steps of the macro.  Trailing 0's are
+ignored.
+
+So for 00000101 06000003 00000201, the crc is 0x18c5, matching aa55c518.
+For 00000101 07000003 00000201, the crc is 0x5016, matching aa55165f.
 
 
 
