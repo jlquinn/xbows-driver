@@ -786,7 +786,175 @@ numeric keypad programmed in, which might explain why packet 220300003800 int
 0c0000000000 	      at 3.0737sec
 ```
 
-### Key code mapping
+## Disabling a key
+
+The Windows driver provides the ability to disable a key.  This is handled by
+setting the code for a key to 00.  For example, Esc is 0x29 and the code would
+normally be 0x00290002.  Disabling the Esc key would instead generate
+0x00000002.
+
+## Flashlight
+
+The flashlight feature appears to be programmed into the set of commands
+starting with 0x26.  These normally have 0xff in them.  
+
+Before, there was a fixed sequence between the keymap and lighting program:
+
+```
+210204000000 crc 0000 (14 ints)
+210205000000 crc 0000 (14 ints)
+260200003800 crc ffff (14 ints)
+260238003800 crc ffff (14 ints)
+260270000800 crc ffff ffff 00 (12 ints)
+210206000000 crc 00 x 14
+```
+
+Setting Q to flash the
+windmill sequence gives the following:
+
+
+```
+210204000000 crc 0000 (14 ints)
+210205000000 crc 0000 (14 ints)
+260200003800 crc ffffffff ffffffff
+	ffffffff ffffffff ffffffff ffffffff
+	ffff01ff ffffffff ffffffff ffffffff
+	ffffffff ffffffff ffffffff ffffffff
+260238003800 crc ffff (14 ints)
+260270000800 crc ffff ffff 00 (12 ints)
+210206000000 crc 00 x 14
+```
+
+Setting A to flash windmill gives 
+
+```
+260200003800 crc ffffffff ffffffff
+	ffff01ff ffffffff ffffffff ffffffff
+	ffffffff ffffffff ffffffff ffffffff
+	ffffffff ffffffff ffffffff ffffffff
+```
+
+Changing the lighting program that is flashed doesn't affect the change from
+0xff to 0x01.
+
+QUESTION: where is this info stored?
+
+If Q is set to windmill, and A is set to gradual brighten, I get the
+following:
+
+```
+260200003800 crc ffffffff ffffffff
+	ffff01ff ffffffff ffffffff ffffffff
+	ffff02ff ffffffff ffffffff ffffffff
+	ffffffff ffffffff ffffffff ffffffff
+```
+
+It looks like the byte is an index into a table of light programs.
+
+QUESTION: where are the lighting programs stored?
+
+
+Slightly different experiment.  Layer 3.  General lighting program is
+Calculator1 which is 20 animation frames with only Esc set, and 2 frames of
+lighting.  The first lighting frame is duration 5, RGB ff0000 (all red)
+monochrome style, only Esc set.  The second lighting frame is duration 1, RGB
+0900ff (almost blue) monochrome style, only Esc set.
+
+Since both monochrome styles are active at the same time, it's possible only
+the 2nd one is delivered to the keyboard.
+
+In addition, I set Q with a flashlight of Calculator11.  Calc11 is 2 animation
+frames, frame 1 with Esc set, frame 2 with F1 set.  2 lighting frames.
+Lighting frame 1 is duration 7, RGB ff00dd monochrome, Esc and F1 set.
+Lighting frame 2 is duration 2, RGB 00ffee RGB style, Esc and F1 set.
+
+Labeling of Q is the same as the first test.  We get 01 on the 27th byte.
+This seems to include 6 bytes before the A byte.
+
+QUESTION: does this match the following key code mapping?  It holds for alpha
+keys so far.
+
+
+Dipping into lighting info...  If I have just calculator1 chosen as the
+layer lighting program, the lighting looks like:
+
+
+```
+270400000038 crc  00020000 14000000		start of lighting program
+08040000 02000000 ffffffff ffffffff		
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+```
+
+00020000 starts the lighting program
+14000000 there are 20 animation frames
+08040000 appears to be 0x1a * 20 + 0200
+02000000 total lighting program duration is 2
+0xffffffff  there are 124 of these
+03001600 0100...  one animation frame with Esc set.  22 byte bitmap following
+	the frame header.  There are 20 of these.
+00200100 0020 starts lighting frame 1.  01 is the start of the
+	22 byte bitmap for lighting frame 1.
+ff000000 RRGGBB00 for this frame
+00003400 monochrome lighting style?
+00200100 0020 starts lighting frame 2.  01 is the start of the
+	22 byte bitmap for lighting frame 2.
+0900ff00 RRGGBB00 for this frame
+00003400 monochrome lighting style?
+
+
+Now assign flashlight to Q with Full white lighting.  Reminder, there are 3
+animation frames.
+
+
+
+```
+270400000038 crc  00020000 14000000		start of lighting program
+08040000 02000000 48040000 03000000
+96040000 01000000 ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+```
+
+00020000 starts the lighting program
+14000000 there are 20 animation frames
+08040000 appears to be 0x1a * 20 + 0200
+02000000 total lighting program duration is 2
+48040000 03000000 96040000 01000000  I suspect these are key assignments of
+some sort
+0xffffffff  there are 120 of these
+03001600 0100...  one animation frame with Esc set.  22 byte bitmap following
+	the frame header.  There are 20 of these.
+00200100 0020 starts lighting frame 1.  01 is the start of the
+	22 byte bitmap for lighting frame 1.
+ff000000 RRGGBB00 for this frame
+00003400 monochrome lighting style?
+00200100 0020 starts lighting frame 2.  01 is the start of the
+	22 byte bitmap for lighting frame 2.
+0900ff00 RRGGBB00 for this frame
+00003400 monochrome lighting style?
+03001600 ffffffff ffffffff ffffffff ffffffff 0f000000 0000
+	animation frame 1 key bitmap for full white lighting
+03001600 ffffffff ffffffff ffffffff ffffffff 0f000000 0000
+	animation frame 2 key bitmap for full white lighting
+03001600 ffffffff ffffffff ffffffff ffffffff 0f000000 0000
+	animation frame 3 key bitmap for full white lighting
+0020 ffffffff ffffffff ffffffff ffffffff 0f000000 0000 RRGGBB00 00003400
+	lighting frame key bitmap for full white lighting and monochrome style
+
+So the key flashlight program immediately follows the default light program
+without the frame count info?
+
+48040000 03000000 96040000 01000000 looks like it might encode frame count
+info for the Nth flashlight program.  03 is the animation frame count.  01 is
+the light frame duration.  I don't know how 4804 and 9604 fit in yet.
+
+If I switch to calculator11, this is 2 animation frames, 2 lighting frames.
+The 4 ints in question are now 48040000 02000000 7c040000 02000000.  Unclear
+how light frame durations of 7 and 2 are encoded.  There is a difference of 52
+between 047c and 0448.  Meaningful?  I don't know yet.
+
+
+## Key code mapping
 
 
 Key id mapping for driver and custom layer
@@ -940,6 +1108,8 @@ standard keyboard interface.
 
 These were acquired by setting keys with new functions in the custom layer
 mapping program.
+
+
 
 
 ## macros and Fnx
@@ -1386,7 +1556,8 @@ At 2703f801 I believe we have a bitmap of keys with lights enabled for the
 pattern.  The specific command number doesn't appear to be fixed.  This is
 just 0x01f8 bytes after the start.
 
-03001600 appears to be a prefix for the light frame key bitmap.  I think the
+03001600 appears to be a prefix for an animation frame.  It is followed by the
+animation mask key bitmap.  I think the
 0xffffffff ffffffff just has to be there as well.
 
 I copied and modified the Calculator pattern to enable a single light at a
@@ -1414,6 +1585,9 @@ byte 15 bits 0-7    RAlt ??   ??   Fn   RCtl Left Down Rght
 
 This is 16 bytes, 4 ints.  After this comes 0x00000000 0x00000020.  I assume
 this is a required separator.  The first int might be more keymap bits though.
+
+Based on other info, I think the bitmap is 22 bytes and the separator is
+actually 0x0020.
 
 Command 27033002000a contains 10 bytes that are valid (see the 0x0a at the end of
 the command).
