@@ -920,6 +920,7 @@ ffffffff ffffffff ffffffff ffffffff
 08040000 appears to be 0x1a * 20 + 0200
 02000000 total lighting program duration is 2
 48040000 03000000 96040000 01000000  I suspect these are key assignments of
+
 some sort
 0xffffffff  there are 120 of these
 03001600 0100...  one animation frame with Esc set.  22 byte bitmap following
@@ -952,6 +953,62 @@ If I switch to calculator11, this is 2 animation frames, 2 lighting frames.
 The 4 ints in question are now 48040000 02000000 7c040000 02000000.  Unclear
 how light frame durations of 7 and 2 are encoded.  There is a difference of 52
 between 047c and 0448.  Meaningful?  I don't know yet.
+
+Switch to RGB Lights Wave program for key Q.  This has 6 animation frames
+duration 2 each.  1 lighting frame duration 20.  Now the 4 ints are 48040000
+0c000000 80050000 01000000.  So it looks like 0c is the total animation
+duration and 01 is lighting frame count.  Still unclear how the other 2 ints
+behave.  Animation frames are individually recorded so duration isn't needed.
+
+0120 bitmap x 22 bytes RRGGBB00 12003400 is lighting frame.  Duration 20, but
+how is that coded?  20 is 0x14 but I'm not seeing that.  Style is RGB.  Is
+that the 12?  Duration 20 affects the rate of RGB change so it's got to be
+here somewhere.
+
+Switch to Windmill1 for key Q.  1 animation frame duration 1.  11 light
+frames, each different duration to figure out how it's represented.  4 ints
+are 48040000 02000000 62040000 0b000000 with 0b being the 11 light frames.
+
+Light frame durations add up to 385 0x181.  Those numbers aren't showing up
+here.  Drat.
+
+With Windmill1 for key Q and no general lighting, the first light program
+packet is:
+
+```
+0040  27 02 00 00 00 38 2b e1 00 02 00 00 01 00 00 00   '....8+.........
+0050  00 00 00 00 00 00 00 00 14 04 00 00 01 00 00 00   ................
+0060  2e 04 00 00 0b 00 00 00 ff ff ff ff ff ff ff ff   ................
+0070  ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff   ................
+```
+
+This is different from some other situations.  00020000 starts the packet as
+expected.  01000000 indicates 1 animation frame duration 1 as expected.  THe
+next 2 ints are 00, which is not expected.  There are then 4 ints
+14040000 01000000 2e040000 0b000000.  Here we have 01 and 0b, that seem to
+match the animation frame count and light frame count.
+
+This might mean that the two 00 ints indicate no general lighting at all,
+which the next 4 indicating lighting program 1 used on the Q key.
+
+I compared two variants of windmill1 by changing the duration of the first
+light frame from 60 to 65.  This reminds me that lighting frames look like the
+following, also described further down under RGB cycle.
+
+duration 60:
+```
+0120 keymap RRGGBB00 06003400
+```
+duration 60:
+```
+0120 keymap RRGGBB00 05003400
+```
+
+They are not identical.  Here we see 0x34 at the end of the frame.  Further
+down, we see 0x79 at the end of the frame.
+
+Huh.  When I enable the same windmill1 as the general lighting instead of a
+key specific program, I still see 0x34 at the end of the light frames.
 
 
 ## Key code mapping
