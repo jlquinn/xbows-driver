@@ -596,6 +596,18 @@ custom mode.
 
 Therefore, I don't know what the 64 at the end of the RGB indicates.
 
+Checking with an RGB cycle, I see value sequences
+
+	Blue 00ffBB64
+	0c 19 26 33 3f 4c 59 65 72 7f 8c 99 a5 b2 bf cb d8 e5 f2 ff
+	Green 00GGff64
+	f2 e5 d8 cb bf b2 a5 99 8c 7f 72 65 59 4c 3f 33 26 19 0c 00
+	Red   RR00ff64
+	0c 19 26 33 3f 4c 59 65 72 7f 8c 99 a5 b2 bf cb d8 e5 f2 ff
+	Blue  ff00BB64	
+	f2 e5 d8 cb bf b2 a5 99 8c 7f 72 65 59 4c 3f 33 26 19 0c 00
+	Green ffGG0064
+	0c 19 26 33 3f 4c 59 65 72 7f 8c 99 a5 b2 bf cb d8 e5 f2 ff
 
 
 I think this is enough to program light patterns in the driver layer.
@@ -605,6 +617,9 @@ After sending 1a01 command packets, the keyboard responds with:
 
 After sending 1a20, the keyboard responds with 
 1a0201000000a08000000000000000000000000000000000...
+
+Windows driver sends each lighting frame every ~0.3 seconds.  I don't know how
+fast it could actually be done.
 
 
 ## Modifying Key Mappings in Driver Mode
