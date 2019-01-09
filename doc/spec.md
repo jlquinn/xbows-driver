@@ -577,6 +577,13 @@ Mshift	 	Rspc		 Ralt		??
 
 I think this is enough to program light patterns in the driver layer.
 
+After sending 1a01 command packets, the keyboard responds with:
+1a0101000000a4b400000000000000000000000000000000...
+
+After sending 1a20, the keyboard responds with 
+1a0201000000a08000000000000000000000000000000000...
+
+
 ## Modifying Key Mappings in Driver Mode
 
 I think that we have a sequence that looks like this to set the key bindings
