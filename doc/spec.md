@@ -575,6 +575,29 @@ Mshift	 	Rspc		 Ralt		??
 ```
 
 
+When sending 1a command packets, each modified gets RRGGBBxx, where xx is the
+key mode, I think.  If the program is numpad in green, I see keys assigned to
+00FF0064 if they are lit.
+
+1a02 appears to mark the end of the lighting sequence.  The Windows driver
+keeps sending lighting frames actively when running, whether the pattern is
+dynamic or not.
+
+When the program is shifted to blue lights breathing, I see 0000FF64 for each
+lit key.  Values assigned to the blue field to emulate breathing:
+
+	ff ff e5 cc b2 99 7f 66 4c 33 19 00 00
+	00 00 19 33 4c 66 7f 99 b2 cb e5 fe ff
+
+You can see some roundoff happening near the end of the cycle.
+
+So for driver mode, breathing isn't a hardware setting the way it is for
+custom mode.
+
+Therefore, I don't know what the 64 at the end of the RGB indicates.
+
+
+
 I think this is enough to program light patterns in the driver layer.
 
 After sending 1a01 command packets, the keyboard responds with:
@@ -643,6 +666,7 @@ Some might be the numeric keypad but I don't have one, so I can't test that
 theory for now.
 
 Commands 1603 and 1701 appear to just terminate the programming sequence.
+1603 has 120 0xff bytes.
 
 After sending a command to the keyboard, the keyboard sends a response.
 
