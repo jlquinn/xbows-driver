@@ -34,6 +34,11 @@ At this point, I could install the xbows driver and it could see the keyboard
 properly.  Then I could use Wireshark to capture USB packets going back and
 forth.
 
+See the following for details:
+http://www.slashdev.ca/2010/05/08/get-usb-report-descriptor-with-linux/
+describes how to unbind usb device to get report descriptors
+
+
 ## Wireshark setup
 
 modprobe usbmon
@@ -44,7 +49,6 @@ faq says to run
 sudo setfacl -m u:$USER:r /dev/usbmon3
 
 but this doesn't change anything.  Root can see it.
-
 
 
 # Basic Device USB HID info
@@ -632,6 +636,24 @@ Some might be the numeric keypad but I don't have one, so I can't test that
 theory for now.
 
 Commands 1603 and 1701 appear to just terminate the programming sequence.
+
+After sending a command to the keyboard, the keyboard sends a response.
+
+After 0b05, the response is identical.
+After 0109, the response is:
+010901000000cf3d0f080000000000000000000000000000...
+I don't know what the 0f08 indicates yet.
+
+After each 0x16 command, I see this as a response:
+160101000000d96f00000000000000000000000000000000...
+
+After the basic keymap is sent, the next 3 packets are cmd 0x1603.  I don't
+understand them yet.  The replies look like:
+160301000000214800000000000000000000000000000000...
+
+The last packet is command 0x1701.  I don't understand this yet.  The response is:
+170100000000fe51f0011203000000000000000000000000...
+
 
 
 # Custom Layer Programming
