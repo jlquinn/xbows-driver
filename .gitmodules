@@ -1,0 +1,6 @@
+[submodule "libcrc"]
+	path = libcrc
+	url = https://github.com/lammertb/libcrc.git
+[submodule "hidapi"]
+	path = hidapi
+	url = https://github.com/supercollider/hidapi.git
