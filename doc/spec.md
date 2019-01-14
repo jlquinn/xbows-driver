@@ -669,6 +669,8 @@ in driver mode.
 0c0000000000 crc end of sequence code
 ```
 
+XXX Check Mctl.  It is probably 10000002, not 01000002, same as Rctl.
+
 Here, the first 2 commands 0b05 and 0109 appear to the start of the remapping
 commands.
 
@@ -700,6 +702,14 @@ understand them yet.  The replies look like:
 The last packet is command 0x1701.  I don't understand this yet.  The response is:
 170100000000fe51f0011203000000000000000000000000...
 
+
+QUESTIONS:
+
+How do macros, flashlight, and shortcuts get implemented in driver mode?
+
+How does a firmware update get sent to the keyboard?
+
+Do I need to interpret the keyboard return packets?
 
 
 # Custom Layer Programming
