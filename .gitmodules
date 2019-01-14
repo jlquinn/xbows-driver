@@ -1,6 +1,8 @@
 [submodule "libcrc"]
 	path = libcrc
 	url = https://github.com/lammertb/libcrc.git
+	ignore = dirty
 [submodule "hidapi"]
 	path = hidapi
 	url = https://github.com/supercollider/hidapi.git
+	ignore = dirty
