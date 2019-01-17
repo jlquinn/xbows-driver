@@ -3,21 +3,26 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <unistd.h>
 
 #include <checksum.h>
 #include <hidapi.h>
 
+#include "driver_layer.hh"
+
 using namespace std;
 
-void dump_packet(unsigned char* data) {
+void dump_packet(const unsigned char* data) {
   cout << "Packet:\n";
   for (int i=0; i < 64; i++) {
     printf(" %02x", data[i]);
     if ((i+1) % 16 == 0) printf("\n");
   }
+  cout << flush;
 }
 
 void hiderror(const string& s) {
@@ -120,7 +125,29 @@ int main(int ac, char* av[]) {
 
   // Let's try sending the green calculator program to the keyboard in driver
   // mode
-  
+  struct timespec ms = {0, 1000000}; // 1 millisec = 1M nanosec
+
+  vector<packet> lgtprog = light_program();
+  cout << "Sending light program now..." << endl;
+  for (const auto& pkt: lgtprog) {
+    //// Send and receive xbows light program command
+    cout << "\nSENDING PACKET\n";
+    dump_packet(pkt.bytes);
+    // int numwr = hid_write(dev, pkt.data, 64);
+    // if (numwr == -1) {
+    //   hid_close(dev);
+    //   hiderror("Failed to write data to hid device");
+    // }
+    nanosleep(&ms, nullptr);
+    // int numrd = hid_read(dev, data, 64);
+    // if (numrd != 64) {
+    //   hid_close(dev);
+    //   hiderror("Failed to read data from hid device");
+    // }
+    dump_packet(data);
+    nanosleep(&ms, nullptr);
+  }
+  cout << "Sending light program DONE" << endl;
   
 
   

@@ -1,7 +1,11 @@
 // Basic packet handling for xbows programming interface
 
 #include <endian.h>
+extern "C" {
 #include <checksum.h>
+}
+
+#include "packet.hh"
 
 // Packet structure
 // byte 0:	command
@@ -12,20 +16,15 @@
 // byte 6,7:	packet crc.  crc-16/ccitt-false with 6,7 set to 0
 // byte 8-63:	data bytes
 
-struct packet {
-  unsigned char bytes[64];	// This is a HID packet sent to the keyboard
+void packet::compute_crc() {
+  // Compute the packet crc
+  bytes[6] = bytes[7] = 0;
+  uint16_t crc = crc_ccitt_ffff(bytes, 64);
 
-  void compute_crc() {
-    // Compute the packet crc
-    bytes[6] = bytes[7] = 0;
-    uint16_t crc = crc_ccitt_ffff(bytes, 64);
-
-    // Assign little-endian crc to bytes 6 and 7
-    crc = htole16(crc);
-    *(uint16_t*)(bytes+6) = crc;
-  }
-
-};
+  // Assign little-endian crc to bytes 6 and 7
+  crc = htole16(crc);
+  *(uint16_t*)(bytes+6) = crc;
+}
 
 
 enum commands {
