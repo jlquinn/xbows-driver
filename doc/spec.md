@@ -571,7 +571,7 @@ Mshift	 	Rspc		 Ralt		??
 ??    	 ??    	     	 ??		??
 ??    	 ??    	     	 ??		??
 
-1a 20 00 00 00 00 crc	 ??		??
+1a 02 00 00 00 00 crc	 ??		??
 ```
 
 
@@ -615,11 +615,19 @@ I think this is enough to program light patterns in the driver layer.
 After sending 1a01 command packets, the keyboard responds with:
 1a0101000000a4b400000000000000000000000000000000...
 
-After sending 1a20, the keyboard responds with 
+After sending 1a02, the keyboard responds with 
 1a0201000000a08000000000000000000000000000000000...
 
 Windows driver sends each lighting frame every ~0.3 seconds.  I don't know how
 fast it could actually be done.
+
+20190117 I tried sending a lighting frame.  It appears to just block on the
+first command.
+
+OK, after looking deeper, it seems that the windows driver updates a light
+program by sending a keymap, followed by 0x0c, followed by an updated light
+program.
+
 
 
 ## Modifying Key Mappings in Driver Mode
