@@ -71,6 +71,11 @@ string find_device(unsigned short vendor, unsigned short product) {
   return progpath;
 }
 
+void do_interval() {
+  struct timespec ms = {0, 1000000}; // 1 millisec = 1M nanosec
+  // nanosleep(&ms, nullptr);
+  usleep(1000);
+}
 
 
 int main(int ac, char* av[]) {
@@ -84,7 +89,6 @@ int main(int ac, char* av[]) {
 
   string progpath = find_device(vendor, product);
 
-  
   // At this point I could try to read the interface and endpoint descriptors,
   // but I already know what they are and don't need anything from them.  I
   // think.  There is no useful usage or usage page, so the HID protocol is
@@ -108,11 +112,13 @@ int main(int ac, char* av[]) {
     hid_close(dev);
     hiderror("Failed to write data to hid device");
   }
+  do_interval();
   int numrd = hid_read(dev, data, 64);
   if (numrd != 64) {
     hid_close(dev);
     hiderror("Failed to read data from hid device");
   }
+  do_interval();
 
   dump_packet(data);
 
@@ -125,27 +131,33 @@ int main(int ac, char* av[]) {
 
   // Let's try sending the green calculator program to the keyboard in driver
   // mode
-  struct timespec ms = {0, 1000000}; // 1 millisec = 1M nanosec
+
+#define REALRUN 1
 
   vector<packet> lgtprog = light_program();
   cout << "Sending light program now..." << endl;
   for (const auto& pkt: lgtprog) {
     //// Send and receive xbows light program command
     cout << "\nSENDING PACKET\n";
+#ifdef REALRUN
+    int numwr = hid_write(dev, pkt.bytes, 64);
+    if (numwr == -1) {
+      hid_close(dev);
+      hiderror("Failed to write data to hid device");
+    }
+#endif
     dump_packet(pkt.bytes);
-    // int numwr = hid_write(dev, pkt.data, 64);
-    // if (numwr == -1) {
-    //   hid_close(dev);
-    //   hiderror("Failed to write data to hid device");
-    // }
-    nanosleep(&ms, nullptr);
-    // int numrd = hid_read(dev, data, 64);
-    // if (numrd != 64) {
-    //   hid_close(dev);
-    //   hiderror("Failed to read data from hid device");
-    // }
+    do_interval();
+    cout << "\nRECEIVING PACKET"<<endl;
+#ifdef REALRUN
+    int numrd = hid_read(dev, data, 64);
+    if (numrd != 64) {
+      hid_close(dev);
+      hiderror("Failed to read data from hid device");
+    }
+#endif
     dump_packet(data);
-    nanosleep(&ms, nullptr);
+    do_interval();
   }
   cout << "Sending light program DONE" << endl;
   
