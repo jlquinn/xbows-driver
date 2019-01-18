@@ -62,9 +62,10 @@ vector<packet> light_program() {
 
   // Convert to packet program
 
-  // Initial program packets.  NO, this is for keymap, not lighting.
-  // program.push_back(packet(0x0b, 0x05));
-  // program.push_back(packet(0x01, 0x09));
+  // Initial program packets.  This gets the keyboard's attention.
+  program.push_back(packet(0x0b, 0x05));
+  program.push_back(packet(0x01, 0x09));
+
 
   // Light program.  14 key rgb per packet
   unsigned short bytes = 0;
@@ -90,7 +91,7 @@ vector<packet> light_program() {
   // Terminator packet
   program.push_back(packet(0x1a, 0x02));
 
-  assert(program.size() == 11);
+  // assert(program.size() == 11);
 
   // Compute crc for each packet
   for (auto& pkt: program)
