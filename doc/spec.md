@@ -628,6 +628,12 @@ OK, after looking deeper, it seems that the windows driver updates a light
 program by sending a keymap, followed by 0x0c, followed by an updated light
 program.
 
+With experimentation, we need to send the 0b05 and 0109 commands to get the
+keyboard's attention.  But we don't have to send a keymap, just a light frame.
+
+Once we have the attention of the keyboard, we can just keep sending packets
+periodically.
+
 
 
 ## Modifying Key Mappings in Driver Mode
@@ -718,6 +724,14 @@ How do macros, flashlight, and shortcuts get implemented in driver mode?
 How does a firmware update get sent to the keyboard?
 
 Do I need to interpret the keyboard return packets?
+
+
+
+## Driver Mode must stay active
+
+It turns out that to maintain an active light program, the driver must send
+packets periodically.  If not, the keyboard will revert to the last used
+build-in backlight mode after about 5 seconds.
 
 
 # Custom Layer Programming
