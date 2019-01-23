@@ -731,7 +731,7 @@ Do I need to interpret the keyboard return packets?
 
 It turns out that to maintain an active light program, the driver must send
 packets periodically.  If not, the keyboard will revert to the last used
-build-in backlight mode after about 5 seconds.
+build-in backlight mode after about 3 seconds.
 
 
 # Custom Layer Programming
