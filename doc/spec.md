@@ -786,6 +786,98 @@ Mapping appears to be the same as keymap:
 
 
 
+## Driver Mode macro assignment
+
+Testing how a macro gets assigned to a key in driver mode.  I apply the macro
+12345 to the key LCtrl.  This gives the first command:
+
+```
+160100000038 crc ffffffff ffffffff
+				 0300010a 02000002 04000002 08000002	Lc Ls La Win
+	     		 10000002 20000002 40000002 ffffffff	Rc Rs Ra
+				 00040002 00050002 00060002 00070002	A B C D
+```
+
+The LCtrl key position gets 0300010a instead of 01000002.
+I don't know how the keyboard is remembering the macro, however.  Or if the
+driver is injecting the key sequence in place of the keyboard.
+
+IMPORTANT: I just discovered the driver sends 0x15 commands to the keyboard.
+I don't know if this stores macro/flashlight info or what yet.
+
+pkt 882
+```
+1503000000 crc 01000000 0000 x 13
+```
+
+pkt 891
+```
+1502000000 crc 001e0000 0000 x 13
+```
+
+pkt 981
+```
+1502000000 crc 00000000 x 14
+```
+pkt 1035
+```
+1502000000 crc 001f0000 0000 x 13
+```
+pkt 1085
+```
+1502000000 crc 00000000 x 14
+```
+pkt 1135
+```
+1502000000 crc 00200000 0000 x 13
+```
+pkt 1187
+```
+1502000000 crc 00000000 x 14
+```
+pkt 1241
+```
+1502000000 crc 00210000 0000 x 13
+```
+pkt 1291
+```
+1502000000 crc 00000000 x 14
+```
+pkt 1347
+```
+1502000000 crc 00220000 0000 x 13
+```
+pkt 1405
+```
+1502000000 crc 00000000 x 14
+```
+pkt 1415
+```
+1503000000 crc 00000000 x 14
+```
+pkt 1417
+```
+1503000000 crc 00000000 x 14
+```
+pkt 1423
+```
+1501000000 crc 00000000 x 14
+```
+pkt 1433
+```
+1502000000 crc 00000000 x 14
+```
+
+It appears that key codes for 12345 are present in the above sequence.  Also,
+the 0x15 command sequence is interleaved with lighting commands.
+
+My suspicion is that the leading 1503 with 01 after the crc starts the macro,
+and 01 is the macro number.  We have 1503 1503 1501 1502 at the tail end.
+
+Q: are all 4 commands needed to terminate the macro?
+Q: Are 1502 with 0 the interkey delays for the macro?
+
+
 
 
 
