@@ -645,7 +645,7 @@ in driver mode.
 0b0500000000 crc 00000000 x 14
 010900000000 crc 00000000 x 14
 160100000038 crc ffffffff ffffffff
-				 01000002 02000002 04000002 08000002	Ls Lc La Win
+				 01000002 02000002 04000002 08000002	Lc Ls La Win
 	     		 10000002 20000002 40000002 ffffffff	Rc Rs Ra
 				 00040002 00050002 00060002 00070002	A B C D
 160138000038 crc 00080002 00090002						E F
@@ -724,6 +724,70 @@ How do macros, flashlight, and shortcuts get implemented in driver mode?
 How does a firmware update get sent to the keyboard?
 
 Do I need to interpret the keyboard return packets?
+
+
+## Driver Mode flashlight
+
+Driver mode provides what is called flashlight settings.  When a key is
+assigned a flashlight, pressing the key causes a light pattern to run briefly.
+
+There appears to be a change in the keymap program when this happens.  The
+keymap program has a section with 1603 commands.  There are changes here.  By
+default, I see the following when the driver keymap is programmed:
+
+```
+160300000038 crc ffffffff x 14
+160338000038 crc ffffffff x 14
+160370000008 crc ffffffff ffffffff 00000000 x 12
+```
+
+If I assign 'S' to have calculator, I see:
+
+```
+160300000038 crc ffffffff ffffffff
+	ffff x 4
+	ffffffff 1dffffff ffff x 6
+160338000038 crc ffffffff x 14
+160370000008 crc ffffffff ffffffff 00000000 x 12
+```
+
+Note the 0x1d at data byte 29.  So far this doesn't match another
+representation of S.
+
+If I assign LShift to Flow, I see:
+```
+160300000038 crc ffffff04 ffffffff
+	ffff x 4
+	ffffffff 1dffffff ffff x 6
+160338000038 crc ffffffff x 14
+160370000008 crc ffffffff ffffffff 00000000 x 12
+```
+
+data byte 4 is set to 0x04.  Changing LShift to Calculator doesn't change the
+bit pattern.  This suggests that the driver program remembers the assignment.
+The keyboard merely informs the driver to initiate the light program.
+
+When I press the LShift key, I see a single frame of the Calculator light
+program sent to the keyboard.
+
+This could easily be done with something that monitors the keyboard for the
+specified keys.  But there must be some reason the keymap gets modified.
+
+Mapping appears to be the same as keymap:
+
+	LCtrl 160300000038 crc ffff03ff ...
+	LShft 160300000038 crc ffffff04 ...
+	LAlt  160300000038 crc ffffffff 05ffffff ...
+	Win   160300000038 crc ffffffff ff06ffff ...
+	RCtrl 160300000038 crc ffffffff ffff07ff ...
+	RShft 160300000038 crc ffffffff ffffff08 ...
+	RAlt  160300000038 crc ffffffff x 2 09ffffff ....
+	
+
+
+
+
+
 
 
 
