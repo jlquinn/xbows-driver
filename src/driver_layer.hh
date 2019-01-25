@@ -17,11 +17,13 @@ struct drv_light_frame {
   drv_light_frame();
   void setkey(keycodes key, uint32_t rgb);
   int size() const { return MAX_KEYCODE; }
+  void clear();
 };
 
 //// These calls create sets of light frames for different patterns.
 // Build a calculator light program.
 vector<drv_light_frame> make_calc();
+vector<drv_light_frame> make_trail();
 
 
 

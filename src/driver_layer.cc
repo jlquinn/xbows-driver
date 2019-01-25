@@ -24,6 +24,11 @@ void drv_light_frame::setkey(keycodes key, uint32_t rgb) {
   keys[pos] = rgb | 0x64000000;
 }
 
+void drv_light_frame::clear() {
+  memset(keys, 0, sizeof(keys));
+}
+
+
 vector<packet> drv_attn;
 void init_driver_mode() {
   if (drv_attn.empty()) {
@@ -173,3 +178,105 @@ vector<drv_light_frame> make_calc() {
 
   return framelist;
 }
+
+// JQ just activate each key one frame at a time
+vector<drv_light_frame> make_trail() {
+  // Start with a green calculator light map.
+  vector<drv_light_frame> framelist;
+
+  // To write the program, user needs to be able to specify that K8 is green.
+  // This means that K8->34 finds rgb[9] and sets it to 00ff0064.
+  drv_light_frame frame;
+  uint32_t green = 0x00ff00;
+
+  frame.setkey(K_Esc, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F1, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F2, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F3, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F4, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F5, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F6, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F7, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F8, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F9, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F10, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_F12, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_Del, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_PrtScrn, green);
+  framelist.push_back(frame);
+  frame.clear();
+
+  frame.setkey(K_RBksp, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_Equal, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_Dash, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_0, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_9, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_8, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_7, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_6, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_5, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_4, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_3, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_2, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_1, green);
+  framelist.push_back(frame);
+  frame.clear();
+  frame.setkey(K_Backquote, green);
+  framelist.push_back(frame);
+
+  vector<drv_light_frame> framelist2(framelist);
+  framelist2.insert(framelist2.end(), framelist.begin(), framelist.end());
+  
+  return framelist2;
+}
+
