@@ -725,6 +725,25 @@ How does a firmware update get sent to the keyboard?
 
 Do I need to interpret the keyboard return packets?
 
+### FnX mapping
+
+Assigning an FnX mapping to a key shows up in the driver keymap.  Assigning
+LCtrl to Custom Layer1 gives 
+
+```
+160100000038 crc ffffffff ffffffff
+				 0200070a 02000002 04000002 08000002	Lc Ls La Win
+	     		 10000002 20000002 40000002 ffffffff	Rc Rs Ra
+				 00040002 00050002 00060002 00070002	A B C D
+```
+
+With LCtrl slot set to 0x0200070a.  Setting to Custom Layer 2 gives
+0x0300070a.  Custom Layer 3 gives 0x0400070a.  Setting to Standard (driver
+layer) gives 0x0100070a.
+
+
+
+
 
 ## Driver Mode flashlight
 
@@ -773,7 +792,7 @@ program sent to the keyboard.
 This could easily be done with something that monitors the keyboard for the
 specified keys.  But there must be some reason the keymap gets modified.
 
-Mapping appears to be the same as keymap:
+Position mapping appears to be the same as keymap:
 
 	LCtrl 160300000038 crc ffff03ff ...
 	LShft 160300000038 crc ffffff04 ...
@@ -782,8 +801,33 @@ Mapping appears to be the same as keymap:
 	RCtrl 160300000038 crc ffffffff ffff07ff ...
 	RShft 160300000038 crc ffffffff ffffff08 ...
 	RAlt  160300000038 crc ffffffff x 2 09ffffff ....
-	
+	A     160300000038 crc ffffffff x 2 ffff0bff ....
+	B     160300000038 crc ffffffff x 2 ffffff0c ....
+	C     160300000038 crc ffffffff x 3 0dffffff ....
 
+Each byte also appears to contain the number of its position.
+
+IMPORTANT: I discovered that the driver sends 0x18 commands to keyboard with
+flashlight setting.  We assigned a calc flashlight to S in position 0x1d.
+
+0040  18 04 1d 01 00 00 68 c1 00 00 00 00 00 00 00 00   ......h.........
+0050  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+0060  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+0070  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+
+Returns 18041d000000 crc
+
+I still don't see how this programs in calculator.
+
+I also haven't see this show up regularly when assigning flashlight.
+
+I applied Full White Lighting to key C.  Pressing the C key causes the driver
+to send 3 frames of all white light to the keys.
+
+So flashlight appears to be implemented at the driver.  Except that the 1603
+commands record something about flashlight being assigned.
+
+When C is pressed, I see the key on endpoint 3.110.1.
 
 
 ## Driver Mode macro assignment
@@ -877,8 +921,114 @@ and 01 is the macro number.  We have 1503 1503 1501 1502 at the tail end.
 Q: are all 4 commands needed to terminate the macro?
 Q: Are 1502 with 0 the interkey delays for the macro?
 
+The actual macro has variable delays between down and up key events.  This
+sequence shows the keys, but doesn't seem to separate down key and up key
+events, or encode the delays.
+
+Assigning C to the 12345 macro puts 0d00010a in place of 00060002.  The 0x15
+command sequence begins ~0.3 sec after the 0x16 keymap command sequence.
+
+Adding B as the long macro puts 0c00010a in place of 00050002.  Here the macro
+command sequence starts 3 seconds after keymap!
+
+Q: what is the significance of the 0d and 0c?
+A: This is the position in the keymap.  So B is position 12 (0xc) in the 0x1601
+keymap counting from 1.
+
+```
+1503000000 crc 01000000 00 x 13
+1501000000 crc 01000000 00 x 13
+1501000000 crc 00 x 14
+1501000000 crc 02000000 00 x 13
+1501000000 crc 02000000 00 x 13
+1501000000 crc 00 x 14
+1502000000 crc 001f0000 00 x 13
+1502000000 crc 00 x 14
+1502000000 crc 00 x 14
+1502000000 crc 00200000 00 x 13
+1502000000 crc 00 x 14
+0c
+1501000000 crc 01000000 00 x 13
+1501000000 crc 00 x 14
+1502000000 crc 00210000 00 x 13
+0c
+1502000000 crc 00 x 14
+1502000000 crc 00220000 00 x 13
+1502000000 crc 00 x 14
+0c
+1502000000 crc 00230000 00 x 13
+1502000000 crc 00 x 14
+1502000000 crc 00240000 00 x 13
+0c
+1502000000 crc 00 x 14
+1502000000 crc 00250000 00 x 13
+1502000000 crc 00 x 14
+0c
+1502000000 crc 00260000 00 x 13
+...
+```
 
 
+It appears that only one macro can be assigned to a key at a time.  I don't
+know if this is a keyboard limitation or driver limitation.  Since the macro
+doesn't seem to have a way to indicate that it is associated with a specific
+key, or the key with a specific macro, I think the one macro at a time is a
+keyboard design, i.e. when you add a macro, the firmware sees which key just
+got a macro added, and matches the next macro to that key.
+
+It's also possible the keyboard remembers a macro that has already been
+stored.  I can't quite tell.
+
+This appears to use the first 2 data bytes to put a key code from the
+driver/custom key id map.
+
+This is not quite right.  If I program a macro sequence LShft down, Z down, Z
+up, LShft up, I see the macro programming as follows (0c given for timing):
+
+```
+1503000000 crc 01000000 00 x 13
+0c
+1502000000 crc 02000000 00 x 13
+0c
+0c
+1502000000 crc 021d0000 00 x 13
+0c
+1502000000 crc 02000000 00 x 13
+0c
+0c
+1502000000 crc 00 x 14
+1503000000 crc 01000000 00 x 13
+1503000000 crc 01000000 00 x 13
+1501000000 crc 00 x 14
+1502000000 crc 00 x 14
+```
+
+0x021d indicates Lshift and Z pressed at the same time.  So the key id table
+is a bit more complex than I thought.
+
+Macros in driver mode record mouse clicks different from custom layer.  I programmed
+the following macro sequence: Lclick, Lclick up, LShift down, Z down, Z up,
+LShift up, Rclick, Rclick up.  I see the following commands:
+
+
+```
+1503000000 crc 01000000 00 x 13
+1501000000 crc 01000000 00 x 13
+1501000000 crc 00000000 00 x 13
+1502000000 crc 02000000 00 x 13
+1502000000 crc 021d0000 00 x 13
+1502000000 crc 02000000 00 x 13
+1501000000 crc 02000000 00 x 13
+1501000000 crc 00000000 00 x 13
+1503000000 crc 01000000 00 x 13
+1501000000 crc 00 x 14
+1502000000 crc 00 x 14
+```
+
+Here, the first byte of Lclick is 01, and the first byte of Rclick is 02.  The
+0101 portion of 01000101 and 02000101 appears to be ignored.
+
+Q: is the 0101 portion of mouse click buttons in the key id map spurious and wrong?
 
 
 
@@ -887,7 +1037,7 @@ Q: Are 1502 with 0 the interkey delays for the macro?
 
 It turns out that to maintain an active light program, the driver must send
 packets periodically.  If not, the keyboard will revert to the last used
-build-in backlight mode after about 3 seconds.
+built-in backlight mode after about 3 seconds.
 
 
 # Custom Layer Programming
