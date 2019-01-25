@@ -1,6 +1,8 @@
 #ifndef KEYMAP_HH
 #define KEYMAP_HH
 
+#include <cstdint>
+
 // Basic keymap data structures
 
 struct key {
@@ -56,6 +58,9 @@ enum keycodes {
   K_Fn,
   MAX_KEYCODE
 };
+
+// Map from keycode to key id.  Used to build driver keymap and custom keymap.
+extern uint16_t keyid[MAX_KEYCODE];
 
 // // Order of keys in driver mode light program
 // int drv_light_pos[] =
