@@ -280,3 +280,174 @@ vector<drv_light_frame> make_trail() {
   return framelist2;
 }
 
+
+//////////////////////
+
+// Set up the default keymap
+drv_keymap default_keymap() {
+  drv_keymap kmap;
+  // Iterate through table and assign values to kmap
+
+  // I need to assign LCtrl position 3 with value 01000002, etc.
+  // Unused/unknown slots get 0xffffffff.
+
+  // How do I track the position mapping?  drv_keymap_assign.
+
+  // There is a keyid map that is shared between driver and custom.
+  // That gives me the value to write into the slot.
+
+  // First fill with 0xff for unused/unknown slots
+  memset(&kmap, 0xff, MAX_KEYMAP * 4);
+
+  // Now set specific key slots
+  for (int i=0; i < MAX_KEYCODE; i++) {
+    if (keyid[i] == 0xffff) continue;
+    uint16_t id = keyid[i];	// 2 of the 4 bytes we need
+    int pos = drv_keymap_assign[i];
+
+    // Each value looks like id 00 02
+    kmap.keys[pos] = 0x02000000 & (uint32_t)id;
+  }
+}
+
+
+// Map from keycode to position in drv_keymap
+int drv_keymap_assign[MAX_KEYCODE] = {
+  // Position 0 is empty
+  0xff,				  // K_NONE
+  // Letters
+  10, 11, 12, 13,			  // A B C D packet 1
+  14, 15, 16, 17, 18, 19, 20, 21,	  // E F G H I J K L packet 2
+  22, 23, 24, 25, 26, 27,		  // M N O P Q R packet 2
+  28, 29, 30, 31, 32, 33, 34, 35,	  // S T U V W X Y Z packet 3
+  // Numbers
+  36, 37, 38, 39, 40, 41,		  // 1 2 3 4 5 6 packet 3
+  42, 43, 44, 45,			  // 7 8 9 0 packet 4
+  // Other printing chars
+  51, 52, 53, 54, 55,		// -_ += [{ ]} \| packet 4
+  56, 57, 59,			// ;: '" ,<
+  60, 61, 58,			// .> /? `~
+  // Nonprinting keys
+  47, 49, 62,			// Esc Tab Capslock
+  63, 64, 65, 66, 67, 68, 69,	// F1 F2 F3 F4 F5 F6 F7
+  70, 71, 72, 73, 74,		// F8 F9 F10 F11 F12
+  81, 113, 			// REnter MEnter
+  3, 115, 7,			// LShift MShift RShift
+  2, 114, 6,			// LControl MControl RControl
+  4, 8,				// LAlt RAlt
+  112, 38,			// MBackspace RBackspace
+  115, 116,			// LSpace RSpace
+  5,				// Windows
+  80, 83,			// PageUp PageDown
+  85, 84, 87, 86,		// Left Right Up Down
+  75, 81,			// PrtScrn Delete
+  0xff,				// XBows
+  // Numpad
+  0xff, 0xff, 0xff, 0xff, 	// Numlock NPSlash NPStar NPEnter
+  0xff, 0xff, 0xff, 0xff,	// NP1 NP2 NP3 NP4
+  0xff, 0xff, 0xff, 0xff,	// NP5 NP6 NP7 NP8
+  0xff, 0xff, 0xff, 0xff, 0xff,	// NP9 NP0 NP. NP- NP+
+  // Media
+  0xff, 0xff, 0xff, 0xff,	// Play Pause Stop Last
+  0xff, 0xff, 0xff, 0xff,	// Next VolUp VolDown Mute
+  // Mouse
+  0xff, 0xff, 0xff, 0xff, 0xff,	// LClick MClick RClick Back Forward
+  // Sys/net
+  0xff, 0xff, 0xff, 0xff,	// NetBack NetFwd NetRefresh NetCollection
+  0xff, 0xff, 0xff, 0xff,	// NetHome NetEmail NetComp NetCalc
+  0xff, 0xff, 0xff,		// NetCopy NetPaste NetPrtScrn
+  // Not on xbows kbd
+  0xff, 0xff, 0xff,		// Home End Insert
+  // Function key
+  0xff				// Fn
+};
+
+
+vector<packet> keymap_program() {
+  // For each key, we want an RGB value.  Convert to a sequence of packets.
+  // Sequence must start with 0x0b05
+  // Sequence must next have 0x0109
+  init_driver_mode();
+
+  // Driver mode light program is 10 packets.
+  vector<packet> program;
+
+  // Start from standard keymap
+  // Reassign keys that are different
+
+  // Start with a default keymap
+  drv_keymap kmap = default_keymap();
+
+  // Now program Z key to return Q
+  // XXX refactor this
+  kmap.keys[drv_keymap_assign[K_Z]] =
+    htobe16(keyid[K_Q]) & 0x02000000;
+
+  // Convert to packet program
+
+  // Get the keyboard's attention.
+  program.assign(drv_attn.begin(), drv_attn.end());
+
+  // XXXXX DEBUG WRITING KEYMAP TO PACKETS
+
+  // Light program.  14 key rgb per packet
+  unsigned short bytes = 0;
+  int remaining = kmap.size();
+  for (int i=0; i < kmap.size(); i+=14, remaining-=14) {
+    packet pkt(0x16, 0x01);
+
+    // Number of bytes already added to the program
+    pkt.progcount = htole16(i * 4);
+
+    // Store bytes of packet data in byte 5
+    unsigned char pktbytes = min(remaining * 4, 56);
+    pkt.datasize = pktbytes;
+
+    // Copy the packet data
+    for (int j=0; j < min(remaining, 14); j++) {
+      uint32_t val = htole32(kmap.keys[i+j]);
+      memcpy(pkt.data+j*4, &val, 4);
+    }
+    program.push_back(pkt);
+  }
+
+  // Default flashlight keymap packets
+  program.push_back(packet(0x16, 0x03));
+  memset(program.back().data, 0xff, 56);
+  program.back().datasize = 56;
+  program.back().progcount = 0;
+
+  program.push_back(packet(0x16, 0x03));
+  memset(program.back().data, 0xff, 56);
+  program.back().datasize = 56;
+  program.back().progcount = 0x38;
+
+  program.push_back(packet(0x16, 0x03));
+  memset(program.back().data, 0xff, 8);
+  program.back().datasize = 8;
+  program.back().progcount = 0x70;
+
+
+  // Terminator packet
+  program.push_back(packet(0x17, 0x01));
+  memset(program.back().data, 0, 56);
+  program.back().data[0] = 0xf0;
+  program.back().data[1] = 0x01;
+  program.back().data[2] = 0x12;
+  program.back().data[3] = 0x03;
+  program.back().data[8] = 0x0f;
+
+  // XXX
+  // ADD writing macro if specified
+  // ADD writing flashlight data if we figure that out 0x18 command
+
+
+
+  // assert(program.size() == 11);
+
+  // Compute crc for each packet
+  for (auto& pkt: program)
+    pkt.compute_crc();
+
+  return program;
+}

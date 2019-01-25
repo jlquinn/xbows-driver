@@ -49,5 +49,19 @@ vector<packet> light_program(const vector<drv_light_frame>& framelist);
 extern int drv_light_assign[MAX_KEYCODE];
 
 
+// This contains the full set of key positions for a driver keymap
+// XXX 120 needs to become a constant somewhere
+const int MAX_KEYMAP=120;
+struct drv_keymap {
+  uint32_t keys[MAX_KEYMAP];
+  int size() const { return MAX_KEYMAP; }
+};
+
+// Similar to drv_light_assign, this maps keycode to position in a driver
+// keymap.
+extern int drv_keymap_assign[MAX_KEYCODE];
+
+// Build a driver mode keymap program
+vector<packet> keymap_program();
 
 #endif
