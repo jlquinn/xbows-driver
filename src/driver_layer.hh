@@ -19,7 +19,25 @@ struct drv_light_frame {
   int size() const { return MAX_KEYCODE; }
 };
 
-vector<packet> light_program();
+//// These calls create sets of light frames for different patterns.
+// Build a calculator light program.
+vector<drv_light_frame> make_calc();
+
+
+
+// The program calls init_driver_mode once.  Then it can create and send light
+// programs as needed.
+
+// This is the 2 packets needed to get the attention of the keyboard in driver
+// mode.
+extern vector<packet> drv_attn;
+
+// Set up default settings to talk to keyboard in driver mode.
+void init_driver_mode();
+
+vector<packet> light_program(const vector<drv_light_frame>& framelist);
+
+
 
 // Map from keycode to driver mode light program position.  This is inversion
 // of drv_light_pos.

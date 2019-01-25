@@ -24,72 +24,66 @@ void drv_light_frame::setkey(keycodes key, uint32_t rgb) {
   keys[pos] = rgb | 0x64000000;
 }
 
+vector<packet> drv_attn;
+void init_driver_mode() {
+  if (drv_attn.empty()) {
+    // Initial program packets.  This gets the keyboard's attention.
+    drv_attn.push_back(packet(0x0b, 0x05));
+    drv_attn.push_back(packet(0x01, 0x09));
+
+    // Compute crc for each packet
+    for (auto& pkt: drv_attn)
+      pkt.compute_crc();
+  }
+}
+
 
 // Generate packets for a driver mode light program.  To do this, I need to
 // assign each key an RGB value.  The return needs to contain the full packet
 // sequence, as well as expected return codes from the keyboard to make sure
 // nothing is going wrong.
-vector<packet> light_program() {
+vector<packet> light_program(const vector<drv_light_frame>& framelist) {
   // For each key, we want an RGB value.  Convert to a sequence of packets.
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109
+  init_driver_mode();
 
   // Driver mode light program is 10 packets.
   vector<packet> program;
 
-  // Start with a green calculator light map.
-
-  // To write the program, user needs to be able to specify that K8 is green.
-  // This means that K8->34 finds rgb[9] and sets it to 00ff0064.
-  drv_light_frame frame;
-  uint32_t green = 0x00ff00;
-  frame.setkey(K_8, green);
-  frame.setkey(K_9, green);
-  frame.setkey(K_U, green);
-  frame.setkey(K_I, green);
-  frame.setkey(K_O, green);
-  frame.setkey(K_P, green);
-  frame.setkey(K_J, green);
-  frame.setkey(K_K, green);
-  frame.setkey(K_L, green);
-  frame.setkey(K_Semi, green);
-  frame.setkey(K_M, green);
-  frame.setkey(K_Comma, green);
-  frame.setkey(K_Period, green);
-  frame.setkey(K_Slash, green);
-  frame.setkey(K_RSpc, green);
-  frame.setkey(K_RAlt, green);
 
   // Convert to packet program
 
-  // Initial program packets.  This gets the keyboard's attention.
-  program.push_back(packet(0x0b, 0x05));
-  program.push_back(packet(0x01, 0x09));
+  // Get the keyboard's attention.
+  program.assign(drv_attn.begin(), drv_attn.end());
 
 
-  // Light program.  14 key rgb per packet
-  unsigned short bytes = 0;
-  int remaining = frame.size();
-  for (int i=0; i < frame.size(); i+=14, remaining-=14) {
-    packet pkt(0x1a, 0x01);
+  for (const auto& frame: framelist) {
+  
+    // Light program.  14 key rgb per packet
+    unsigned short bytes = 0;
+    int remaining = frame.size();
+    for (int i=0; i < frame.size(); i+=14, remaining-=14) {
+      packet pkt(0x1a, 0x01);
 
-    // Number of bytes already added to the program
-    pkt.progcount = htole16(i * 4);
+      // Number of bytes already added to the program
+      pkt.progcount = htole16(i * 4);
 
-    // Store bytes of packet data in byte 5
-    unsigned char pktbytes = min(remaining * 4, 56);
-    pkt.datasize = pktbytes;
+      // Store bytes of packet data in byte 5
+      unsigned char pktbytes = min(remaining * 4, 56);
+      pkt.datasize = pktbytes;
 
-    // Copy the packet data
-    for (int j=0; j < min(remaining, 14); j++) {
-      uint32_t val = htole32(frame.keys[i+j]);
-      memcpy(pkt.data+j*4, &val, 4);
+      // Copy the packet data
+      for (int j=0; j < min(remaining, 14); j++) {
+	uint32_t val = htole32(frame.keys[i+j]);
+	memcpy(pkt.data+j*4, &val, 4);
+      }
+      program.push_back(pkt);
     }
-    program.push_back(pkt);
-  }
 
-  // Terminator packet
-  program.push_back(packet(0x1a, 0x02));
+    // Terminator packet
+    program.push_back(packet(0x1a, 0x02));
+  }
 
   // assert(program.size() == 11);
 
@@ -148,3 +142,34 @@ int drv_light_assign[MAX_KEYCODE] = {
   123				// Fn
 
 };
+
+
+vector<drv_light_frame> make_calc() {
+  // Start with a green calculator light map.
+  vector<drv_light_frame> framelist;
+
+  // To write the program, user needs to be able to specify that K8 is green.
+  // This means that K8->34 finds rgb[9] and sets it to 00ff0064.
+  drv_light_frame frame;
+  uint32_t green = 0x00ff00;
+  frame.setkey(K_8, green);
+  frame.setkey(K_9, green);
+  frame.setkey(K_U, green);
+  frame.setkey(K_I, green);
+  frame.setkey(K_O, green);
+  frame.setkey(K_P, green);
+  frame.setkey(K_J, green);
+  frame.setkey(K_K, green);
+  frame.setkey(K_L, green);
+  frame.setkey(K_Semi, green);
+  frame.setkey(K_M, green);
+  frame.setkey(K_Comma, green);
+  frame.setkey(K_Period, green);
+  frame.setkey(K_Slash, green);
+  frame.setkey(K_RSpc, green);
+  frame.setkey(K_RAlt, green);
+
+  framelist.push_back(frame);
+
+  return framelist;
+}

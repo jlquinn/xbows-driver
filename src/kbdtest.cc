@@ -134,7 +134,8 @@ int main(int ac, char* av[]) {
 
 #define REALRUN 1
 
-  vector<packet> lgtprog = light_program();
+  vector<drv_light_frame> calc = make_calc();
+  vector<packet> lgtprog = light_program(calc);
   cout << "Sending light program now..." << endl;
   for (const auto& pkt: lgtprog) {
     //// Send and receive xbows light program command
