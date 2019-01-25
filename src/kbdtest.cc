@@ -13,6 +13,7 @@
 #include <hidapi.h>
 
 #include "driver_layer.hh"
+#include "timer.hh"
 
 using namespace std;
 
@@ -134,9 +135,11 @@ int main(int ac, char* av[]) {
 
 #define REALRUN 1
 
-  vector<drv_light_frame> calc = make_calc();
+  //  vector<drv_light_frame> calc = make_calc();
+  vector<drv_light_frame> calc = make_trail();
   vector<packet> lgtprog = light_program(calc);
   cout << "Sending light program now..." << endl;
+  timestamp t = now();
   for (const auto& pkt: lgtprog) {
     //// Send and receive xbows light program command
     cout << "\nSENDING PACKET\n";
@@ -161,8 +164,8 @@ int main(int ac, char* av[]) {
     do_interval();
   }
   cout << "Sending light program DONE" << endl;
-  
-
+  timestamp t2 = now();
+  cout << "Sent program in " << (t2-t).millis() << " ms\n";
   
   hid_close(dev);
   
