@@ -1039,6 +1039,18 @@ It turns out that to maintain an active light program, the driver must send
 packets periodically.  If not, the keyboard will revert to the last used
 built-in backlight mode after about 3 seconds.
 
+This is also true for key assignments.  The keymap reverts to default after
+about 3 seconds.  This suggests that refreshing the keyboard with a lighting
+program will preserve the keymap.
+
+Sending light frames after the keymap is what the driver does to keep things
+going.
+
+Q: Is sending 0c periodically enough?
+A: Yes.  We don't have to send light frames to keep the driver program alive.
+Just sending an idle command every 2 seconds is adequate.
+
+
 
 # Custom Layer Programming
 
