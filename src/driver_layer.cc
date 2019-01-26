@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <iostream>
 #include <vector>
 
 #include <endian.h>
@@ -66,7 +67,6 @@ vector<packet> light_program(const vector<drv_light_frame>& framelist) {
   for (const auto& frame: framelist) {
   
     // Light program.  14 key rgb per packet
-    unsigned short bytes = 0;
     int remaining = frame.size();
     for (int i=0; i < frame.size(); i+=14, remaining-=14) {
       packet pkt(0x1a, 0x01);
@@ -301,13 +301,17 @@ drv_keymap default_keymap() {
 
   // Now set specific key slots
   for (int i=0; i < MAX_KEYCODE; i++) {
-    if (keyid[i] == 0xffff) continue;
     uint16_t id = keyid[i];	// 2 of the 4 bytes we need
     int pos = drv_keymap_assign[i];
 
+    if (id == 0xffff) continue;
+    if (pos == 0xff) continue;
+
     // Each value looks like id 00 02
-    kmap.keys[pos] = 0x02000000 & (uint32_t)id;
+    kmap.keys[pos] = 0x02000000 | (uint32_t)htobe16(id);
   }
+
+  return kmap;
 }
 
 
@@ -331,12 +335,12 @@ int drv_keymap_assign[MAX_KEYCODE] = {
   47, 49, 62,			// Esc Tab Capslock
   63, 64, 65, 66, 67, 68, 69,	// F1 F2 F3 F4 F5 F6 F7
   70, 71, 72, 73, 74,		// F8 F9 F10 F11 F12
-  81, 113, 			// REnter MEnter
+  46, 113, 			// REnter MEnter
   3, 115, 7,			// LShift MShift RShift
   2, 114, 6,			// LControl MControl RControl
   4, 8,				// LAlt RAlt
-  112, 38,			// MBackspace RBackspace
-  115, 116,			// LSpace RSpace
+  112, 48,			// MBackspace RBackspace
+  50, 116,			// LSpace RSpace
   5,				// Windows
   80, 83,			// PageUp PageDown
   85, 84, 87, 86,		// Left Right Up Down
@@ -381,7 +385,7 @@ vector<packet> keymap_program() {
   // Now program Z key to return Q
   // XXX refactor this
   kmap.keys[drv_keymap_assign[K_Z]] =
-    htobe16(keyid[K_Q]) & 0x02000000;
+    htobe16(keyid[K_Q]) | 0x02000000;
 
   // Convert to packet program
 
@@ -391,7 +395,6 @@ vector<packet> keymap_program() {
   // XXXXX DEBUG WRITING KEYMAP TO PACKETS
 
   // Light program.  14 key rgb per packet
-  unsigned short bytes = 0;
   int remaining = kmap.size();
   for (int i=0; i < kmap.size(); i+=14, remaining-=14) {
     packet pkt(0x16, 0x01);
@@ -409,6 +412,7 @@ vector<packet> keymap_program() {
       memcpy(pkt.data+j*4, &val, 4);
     }
     program.push_back(pkt);
+    // cout << "push packet " << pkt.to_string();
   }
 
   // Default flashlight keymap packets
