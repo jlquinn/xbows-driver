@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <array>
+#include <string>
 
 // Packet structure
 // byte 0:	command
@@ -35,6 +36,7 @@ struct packet {
   
   void compute_crc();
 
+  std::string to_string() const;
 };
 
 #endif

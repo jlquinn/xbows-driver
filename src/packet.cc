@@ -5,7 +5,13 @@ extern "C" {
 #include <checksum.h>
 }
 
+#include <iomanip>
+#include <sstream>
+#include <string>
+
 #include "packet.hh"
+
+using namespace std;
 
 // Packet structure
 // byte 0:	command
@@ -24,6 +30,17 @@ void packet::compute_crc() {
   // Assign little-endian crc to bytes 6 and 7
   crc = htole16(crc);
   *(uint16_t*)(bytes+6) = crc;
+}
+
+string packet::to_string() const {
+  ostringstream os;
+  os << "Packet:\n";
+  for (int i=0; i < 64; i++) {
+    os << " " << hex << setw(2) << setfill('0') << (unsigned short)bytes[i];
+    //printf(" %02x", data[i]);
+    if ((i+1) % 16 == 0) os << "\n";
+  }
+  return os.str();
 }
 
 
