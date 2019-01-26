@@ -466,6 +466,23 @@ Generally, the driver keeps sending
 0c0000000000a70d00000000000000000000000000000000... when there's nothing to
 do.  It does this about every 0.3 seconds.
 
+# Switching layers
+
+The windows driver can tell the keyboard to switch between layers.  Looking
+for this control packet, I find:
+
+```
+0b 03 00 00 00 00 crc 0000 x 14
+```
+
+The response is the same as the command.
+
+0b02 enables layer 1.
+0b03 enables layer 2.
+0b04 enables layer 3.
+0b05 enables driver mode layer.
+
+
 # Driver Mode Programming
 
 I've made progress on the how the driver controls lights in the driver layer.
