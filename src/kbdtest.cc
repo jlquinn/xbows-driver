@@ -174,9 +174,13 @@ int main(int ac, char* av[]) {
   // vector<packet> lgtprog = light_program(calc);
 
   // XXX test driver keymap program
-  vector<packet> lgtprog = keymap_program();
+  // Start with a default keymap
+  drv_keymap kmap;
+  kmap.assign(K_Z, K_Q);
+  
+  vector<packet> kprog = keymap_program(kmap);
 
-  send_program(dev, lgtprog);
+  send_program(dev, kprog);
 
   // sending calc program clobbers keymap
   sleep(2);

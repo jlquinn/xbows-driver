@@ -284,8 +284,7 @@ vector<drv_light_frame> make_trail() {
 //////////////////////
 
 // Set up the default keymap
-drv_keymap default_keymap() {
-  drv_keymap kmap;
+void drv_keymap::clear() {
   // Iterate through table and assign values to kmap
 
   // I need to assign LCtrl position 3 with value 01000002, etc.
@@ -297,7 +296,7 @@ drv_keymap default_keymap() {
   // That gives me the value to write into the slot.
 
   // First fill with 0xff for unused/unknown slots
-  memset(&kmap, 0xff, MAX_KEYMAP * 4);
+  memset(keys, 0xff, MAX_KEYMAP * 4);
 
   // Now set specific key slots
   for (int i=0; i < MAX_KEYCODE; i++) {
@@ -308,10 +307,9 @@ drv_keymap default_keymap() {
     if (pos == 0xff) continue;
 
     // Each value looks like id 00 02
-    kmap.keys[pos] = 0x02000000 | (uint32_t)htobe16(id);
+    keys[pos] = 0x02000000 | (uint32_t)htobe16(id);
   }
 
-  return kmap;
 }
 
 
@@ -366,8 +364,13 @@ int drv_keymap_assign[MAX_KEYCODE] = {
   0xff				// Fn
 };
 
+void drv_keymap::assign(keycodes key, keycodes emits) {
+  keys[drv_keymap_assign[K_Z]] =
+    htobe16(keyid[K_Q]) | 0x02000000;
+}
 
-vector<packet> keymap_program() {
+
+vector<packet> keymap_program(drv_keymap& kmap) {
   // For each key, we want an RGB value.  Convert to a sequence of packets.
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109
@@ -379,13 +382,6 @@ vector<packet> keymap_program() {
   // Start from standard keymap
   // Reassign keys that are different
 
-  // Start with a default keymap
-  drv_keymap kmap = default_keymap();
-
-  // Now program Z key to return Q
-  // XXX refactor this
-  kmap.keys[drv_keymap_assign[K_Z]] =
-    htobe16(keyid[K_Q]) | 0x02000000;
 
   // Convert to packet program
 

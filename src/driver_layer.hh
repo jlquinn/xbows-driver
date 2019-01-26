@@ -55,6 +55,13 @@ const int MAX_KEYMAP=120;
 struct drv_keymap {
   uint32_t keys[MAX_KEYMAP];
   int size() const { return MAX_KEYMAP; }
+
+  // This function tells keyboard to send emits when key is pressed.
+  void assign(keycodes key, keycodes emits);
+
+  void clear();
+
+  drv_keymap() { clear(); }
 };
 
 // Similar to drv_light_assign, this maps keycode to position in a driver
@@ -62,6 +69,6 @@ struct drv_keymap {
 extern int drv_keymap_assign[MAX_KEYCODE];
 
 // Build a driver mode keymap program
-vector<packet> keymap_program();
+vector<packet> keymap_program(drv_keymap& kmap);
 
 #endif
