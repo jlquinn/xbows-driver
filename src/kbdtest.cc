@@ -17,6 +17,9 @@
 
 using namespace std;
 
+#define REALRUN 1
+
+
 void dump_packet(const unsigned char* data) {
   cout << "Packet:\n";
   for (int i=0; i < 64; i++) {
@@ -73,9 +76,43 @@ string find_device(unsigned short vendor, unsigned short product) {
 }
 
 void do_interval() {
-  struct timespec ms = {0, 1000000}; // 1 millisec = 1M nanosec
+  // struct timespec ms = {0, 1000000}; // 1 millisec = 1M nanosec
   // nanosleep(&ms, nullptr);
   usleep(1000);
+}
+
+void send_program(hid_device* dev, const vector<packet>& prog) {
+  // OK, we have a handle to the xbows programming interface.
+  packet data;
+
+  cout << "Sending program now..." << endl;
+  timestamp t = now();
+  for (const auto& pkt: prog) {
+    //// Send and receive xbows light program command
+    cout << "\nSENDING PACKET\n";
+#ifdef REALRUN
+    int numwr = hid_write(dev, pkt.bytes, 64);
+    if (numwr == -1) {
+      hid_close(dev);
+      hiderror("Failed to write data to hid device");
+    }
+#endif
+    cout << pkt.to_string();
+    do_interval();
+    cout << "\nRECEIVING PACKET"<<endl;
+#ifdef REALRUN
+    int numrd = hid_read(dev, data.bytes, 64);
+    if (numrd != 64) {
+      hid_close(dev);
+      hiderror("Failed to read data from hid device");
+    }
+    cout << data.to_string();
+#endif
+    do_interval();
+  }
+  cout << "Sending light program DONE" << endl;
+  timestamp t2 = now();
+  cout << "Sent program in " << (t2-t).millis() << " ms\n";
 }
 
 
@@ -100,28 +137,25 @@ int main(int ac, char* av[]) {
     hiderror("Failed to open hid device at " + progpath);
 
   // OK, we have a handle to the xbows programming interface.
-  unsigned char data[64];
-  memset(data, 0, 64);
-  data[0] = 0x0c;
-  data[6] = 0xa7;
-  data[7] = 0x0d;
+  packet data(0x0c, 00);
+  data.compute_crc();
 
 
   //// Send and receive xbows idle command
-  int numwr = hid_write(dev, data, 64);
+  int numwr = hid_write(dev, data.bytes, 64);
   if (numwr == -1) {
     hid_close(dev);
     hiderror("Failed to write data to hid device");
   }
   do_interval();
-  int numrd = hid_read(dev, data, 64);
+  int numrd = hid_read(dev, data.bytes, 64);
   if (numrd != 64) {
     hid_close(dev);
     hiderror("Failed to read data from hid device");
   }
   do_interval();
 
-  dump_packet(data);
+  cout << data.to_string();
 
   //// Send a basic driver mode light program ////
   // TODO
@@ -133,39 +167,29 @@ int main(int ac, char* av[]) {
   // Let's try sending the green calculator program to the keyboard in driver
   // mode
 
-#define REALRUN 1
 
+  // XXX test driver light program
   //  vector<drv_light_frame> calc = make_calc();
-  vector<drv_light_frame> calc = make_trail();
-  vector<packet> lgtprog = light_program(calc);
-  cout << "Sending light program now..." << endl;
-  timestamp t = now();
-  for (const auto& pkt: lgtprog) {
-    //// Send and receive xbows light program command
-    cout << "\nSENDING PACKET\n";
-#ifdef REALRUN
-    int numwr = hid_write(dev, pkt.bytes, 64);
-    if (numwr == -1) {
-      hid_close(dev);
-      hiderror("Failed to write data to hid device");
-    }
-#endif
-    dump_packet(pkt.bytes);
-    do_interval();
-    cout << "\nRECEIVING PACKET"<<endl;
-#ifdef REALRUN
-    int numrd = hid_read(dev, data, 64);
-    if (numrd != 64) {
-      hid_close(dev);
-      hiderror("Failed to read data from hid device");
-    }
-#endif
-    dump_packet(data);
-    do_interval();
+  // vector<drv_light_frame> calc = make_trail();
+  // vector<packet> lgtprog = light_program(calc);
+
+  // XXX test driver keymap program
+  vector<packet> lgtprog = keymap_program();
+
+  send_program(dev, lgtprog);
+
+  // sending calc program clobbers keymap
+  sleep(2);
+  // vector<packet> calc = light_program(make_calc());
+  vector<packet> idle;
+  idle.push_back(packet(0x0c, 0));
+  idle.back().compute_crc();
+  
+  for (int i=0; i < 10; i++) {
+    send_program(dev, idle);
+    sleep(2);
   }
-  cout << "Sending light program DONE" << endl;
-  timestamp t2 = now();
-  cout << "Sent program in " << (t2-t).millis() << " ms\n";
+
   
   hid_close(dev);
   
