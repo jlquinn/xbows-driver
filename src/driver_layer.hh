@@ -27,17 +27,7 @@ vector<drv_light_frame> make_trail();
 
 
 
-// The program calls init_driver_mode once.  Then it can create and send light
-// programs as needed.
-
-// This is the 2 packets needed to get the attention of the keyboard in driver
-// mode.
-extern vector<packet> drv_attn;
-
-// Set up default settings to talk to keyboard in driver mode.
-void init_driver_mode();
-
-vector<packet> light_program(const vector<drv_light_frame>& framelist);
+vector<packet> driver_light_program(const vector<drv_light_frame>& framelist);
 
 
 
@@ -69,6 +59,6 @@ struct drv_keymap {
 extern int drv_keymap_assign[MAX_KEYCODE];
 
 // Build a driver mode keymap program
-vector<packet> keymap_program(drv_keymap& kmap);
+vector<packet> driver_keymap_program(drv_keymap& kmap);
 
 #endif

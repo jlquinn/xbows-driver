@@ -30,25 +30,12 @@ void drv_light_frame::clear() {
 }
 
 
-vector<packet> drv_attn;
-void init_driver_mode() {
-  if (drv_attn.empty()) {
-    // Initial program packets.  This gets the keyboard's attention.
-    drv_attn.push_back(packet(0x0b, 0x05));
-    drv_attn.push_back(packet(0x01, 0x09));
-
-    // Compute crc for each packet
-    for (auto& pkt: drv_attn)
-      pkt.compute_crc();
-  }
-}
-
 
 // Generate packets for a driver mode light program.  To do this, I need to
 // assign each key an RGB value.  The return needs to contain the full packet
 // sequence, as well as expected return codes from the keyboard to make sure
 // nothing is going wrong.
-vector<packet> light_program(const vector<drv_light_frame>& framelist) {
+vector<packet> driver_light_program(const vector<drv_light_frame>& framelist) {
   // For each key, we want an RGB value.  Convert to a sequence of packets.
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109
@@ -370,7 +357,7 @@ void drv_keymap::assign(keycodes key, keycodes emits) {
 }
 
 
-vector<packet> keymap_program(drv_keymap& kmap) {
+vector<packet> driver_keymap_program(drv_keymap& kmap) {
   // For each key, we want an RGB value.  Convert to a sequence of packets.
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109

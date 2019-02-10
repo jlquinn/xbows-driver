@@ -171,20 +171,20 @@ int main(int ac, char* av[]) {
   // XXX test driver light program
   //  vector<drv_light_frame> calc = make_calc();
   // vector<drv_light_frame> calc = make_trail();
-  // vector<packet> lgtprog = light_program(calc);
+  // vector<packet> lgtprog = driver_light_program(calc);
 
   // XXX test driver keymap program
   // Start with a default keymap
   drv_keymap kmap;
   kmap.assign(K_Z, K_Q);
   
-  vector<packet> kprog = keymap_program(kmap);
+  vector<packet> kprog = driver_keymap_program(kmap);
 
   send_program(dev, kprog);
 
   // sending calc program clobbers keymap
   sleep(2);
-  // vector<packet> calc = light_program(make_calc());
+  // vector<packet> calc = driver_light_program(make_calc());
   vector<packet> idle;
   idle.push_back(packet(0x0c, 0));
   idle.back().compute_crc();

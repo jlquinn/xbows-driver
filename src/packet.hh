@@ -4,6 +4,7 @@
 #include <cstring>
 #include <array>
 #include <string>
+#include <vector>
 
 // Packet structure
 // byte 0:	command
@@ -38,5 +39,16 @@ struct packet {
 
   std::string to_string() const;
 };
+
+
+// The program calls init_driver_mode once.  Then it can create and send light
+// programs as needed.
+
+// This is the 2 packets needed to get the attention of the keyboard in driver
+// mode.
+extern std::vector<packet> drv_attn;
+
+// Set up default settings to talk to keyboard in driver mode.
+void init_driver_mode();
 
 #endif
