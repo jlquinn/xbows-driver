@@ -1221,6 +1221,8 @@ numeric keypad programmed in, which might explain why packet 220300003800 int
 0c0000000000 	      at 3.0737sec
 ```
 
+Command 0x0109 tells the keyboard that a keymap is coming, followed by lighting.
+
 ## Disabling a key
 
 The Windows driver provides the ability to disable a key.  This is handled by
