@@ -109,7 +109,7 @@ void send_program(hid_device* dev, const vector<packet>& prog) {
     }
     cout << data.to_string();
 #endif
-    do_interval();
+do_interval();
   }
   cout << "Sending light program DONE" << endl;
   timestamp t2 = now();
@@ -165,9 +165,17 @@ int main(int ac, char* av[]) {
   // Each program is going to be somewhat different.
   // I need to represent a program, and the packet sequence.
 
+  // // experiment with layer switching
+  // vector<packet> prog;
+  // prog.push_back(packet(0x0b, 0x05));
+  // prog.back().compute_crc();
+  // send_program(dev, prog);
+
+  
   // Let's try sending the green calculator program to the keyboard in driver
   // mode
 
+#if 1
   init_xbows();
 
 
@@ -193,11 +201,14 @@ int main(int ac, char* av[]) {
   idle.push_back(packet(0x0c, 0));
   idle.back().compute_crc();
   
-  for (int i=0; i < 10; i++) {
-    send_program(dev, idle);
-    sleep(2);
+  bool do_idle = false;
+  if (do_idle) {
+    for (int i=0; i < 10; i++) {
+      send_program(dev, idle);
+      sleep(2);
+    }
   }
-
+#endif
   
   hid_close(dev);
   

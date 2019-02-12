@@ -65,7 +65,7 @@ vector<packet> drv_attn;
 void init_xbows() {
   if (drv_attn.empty()) {
     // Initial program packets.  This gets the keyboard's attention.
-    drv_attn.push_back(packet(0x0b, 0x05));
+    drv_attn.push_back(packet(0x0b, 0x03)); // 03 is the layer selection
     drv_attn.push_back(packet(0x01, 0x09));
 
     // Compute crc for each packet

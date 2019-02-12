@@ -3,22 +3,89 @@
 // Custom layer is different from driver layer.  It seems all bits have to be
 // sent, at least Windows driver does so.
 
+#include <cmath>
 #include <vector>
 
 #include "keymap.hh"
 #include "packet.hh"
 
 struct cus_anim_frame {
-  unsigned char keymap[22];	// keymap is packed into 22 bits
+  union {
+    unsigned char data[26];
+    struct {
+      uint32_t header;
+      unsigned char keymap[22];        // keymap is packed into 22 bits
+    };
+  };
+
+  cus_anim_frame() {
+    header = htole32(0x00160003);
+    memset(keymap, 0, 22);
+  }
 };
 
-struct cus_light_frame {
-  unsigned char keymap[22];	// keymap is packed into 22 bits
-  unsigned char R,G,B;
-  uint8_t pattern;		// type is monochrome, rgb cycle, breathing
-  uint8_t duration;		// inverse duration
-  uint8_t gap;			// gap between cycles for breathing pattern.
-};
+
+ struct cus_light_frame {
+  union {
+    unsigned char data[32];
+    struct {
+      uint16_t header;
+      unsigned char keymap[22];        // keymap is packed into 22 bits
+      uint8_t R;
+      uint8_t G;
+      uint8_t B;       // colors
+      uint8_t dummy;
+      // type is monochrome, rgb cycle, breathing
+      uint8_t pattern;
+      uint8_t inv_duration;                // inverse duration
+      // Gap between cycles for breathing pattern.  0x79 for mono and rgb cycle.
+      uint8_t gapcode;
+      uint8_t dummy2;
+    };
+  };
+
+  // Set up monochrome by default
+  cus_light_frame() {
+    header = htole16(0x2000);
+    memset(data+2, 0, 30);
+    gapcode = 0x79;                        // monochrome terminator
+  }
+
+  // Set lighting for keys in keymap to be fixed at RGB.
+  void monochrome(uint8_t red, uint8_t green, uint8_t blue) {
+    R = red; G = green; B = blue;
+    // 00007900
+    pattern = inv_duration = 0;
+    gapcode = 0x79;    
+  }
+
+  // Set lighting for keys in keymap to be breathing pattern with duration
+  // being how long the cycle lasts and gap frames between cycles.
+  void breathe(uint8_t red, uint8_t green, uint8_t blue, int duration, int gap) {
+    R = red; G = green; B = blue;
+    // dur 00 gap 00
+    // Actual duration value is inverse of specified value
+    // Matching the windows driver
+    int speed = floor(100 / duration);
+    pattern = speed;
+    inv_duration = 0;
+    gapcode = gap;
+  }
+
+  // Set lighting to RGB cycle starting with specified value.  Duration
+  // specifies the speed of changing through the colors.
+  void rgb_cycle(uint8_t red, uint8_t green, uint8_t blue, int duration) {
+    // dur 00 79 00
+    R = red; G = green; B = blue;
+    // Actual duration value is inverse of specified value
+    // Matching the windows driver
+    int speed = floor(360/duration);
+    pattern = speed;
+    inv_duration = 0;
+    gapcode = 0x79;
+  }
+ };
+
 
 std::vector<packet> custom_program(char layer);
 

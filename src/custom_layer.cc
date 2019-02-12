@@ -242,8 +242,10 @@ vector<packet> custom_flashlight_program(int layer) {
 
 
 // Map from keycode to bit position in animation frame.  Each key gets
-// assigned to a byte and a bit within the byte.  For now I'm cheating.  The
-// first nibble is the byte 0-15, and the second nibble is the bit position.
+// assigned to a byte and a bit within the byte.  The least significant nibble
+// is the bit position.  The most significant nibbles are the byte position.
+// int is overkill but we need more than 8 bits to represent the byte position
+// because the bitmap is 22 bytes long.
 //
 // 0xff is unassigned.
 int cus_anim_assign[MAX_KEYCODE] = {
@@ -251,7 +253,7 @@ int cus_anim_assign[MAX_KEYCODE] = {
   0xff,				  // K_NONE
   // Letters
   0x83, 0xb6, 0xb4, 0x86,			  // A B C D 
-  0x60, 15, 16, 17, 0x66, 19, 0x94, 0x96,	  // E F G H I J K L
+  0x60, 0x87, 0x90, 0x92, 0x66, 0x93, 0x94, 0x96, // E F G H I J K L
   0xc1, 0xc0, 0x70, 0x71, 0x55, 0x61,		  // M N O P Q R
   0x84, 0x62, 0x65, 0xb5, 0x56, 0xb2, 0x64, 0xb1,	  // S T U V W X Y Z
   // Numbers
@@ -269,7 +271,7 @@ int cus_anim_assign[MAX_KEYCODE] = {
   0xb0, 0xe6, 0xc6,	      // LShift MShift RShift
   0xd6, 0xe4, 0xf4,	      // LControl MControl RControl
   0xe0, 0xf0,		      // LAlt RAlt
-  112, 0x46,		      // MBackspace RBackspace
+  0x91, 0x46,		      // MBackspace RBackspace
   0xe3, 0xe7,		      // LSpace RSpace
   0xd7,			      // Windows
   0x75, 0xa3,		      // PageUp PageDown
@@ -296,7 +298,19 @@ int cus_anim_assign[MAX_KEYCODE] = {
   0xf3				// Fn
 };
 
-// TODO code to pack animation and light frames into packets
+// Enable the bit associated with key in keymap.  keymap is a 22 char bitmap.
+void enable_key(uint8_t* keymap, keycodes key) {
+  int code = cus_anim_assign[key];
+  int byte = code >> 4;                // byte position is everything but lowest 4 bits
+  int bit = code & 0xf;                // Low 4 bits is the bit to enable
+  int mask = 1 << bit;
+  keymap[byte] |= mask;
+}
+
+// Clear the bitmap
+void clear_keys(uint8_t* keymap) { memset(keymap, 0, 22); }
+
+
 
 // Pack bytes into program, adding more packets as needed.
 vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int count) {
@@ -331,6 +345,7 @@ vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int coun
 // Light program is mode complex than driver mode.  We have animation frames
 // and light frames.
 
+// TODO automatically prep first packet based on program contents
 vector<packet> custom_light_program(int layer// ,
 				    // const vector<cus_light_frame>& framelist
 				    ) {
@@ -371,23 +386,22 @@ vector<packet> custom_light_program(int layer// ,
   // Frame buffer for 26 byte animation frame, 32 byte light frame
   // 4 byte header, 22 byte bitmap
   // 2 byte header, 22 byte bitmap, 4 byte RGB, 4 byte terminator
-  unsigned char frame[34];
-  memset(frame, 0, 26);
-  addr_to_32(frame) = 0x00160003; // Animation frame header
-  frame[4] = 0x01;		  // Esc
-  // Add data to program packets
-  pack_data(program, frame, 26);
-
-  frame[4] = 0x02;		// F1
-  pack_data(program, frame, 26);
+  cus_anim_frame aframe1;
+  enable_key(aframe1.keymap, K_Esc);
+  pack_data(program, aframe1.data, 26);
+  
+  cus_anim_frame aframe2;
+  enable_key(aframe2.keymap, K_F1);
+  pack_data(program, aframe2.data, 26);
 
   // Light frame
-  memset(frame, 0, 32);
-  addr_to_16(frame) = 0x2000; // Animation frame header
-  frame[2] = 0x03;	      // Esc and F1
-  addr_to_32(frame+24) = htole32(0x000000ff); // RGB red
-  addr_to_32(frame+28) = htole32(0x00790000); // frame terminator
-  pack_data(program, frame, 32);
+  cus_light_frame lframe1;
+  // lframe1.R = 0xff;
+  enable_key(lframe1.keymap, K_Esc);
+  enable_key(lframe1.keymap, K_F1);
+  lframe1.monochrome(0xff, 0, 0);
+  // lframe1.rgb_cycle(0xff, 0, 0, 10);
+  pack_data(program, lframe1.data, 32);
   
   return program;
 }
