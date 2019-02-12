@@ -2404,6 +2404,8 @@ Breathing change relationship:
 	
 	byte = floor(100/duration)
 
+Q: since mono is 00 duration and 0x79 stop, is there a consistent pattern to
+how these numbers are specified?
 
 
 
@@ -2436,6 +2438,17 @@ frame 1, frame 3 hits full red 5 cycles after frame 2, and so on.
 Next, each frame maps to a slice of a wheel, so that the color peaks will
 happen in successive slices, giving the illusion of a turning.  In this case,
 the animation frame just allows everything through.
+
+### Animation frames
+
+Animation frames are a mask that allows the lighting program to show through.
+Individual frames do not have a duration.  The windows driver implements
+duration by repeating the frame.  So if you have 2 animations frames, with
+frame 1 having duration 2, and frame 2 having duration 1, the program sent to
+the keyboard contains 2 copies of frame 1 and 1 copy of frame 2.
+
+The first lighting packet contains 0x1a * frame count + 0x200.  I suspect 0x1a
+tunes the overall frame duration.
 
 
 ### Simulating driver style lighting program
