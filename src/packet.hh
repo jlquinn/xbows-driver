@@ -14,6 +14,7 @@
 // byte 5:	number of valid data bytes in this packet
 // byte 6,7:	packet crc.  crc-16/ccitt-false with 6,7 set to 0
 // byte 8-63:	data bytes
+// data is little-endian byte order
 typedef std::array<unsigned char, 64> pktarray;
 struct packet {
   union {
