@@ -2346,6 +2346,8 @@ The 11 sequences are:
 0120 keymap RRGGBB00 18007900
 0120 keymap RRGGBB00 24007900
 
+The leading 0120 indicates RGB cycle style.
+
 The first byte of the 79 int looks like an inverse of the duration.  We have
 
 	byte  duration
@@ -2369,6 +2371,9 @@ works for 36,10.  In general, it looks like:
 
 ### Trying breathing patterns
 
+Breathing cycles dim and brighten the light as well as shift the RGB color
+over time.
+
 Breathing patterns have 2 numbers for the duration: breathing change, and
 breathing stop.  The first number controls how fast or slow the brightness
 varies up and down.  The second controls gaps between patterns.
@@ -2378,6 +2383,8 @@ animation is 22 cycles, 22 frames.
 
 0220 keymap RRGGBB00 05000100
 0220 keymap RRGGBB00 0a000200
+
+The leading 0220 indicates breathing style.
 
 The first frame was duration 20+1.  The second was 10+2.  The second is
 obvious how it applies.  The first is not.

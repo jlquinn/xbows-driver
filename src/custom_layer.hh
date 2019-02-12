@@ -53,6 +53,7 @@ struct cus_anim_frame {
 
   // Set lighting for keys in keymap to be fixed at RGB.
   void monochrome(uint8_t red, uint8_t green, uint8_t blue) {
+    data[0] = 0;		// Enable monochrome
     R = red; G = green; B = blue;
     // 00007900
     pattern = inv_duration = 0;
@@ -62,6 +63,7 @@ struct cus_anim_frame {
   // Set lighting for keys in keymap to be breathing pattern with duration
   // being how long the cycle lasts and gap frames between cycles.
   void breathe(uint8_t red, uint8_t green, uint8_t blue, int duration, int gap) {
+    data[0] = 1;		// Enable breathing
     R = red; G = green; B = blue;
     // dur 00 gap 00
     // Actual duration value is inverse of specified value
@@ -75,6 +77,7 @@ struct cus_anim_frame {
   // Set lighting to RGB cycle starting with specified value.  Duration
   // specifies the speed of changing through the colors.
   void rgb_cycle(uint8_t red, uint8_t green, uint8_t blue, int duration) {
+    data[0] = 1;		// Enable RGB cycle
     // dur 00 79 00
     R = red; G = green; B = blue;
     // Actual duration value is inverse of specified value

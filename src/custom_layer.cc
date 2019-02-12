@@ -445,17 +445,19 @@ vector<packet> custom_program(char layer) {
   
   cus_anim_frame aframe1;
   enable_key(aframe1.keymap, K_REnter);
+  enable_key(aframe1.keymap, K_Esc);
   lightprog.aframes.push_back(aframe1);
   
-  cus_anim_frame aframe2;
-  enable_key(aframe2.keymap, K_Esc);
-  lightprog.aframes.push_back(aframe2);
+  // cus_anim_frame aframe2;
+  // enable_key(aframe2.keymap, K_Esc);
+  // lightprog.aframes.push_back(aframe2);
 
   cus_light_frame lframe1;
   enable_key(lframe1.keymap, K_Esc);
   enable_key(lframe1.keymap, K_REnter);
-  lframe1.monochrome(0xff, 0, 0);
-  // lframe1.rgb_cycle(0xff, 0, 0, 10);
+  // lframe1.monochrome(0xff, 0, 0);
+  // lframe1.rgb_cycle(0xff, 0, 0, 100);
+  lframe1.breathe(0xff, 0, 0, 30, 5);
   lightprog.lframes.push_back(lframe1);
   
   
