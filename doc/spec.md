@@ -2075,8 +2075,8 @@ byte 4 bits 0-7     8    ??   9    0    -    =    BkSp ??
 byte 5 bits 0-7     ??   ??   ??   ??   Tab  Q    W    ??
 byte 6 bits 0-7     E    R    T    Xbow Y    U    I    ??
 byte 7 bits 0-7     O    P    [    ]    \    PgUp ??   ??
-byte 8 bits 0-7     ??   ??   Caps A    S    ??   D    ??
-byte 9 bits 0-7     ??   ??   ??   ??   K    ??   L    ;
+byte 8 bits 0-7     ??   ??   Caps A    S    ??   D    F
+byte 9 bits 0-7     G    MBk  H    J    K    ??   L    ;
 byte 10 bits 0-7    '    Entr ??   PgDn ??   ??   ??   ??
 byte 11 bits 0-7    LShf Z    X    ??   C    V    B    Entr
 byte 12 bits 0-7    N    M    ,    ??   .    /    RShf ??
