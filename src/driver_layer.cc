@@ -39,7 +39,7 @@ vector<packet> driver_light_program(const vector<drv_light_frame>& framelist) {
   // For each key, we want an RGB value.  Convert to a sequence of packets.
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109
-  init_driver_mode();
+  init_xbows();
 
   // Driver mode light program is 10 packets.
   vector<packet> program;
@@ -283,7 +283,7 @@ void drv_keymap::clear() {
   // That gives me the value to write into the slot.
 
   // First fill with 0xff for unused/unknown slots
-  memset(keys, 0xff, MAX_KEYMAP * 4);
+  memset(keys, 0xff, MAX_DRV_KEYMAP * 4);
 
   // Now set specific key slots
   for (int i=0; i < MAX_KEYCODE; i++) {
@@ -361,7 +361,6 @@ vector<packet> driver_keymap_program(drv_keymap& kmap) {
   // For each key, we want an RGB value.  Convert to a sequence of packets.
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109
-  init_driver_mode();
 
   // Driver mode light program is 10 packets.
   vector<packet> program;

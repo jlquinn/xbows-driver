@@ -49,6 +49,6 @@ struct packet {
 extern std::vector<packet> drv_attn;
 
 // Set up default settings to talk to keyboard in driver mode.
-void init_driver_mode();
+void init_xbows();
 
 #endif

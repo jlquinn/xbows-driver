@@ -41,10 +41,10 @@ extern int drv_light_assign[MAX_KEYCODE];
 
 // This contains the full set of key positions for a driver keymap
 // XXX 120 needs to become a constant somewhere
-const int MAX_KEYMAP=120;
+const int MAX_DRV_KEYMAP=120;
 struct drv_keymap {
-  uint32_t keys[MAX_KEYMAP];
-  int size() const { return MAX_KEYMAP; }
+  uint32_t keys[MAX_DRV_KEYMAP];
+  int size() const { return MAX_DRV_KEYMAP; }
 
   // This function tells keyboard to send emits when key is pressed.
   void assign(keycodes key, keycodes emits);
