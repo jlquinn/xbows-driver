@@ -2078,15 +2078,13 @@ byte 7 bits 0-7     O    P    [    ]    \    PgUp ??   ??
 byte 8 bits 0-7     ??   ??   Caps A    S    ??   D    F
 byte 9 bits 0-7     G    MBk  H    J    K    ??   L    ;
 byte 10 bits 0-7    '    Entr ??   PgDn ??   ??   ??   ??
-byte 11 bits 0-7    LShf Z    X    ??   C    V    B    Entr
+byte 11 bits 0-7    LShf Z    X    ??   C    V    B    REnt
 byte 12 bits 0-7    N    M    ,    ??   .    /    RShf ??
 byte 13 bits 0-7    Up   ??   ??   ??   ??   ??   LCtl Win
 byte 14 bits 0-7    LAlt ??   ??   LSpc MCtl ??   MShf RSpc
 byte 15 bits 0-7    RAlt ??   ??   Fn   RCtl Left Down Rght
 ```
 
-Q: byte 10 bit 1 and byte 11 bit 7 are both Enter.  Probably one is Middle and
-one is Right.  Which is which???
 
 This is 16 bytes, 4 ints.  After this comes 0x00000000 0x00000020.  I assume
 this is a required separator.  The first int might be more keymap bits though.
