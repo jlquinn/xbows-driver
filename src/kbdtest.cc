@@ -12,12 +12,13 @@
 #include <checksum.h>
 #include <hidapi.h>
 
+#include "custom_layer.hh"
 #include "driver_layer.hh"
 #include "timer.hh"
 
 using namespace std;
 
-#define REALRUN 1
+#define REALRUN
 
 
 void dump_packet(const unsigned char* data) {
@@ -167,6 +168,8 @@ int main(int ac, char* av[]) {
   // Let's try sending the green calculator program to the keyboard in driver
   // mode
 
+  init_xbows();
+
 
   // XXX test driver light program
   //  vector<drv_light_frame> calc = make_calc();
@@ -178,7 +181,8 @@ int main(int ac, char* av[]) {
   drv_keymap kmap;
   kmap.assign(K_Z, K_Q);
   
-  vector<packet> kprog = driver_keymap_program(kmap);
+  // vector<packet> kprog = driver_keymap_program(kmap);
+  vector<packet> kprog = custom_program(3);
 
   send_program(dev, kprog);
 
