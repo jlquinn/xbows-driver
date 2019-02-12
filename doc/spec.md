@@ -2286,6 +2286,8 @@ short, I have 0x0208.  0x0208 / 20 gives 0x1a, which is the number I see in
 duration 1 animations.
 
 So this suggests that those 2 bytes are 0x0200 + 0x1a * duration.
+The 0x0200 is very specific.  Changing it makes the lighting effect fall back
+to white.
 
 IMPORTANT: 0x1a is 26.  I *think* this is 4 bytes bitmap leader and 22 bytes
 of bitmap.

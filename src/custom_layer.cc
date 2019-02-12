@@ -346,13 +346,15 @@ vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int coun
 // and light frames.
 
 // TODO automatically prep first packet based on program contents
-vector<packet> custom_light_program(int layer// ,
-				    // const vector<cus_light_frame>& framelist
+vector<packet> custom_light_program(int layer,
+				    custom_light_prog& frames
 				    ) {
   if (layer < 1 || layer > 3)
     throw runtime_error("Bad layer");
 
   // unsigned char layercode = (unsigned char)layer;
+  int num_light_frames = frames.lframes.size();
+  int num_anim_frames = frames.aframes.size();
 
   // XXXX Driver mode light program is 10 packets.
   vector<packet> program;
@@ -364,16 +366,16 @@ vector<packet> custom_light_program(int layer// ,
   pkt.progcount = bytes;
   pkt.datasize = 16;
 
-  // Start of lighting program.  I think.
+  // Start of lighting program.
   addr_to_32(pkt.data) = htole32(0x0200);
-  addr_to_32(pkt.data+4) = htole32(0x02);
+  addr_to_32(pkt.data+4) = htole32(num_anim_frames);
 
-  // 2 animation frames
-  uint32_t anim_dur = 2;
+  // Animation frames duration
+  uint32_t anim_dur = num_anim_frames;
   anim_dur *= 0x1a;
-  anim_dur += 0x0200;		// I don't know why we add 0x0200
+  anim_dur += 0x0200;		// I don't know why we add 0x0200.
   addr_to_32(pkt.data+8) = htole32(anim_dur);
-  addr_to_32(pkt.data+12) = htole32(1); // 1 lighting frame
+  addr_to_32(pkt.data+12) = htole32(num_light_frames); // 1 lighting frame
   program.push_back(pkt);
 
   // Fill in 124 ints of 0xffffffff into last packet, 8 full packets, and
@@ -382,27 +384,14 @@ vector<packet> custom_light_program(int layer// ,
   memset(ffs, 0xff, 124*4);
   pack_data(program, ffs, 124*4);
 
+  // Add animation frames
+  for (auto f: frames.aframes)
+    pack_data(program, f.data, 26);
 
-  // Frame buffer for 26 byte animation frame, 32 byte light frame
-  // 4 byte header, 22 byte bitmap
-  // 2 byte header, 22 byte bitmap, 4 byte RGB, 4 byte terminator
-  cus_anim_frame aframe1;
-  enable_key(aframe1.keymap, K_REnter);
-  pack_data(program, aframe1.data, 26);
-  
-  cus_anim_frame aframe2;
-  enable_key(aframe2.keymap, K_Esc);
-  pack_data(program, aframe2.data, 26);
+  // Add light frames
+  for (auto f: frames.lframes)
+    pack_data(program, f.data, 32);
 
-  // Light frame
-  cus_light_frame lframe1;
-  // lframe1.R = 0xff;
-  enable_key(lframe1.keymap, K_Esc);
-  enable_key(lframe1.keymap, K_F1);
-  lframe1.monochrome(0xff, 0, 0);
-  // lframe1.rgb_cycle(0xff, 0, 0, 10);
-  pack_data(program, lframe1.data, 32);
-  
   return program;
 }
 
@@ -449,9 +438,29 @@ vector<packet> custom_program(char layer) {
   packet light_intro(0x21, layer);
   light_intro.bytes[2] = 0x06;
   program.push_back(light_intro);
+
+
+  // Construct the lighting program
+  custom_light_prog lightprog;
   
-  vector<packet> lightprog = custom_light_program(layer);
-  program.insert(program.end(), lightprog.begin(), lightprog.end());
+  cus_anim_frame aframe1;
+  enable_key(aframe1.keymap, K_REnter);
+  lightprog.aframes.push_back(aframe1);
+  
+  cus_anim_frame aframe2;
+  enable_key(aframe2.keymap, K_Esc);
+  lightprog.aframes.push_back(aframe2);
+
+  cus_light_frame lframe1;
+  enable_key(lframe1.keymap, K_Esc);
+  enable_key(lframe1.keymap, K_REnter);
+  lframe1.monochrome(0xff, 0, 0);
+  // lframe1.rgb_cycle(0xff, 0, 0, 10);
+  lightprog.lframes.push_back(lframe1);
+  
+  
+  vector<packet> lightprogram = custom_light_program(layer, lightprog);
+  program.insert(program.end(), lightprogram.begin(), lightprogram.end());
 
 
   packet terminator(0x0b, layer);

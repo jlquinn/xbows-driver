@@ -86,6 +86,11 @@ struct cus_anim_frame {
   }
  };
 
+struct custom_light_prog {
+  std::vector<cus_anim_frame> aframes;
+  std::vector<cus_light_frame> lframes;
+};
+
 
 std::vector<packet> custom_program(char layer);
 
