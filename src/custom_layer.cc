@@ -3,6 +3,7 @@
 // We need to convert a keyboard program to a sequence of packets.  This code
 // is similar but not identical to the driver layer program.
 
+#include <endian.h>
 #include <cmath>
 #include <vector>
 
@@ -297,6 +298,34 @@ int cus_anim_assign[MAX_KEYCODE] = {
 
 // TODO code to pack animation and light frames into packets
 
+// Pack bytes into program, adding more packets as needed.
+vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int count) {
+  // Assumes there is a packet at the end of program to look at
+  while (count) {
+    // Add new packet if needed.
+    if (program.empty() || program.back().datasize == 56)
+      program.push_back(packet());
+
+    // Copy command info forward
+    if (program.size() > 1) {
+      unsigned psz = program.size()-1;
+      program[psz].cmd = program[psz-1].cmd;
+      program[psz].sub = program[psz-1].sub;
+      program[psz].progcount = htole16(le16toh(program[psz-1].progcount) + 56);
+    }
+    
+    // Try to fill the current packet
+    packet& pkt = program.back();
+
+    // Pack up to 56 bytes of data into packet
+    int pcount = min(count, 56-pkt.datasize);
+    memcpy(pkt.data + pkt.datasize, data, pcount);
+    pkt.datasize += pcount;
+    count -= pcount;
+    data += pcount;
+  }
+  return program;
+}
 
 
 // Light program is mode complex than driver mode.  We have animation frames
@@ -318,7 +347,7 @@ vector<packet> custom_light_program(int layer// ,
   unsigned short bytes = 0;
   packet pkt(0x27, layer);
   pkt.progcount = bytes;
-  pkt.datasize = 0x38;
+  pkt.datasize = 16;
 
   // Start of lighting program.  I think.
   addr_to_32(pkt.data) = htole32(0x0200);
@@ -330,55 +359,35 @@ vector<packet> custom_light_program(int layer// ,
   anim_dur += 0x0200;		// I don't know why we add 0x0200
   addr_to_32(pkt.data+8) = htole32(anim_dur);
   addr_to_32(pkt.data+12) = htole32(1); // 1 lighting frame
-  memset(pkt.data+12, 0xff, 44);       // Fill remainder with ff
-
   program.push_back(pkt);
 
-  // Add in 0xff packets.  We end up with 120 ints of 0xffffffff including
-  // previous and following packet.
-  for (int i=0; i < 8; i++) {
-    packet pkt(0x27, layer);
-    bytes += 0x38;
-    pkt.progcount = htole16(bytes);
-    pkt.datasize = 0x38;
-    memset(pkt.data, 0xff, 56);
-    program.push_back(pkt);
-  }
+  // Fill in 124 ints of 0xffffffff into last packet, 8 full packets, and
+  // start of another packet.
+  unsigned char ffs[124*4];
+  memset(ffs, 0xff, 124*4);
+  pack_data(program, ffs, 124*4);
 
-  // Animation frames
-  // Anim frame 1
-  bytes += 0x38;
-  packet pkt2(0x27, layer);
-  pkt2.datasize = 0x38;
-  pkt2.progcount = htole16(bytes); // XXX hardwired
-  // Last two 0xfffffffff spots
-  addr_to_32(pkt2.data) = 0xffffffff;
-  addr_to_32(pkt2.data + 4) = 0xffffffff;
 
-  // First animation frame
-  addr_to_32(pkt2.data + 8) = 0x00160003; // animation frame header
-  pkt2.data[12] = 0x02;			 // Unmask Esc
+  // Frame buffer for 26 byte animation frame, 32 byte light frame
+  // 4 byte header, 22 byte bitmap
+  // 2 byte header, 22 byte bitmap, 4 byte RGB, 4 byte terminator
+  unsigned char frame[34];
+  memset(frame, 0, 26);
+  addr_to_32(frame) = 0x00160003; // Animation frame header
+  frame[4] = 0x01;		  // Esc
+  // Add data to program packets
+  pack_data(program, frame, 26);
 
-  // Second animation frame;
-  addr_to_32(pkt2.data + 34) = 0x00160003; // animation frame header
-  pkt2.data[38] = 0x01;			  // Unmask F1
+  frame[4] = 0x02;		// F1
+  pack_data(program, frame, 26);
 
-  program.push_back(pkt2);
-
-  // 2nd animation frame continues into next packet
-  packet pkt3(0x27, layer);
-  pkt3.datasize = 36;		// last 4 bytes anim frame 2, 32 bytes light frame
-  bytes += 0x38;
-  pkt3.progcount = htole16(bytes);
-
-  // Start of light frame
-  addr_to_16(pkt3.data+4) = htole16(0x2000);
-  pkt3.data[6] = 0x03;				  // Light up Esc and F1 
-  addr_to_32(pkt3.data+28) = htole32(0x000000ff); // RGB red
-  addr_to_32(pkt3.data+32) = htole32(0x00790000); // frame terminator
-  
-  program.push_back(pkt3);
-
+  // Light frame
+  memset(frame, 0, 32);
+  addr_to_16(frame) = 0x2000; // Animation frame header
+  frame[2] = 0x03;	      // Esc and F1
+  addr_to_32(frame+24) = htole32(0x000000ff); // RGB red
+  addr_to_32(frame+28) = htole32(0x00790000); // frame terminator
+  pack_data(program, frame, 32);
   
   return program;
 }
