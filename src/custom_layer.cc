@@ -267,7 +267,7 @@ int cus_anim_assign[MAX_KEYCODE] = {
   0x00, 0x54, 0x82,			    // Esc Tab Capslock
   0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x10, // F1 F2 F3 F4 F5 F6 F7
   0x11, 0x12, 0x13, 0x14, 0x15,		    // F8 F9 F10 F11 F12
-  0xa1, 0xb7,		      // REnter MEnter  XXXX spec is unsure of these 2
+  0xa1, 0xb7,		      // REnter MEnter
   0xb0, 0xe6, 0xc6,	      // LShift MShift RShift
   0xd6, 0xe4, 0xf4,	      // LControl MControl RControl
   0xe0, 0xf0,		      // LAlt RAlt
@@ -387,11 +387,11 @@ vector<packet> custom_light_program(int layer// ,
   // 4 byte header, 22 byte bitmap
   // 2 byte header, 22 byte bitmap, 4 byte RGB, 4 byte terminator
   cus_anim_frame aframe1;
-  enable_key(aframe1.keymap, K_Esc);
+  enable_key(aframe1.keymap, K_REnter);
   pack_data(program, aframe1.data, 26);
   
   cus_anim_frame aframe2;
-  enable_key(aframe2.keymap, K_F1);
+  enable_key(aframe2.keymap, K_Esc);
   pack_data(program, aframe2.data, 26);
 
   // Light frame
