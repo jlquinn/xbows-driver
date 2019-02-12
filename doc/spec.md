@@ -2448,6 +2448,9 @@ the keyboard contains 2 copies of frame 1 and 1 copy of frame 2.
 The first lighting packet contains 0x1a * frame count + 0x200.  I suspect 0x1a
 tunes the overall frame duration.
 
+Unfortunately, tweaking this value causes the lighting to revert to white.  So
+there doesn't seem to be flexibility here to play with durations.
+
 
 ### Simulating driver style lighting program
 
