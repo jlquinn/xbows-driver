@@ -2054,6 +2054,14 @@ just 0x01f8 bytes after the start.
 animation mask key bitmap.  I think the
 0xffffffff ffffffff just has to be there as well.
 
+Q: What are all the ffffffff for?
+There are 124 ffffffff here.  This seems to be approximately the number of
+keys to program.  Are these direct RGB codes, similar to driver mode
+programming?  That seems a lot of bytes to waste on ffffffff.
+Perhaps try fixed lighting and see what happens.  Similarly, try the
+anim/light frame programming in driver mode.  Does it work?
+
+
 I copied and modified the Calculator pattern to enable a single light at a
 time to try to describe the bitmap.  Treating the first byte after the crc as
 byte 0:
@@ -2219,6 +2227,11 @@ Packet 27033002000a by int
 	01200200		0120 start of lighting frame #2.  01 indicating RGB cycle,
 					Then 0200 is F1 in keymap
 	00000000 00000000 00000000 00000000		16 bytes of keymap
+	
+Q: Is 0a correct for packet data size?  This seems wrong.
+A: When I compute packet data size consistently, things seem to work.  I'm OK
+with leaving as is.
+
 
 Packet 27036802002c by int
 
@@ -2424,3 +2437,15 @@ Next, each frame maps to a slice of a wheel, so that the color peaks will
 happen in successive slices, giving the illusion of a turning.  In this case,
 the animation frame just allows everything through.
 
+
+### Simulating driver style lighting program
+
+Q: can we simulate simple frame lighting?
+
+I don't know if this is actually doable.  The lighting frames don't easily
+allow specifying a key position as a fixed color, then changing it.  Perhaps
+breathing can be adapted to do the right thing.
+
+Early on, the 0x27 lighting program section has 120 0xff values.  This is the
+right size to contain an RGB frame.  Initial tests suggest it doesn't work,
+but there may be something else that needs to change.
