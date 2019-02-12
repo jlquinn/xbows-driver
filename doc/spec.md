@@ -2087,8 +2087,6 @@ byte 15 bits 0-7    RAlt ??   ??   Fn   RCtl Left Down Rght
 
 Q: byte 10 bit 1 and byte 11 bit 7 are both Enter.  Probably one is Middle and
 one is Right.  Which is which???
-Q: Where is MBackspace?
-Q: Where is F, G, H, J
 
 This is 16 bytes, 4 ints.  After this comes 0x00000000 0x00000020.  I assume
 this is a required separator.  The first int might be more keymap bits though.
