@@ -1,9 +1,11 @@
 // This code is to parse a configuration for driver mode.  It is different
 // from custom mode unfortunately.
 
+#include <stdexcept>
 #include <istream>
 #include <string>
 #include <unordered_map>
+#include <yaml-cpp/yaml.h>
 
 #include "keymap.hh"
 
@@ -204,6 +206,61 @@ keycodes string_to_key(const string& keyname) {
 // allow color names?  If so, where to get them from?  Can I leverage X color
 // tables?
 
-void read_light_program(istream& os) {
+void read_light_program(istream& is) {
+  
+}
+
+void parse_driver_cfg(YAML::Node node) {
+  if (node["lights"]) {
+    YAML::Node lt = node["lights"];
+    // read a light program
+    if (lt.Type() != YAML::NodeType::Sequence) {
+      throw runtime_error("not sequence");
+    }
+    for (auto frame: lt) {
+      int id = frame["id"].as<int>();
+      auto steps = frame["steps"];
+      for (auto step: steps) {
+	// process each macro step
+	if (step["down"]) {}
+	if (step["up"]) {}
+	if (step["delay"]) {}
+      }
+
+    }
+    
+  }
+  if (node["keymap"]) {
+    // read a keymapping
+  }
+
+  if (node["macros"]) {
+    // read macros
+  }
+  if (node["flashlight"]) {
+    // read flashlight programs
+  }
+}
+
+void parse_custom_cfg(YAML::Node node) {
+
+}
+
+// Treat driver mode and custom mode configs as separate streams
+void read_config(istream& is) {
+  YAML::Node cfglist = YAML::Load(is);
+
+  // Each config is separate
+  for (unsigned i=0; i < cfglist.size(); i++)  {
+    auto cfg = cfglist[i];
+    if (cfg["driver"])
+      parse_driver_cfg(cfg);
+    else if (cfg["custom"])
+      parse_custom_cfg(cfg);
+    else {
+      throw runtime_error("unknown config");
+    }
+    
+  }
   
 }
