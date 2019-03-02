@@ -16,65 +16,6 @@ uint16_t& addr_to_16(unsigned char* addr) { return *(uint16_t*)addr; }
 uint32_t& addr_to_32(unsigned char* addr) { return *(uint32_t*)addr; }
 
 
-// Custom program
-
-// animation keymap is a 22 byte bitmap representing keys
-// struct keymap {
-//   unsigned char[22];
-// };
-
-
-// struct light_frame {
-//   uint16_t header = 0x0020;
-//   keymap keys;
-//   uint32_t rgb0;
-//   uint16_t inv_dur = 0;		// rgb and breathing set this
-//   uint16_t terminator = 0x7900;	// unchanged for monochrome and rgb
-
-//   // RGB cycle duration
-//   void set_rgb_cycle(int d) {
-//     int inv = floor(360/d);
-//     inv_dur = (short)inv;
-//   }
-
-//   // Breathing duration
-//   void set_breathe_cycle(int dur, uint16_t stop) {
-//     int inv = floor(100/d);
-//     inv_dur = (short)inv;
-//     terminator = stop * 0xffff;
-//   }
-// };
-
-
-// // This is essentially a mask over whatever lighting is active.
-// struct animation_frame {
-//   uint32_t header = 0x03001600;
-//   keymap keys;
-// };
-
-
-// // Lighting program is a combination of light frames and animation frames.
-// struct light_program {
-//   uint32_t start = 0x00020000;
-//   uint32_t anim_frames;
-//   uint32_t anim_duration;
-//   uint32_t light_frames;
-
-//   keymap light_keymap;
-
-// };
-
-// struct macro_program {
-
-// };
-
-// struct keymap_program {
-// };
-
-// struct flashlight_program {
-
-// };
-
 // Map from keycode to position in drv_keymap
 int cus_keymap_assign[MAX_KEYCODE] = {
   // Position 0 is empty
@@ -168,15 +109,11 @@ void cus_keymap::clear() {
 //
 // Handles rebinding and disabling keys.
 //
-vector<packet> custom_keymap_program(int layer// , cus_keymap& kmap
-				     ) {
+vector<packet> custom_keymap_program(int layer, cus_keymap& kmap) {
   if (layer < 1 || layer > 3)
     throw runtime_error("Bad layer");
   
   vector<packet> program;
-
-// XXX Default keymap for now
-  cus_keymap kmap;
 
   // Light program.  14 key rgb per packet
   int remaining = kmap.size();
@@ -240,6 +177,12 @@ vector<packet> custom_flashlight_program(int layer) {
   return program;
 }
 
+// Constructor
+cus_anim_frame::cus_anim_frame() {
+  header = htole32(0x00160003);
+  clear();
+}
+
 
 // Map from keycode to bit position in animation frame.  Each key gets
 // assigned to a byte and a bit within the byte.  The least significant nibble
@@ -299,6 +242,7 @@ int cus_anim_assign[MAX_KEYCODE] = {
 };
 
 // Enable the bit associated with key in keymap.  keymap is a 22 char bitmap.
+// Same for both animation and light frame keymaps.
 void enable_key(uint8_t* keymap, keycodes key) {
   int code = cus_anim_assign[key];
   int byte = code >> 4;                // byte position is everything but lowest 4 bits
@@ -307,9 +251,18 @@ void enable_key(uint8_t* keymap, keycodes key) {
   keymap[byte] |= mask;
 }
 
-// Clear the bitmap
-void clear_keys(uint8_t* keymap) { memset(keymap, 0, 22); }
 
+// Enable the bit associated with key in keymap.  keymap is a 22 char bitmap.
+void cus_anim_frame::enable(keycodes key) { enable_key(keymap, key); }
+
+// Clear the bitmap
+void cus_anim_frame::clear() { memset(keymap, 0, 22); }
+
+// Enable the bit associated with key in keymap.  keymap is a 22 char bitmap.
+void cus_light_frame::enable(keycodes key) { enable_key(keymap, key); }
+
+// Clear the bitmap
+void cus_light_frame::clear() { memset(keymap, 0, 22); }
 
 
 // Pack bytes into program, adding more packets as needed.
@@ -352,11 +305,9 @@ vector<packet> custom_light_program(int layer,
   if (layer < 1 || layer > 3)
     throw runtime_error("Bad layer");
 
-  // unsigned char layercode = (unsigned char)layer;
   int num_light_frames = frames.lframes.size();
   int num_anim_frames = frames.aframes.size();
 
-  // XXXX Driver mode light program is 10 packets.
   vector<packet> program;
 
   // Starting with alternating Esc and F1 in green.
@@ -397,7 +348,7 @@ vector<packet> custom_light_program(int layer,
 
 
 // We have to assemble a complete program to send
-vector<packet> custom_program(char layer) {
+vector<packet> custom_program(char layer, custom_layer_prog& cus_prog) {
   init_xbows();
 
   vector<packet> program;
@@ -411,7 +362,7 @@ vector<packet> custom_program(char layer) {
   keymap_intro.bytes[2] = 0x01;
   program.push_back(keymap_intro);
   
-  vector<packet> keyprog = custom_keymap_program(layer);
+  vector<packet> keyprog = custom_keymap_program(layer, cus_prog.kmap);
   program.insert(program.end(), keyprog.begin(), keyprog.end());
 
 
@@ -441,27 +392,7 @@ vector<packet> custom_program(char layer) {
 
 
   // Construct the lighting program
-  custom_light_prog lightprog;
-  
-  cus_anim_frame aframe1;
-  enable_key(aframe1.keymap, K_REnter);
-  enable_key(aframe1.keymap, K_Esc);
-  lightprog.aframes.push_back(aframe1);
-  
-  // cus_anim_frame aframe2;
-  // enable_key(aframe2.keymap, K_Esc);
-  // lightprog.aframes.push_back(aframe2);
-
-  cus_light_frame lframe1;
-  enable_key(lframe1.keymap, K_Esc);
-  enable_key(lframe1.keymap, K_REnter);
-  // lframe1.monochrome(0xff, 0, 0);
-  // lframe1.rgb_cycle(0xff, 0, 0, 100);
-  lframe1.breathe(0xff, 0, 0, 30, 5);
-  lightprog.lframes.push_back(lframe1);
-  
-  
-  vector<packet> lightprogram = custom_light_program(layer, lightprog);
+  vector<packet> lightprogram = custom_light_program(layer, cus_prog.lights);
   program.insert(program.end(), lightprogram.begin(), lightprogram.end());
 
 

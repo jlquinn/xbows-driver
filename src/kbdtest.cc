@@ -190,7 +190,27 @@ int main(int ac, char* av[]) {
   kmap.assign(K_Z, K_Q);
   
   // vector<packet> kprog = driver_keymap_program(kmap);
-  vector<packet> kprog = custom_program(3);
+  custom_layer_prog cprog;
+  custom_light_prog& lightprog = cprog.lights;
+  
+  cus_anim_frame aframe1;
+  aframe1.enable(K_MEnter);
+  aframe1.enable(K_Esc);
+  lightprog.aframes.push_back(aframe1);
+  
+  // cus_anim_frame aframe2;
+  // enable_key(aframe2.keymap, K_Esc);
+  // lightprog.aframes.push_back(aframe2);
+
+  cus_light_frame lframe1;
+  lframe1.enable(K_Esc);
+  lframe1.enable(K_MEnter);
+  // lframe1.monochrome(0xff, 0, 0);
+  // lframe1.rgb_cycle(0xff, 0, 0, 100);
+  lframe1.breathe(0, 0xff, 0, 30, 5);
+  lightprog.lframes.push_back(lframe1);
+
+  vector<packet> kprog = custom_program(3, cprog);
 
   send_program(dev, kprog);
 

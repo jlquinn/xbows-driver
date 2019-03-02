@@ -9,6 +9,40 @@
 #include "keymap.hh"
 #include "packet.hh"
 
+
+// This contains the full set of key positions for a driver keymap
+// XXX 120 needs to become a constant somewhere
+const int MAX_KEYMAP=120;
+struct cus_keymap {
+  uint32_t keys[MAX_KEYMAP];
+  int size() const { return MAX_KEYMAP; }
+
+  // This function tells keyboard to send emits when key is pressed.
+  void assign(keycodes key, keycodes emits);
+
+  void clear();
+
+  cus_keymap() { clear(); }
+};
+
+// A step is either an action or a delay.  Actions have key and down, with
+// duration 0.  Delay has nonzero duration.
+struct cus_macro_step {
+  int duration;			// duration in milliseconds
+  keycodes key;			// key/button action for this step
+  bool down;			// true down, false up
+};
+
+struct cus_macro {
+  keycodes key;			// key the macro is assigned to
+  int play_mode;		// 0 - auto stop
+				// 1 - release stop
+				// 2 - press again to stop
+  std::vector<cus_macro_step> steps;	// macro sequence
+};
+
+// One animation frame of a custom light program.  This is just a bitmask of
+// keys that allow lighting to shine through.
 struct cus_anim_frame {
   union {
     unsigned char data[26];
@@ -18,22 +52,24 @@ struct cus_anim_frame {
     };
   };
 
-  cus_anim_frame() {
-    header = htole32(0x00160003);
-    memset(keymap, 0, 22);
-  }
+  cus_anim_frame();
+  
+  // Turn on key for this frame.
+  void enable(keycodes key);
+  // Turn off all keys for this frame.
+  void clear();
 };
 
 
- struct cus_light_frame {
+struct cus_light_frame {
   union {
     unsigned char data[32];
     struct {
       uint16_t header;
       unsigned char keymap[22];        // keymap is packed into 22 bits
-      uint8_t R;
-      uint8_t G;
-      uint8_t B;       // colors
+      uint8_t R;		       // red 0-255
+      uint8_t G;		       // green 0-255
+      uint8_t B;		       // blue 0-255
       uint8_t dummy;
       // type is monochrome, rgb cycle, breathing
       uint8_t pattern;
@@ -50,6 +86,11 @@ struct cus_anim_frame {
     memset(data+2, 0, 30);
     gapcode = 0x79;                        // monochrome terminator
   }
+
+  // Turn on key for this frame.
+  void enable(keycodes key);
+  // Turn off all keys for this frame.
+  void clear();
 
   // Set lighting for keys in keymap to be fixed at RGB.
   void monochrome(uint8_t red, uint8_t green, uint8_t blue) {
@@ -82,36 +123,27 @@ struct cus_anim_frame {
     R = red; G = green; B = blue;
     // Actual duration value is inverse of specified value
     // Matching the windows driver
-    int speed = floor(360/duration);
+    int speed = floor(360 / duration);
     pattern = speed;
     inv_duration = 0;
     gapcode = 0x79;
   }
- };
+};
 
 struct custom_light_prog {
   std::vector<cus_anim_frame> aframes;
   std::vector<cus_light_frame> lframes;
 };
 
-
-std::vector<packet> custom_program(char layer);
-
-
-// This contains the full set of key positions for a driver keymap
-// XXX 120 needs to become a constant somewhere
-const int MAX_KEYMAP=120;
-struct cus_keymap {
-  uint32_t keys[MAX_KEYMAP];
-  int size() const { return MAX_KEYMAP; }
-
-  // This function tells keyboard to send emits when key is pressed.
-  void assign(keycodes key, keycodes emits);
-
-  void clear();
-
-  cus_keymap() { clear(); }
+// Complete program for a layer
+struct custom_layer_prog {
+  cus_keymap kmap;
+  custom_light_prog lights;
 };
+
+// How do I get mappings into this function to be converted to a program?
+std::vector<packet> custom_program(char layer, custom_layer_prog& cus_prog);
+
 
 // Similar to drv_light_assign, this maps keycode to position in a driver
 // keymap.
