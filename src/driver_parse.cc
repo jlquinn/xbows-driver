@@ -1,15 +1,19 @@
 // This code is to parse a configuration for driver mode.  It is different
 // from custom mode unfortunately.
 
+#include <cctype>
 #include <stdexcept>
 #include <istream>
+#include <fstream>
 #include <string>
 #include <unordered_map>
+#include <boost/algorithm/string.hpp>
 #include <yaml-cpp/yaml.h>
 
 #include "keymap.hh"
 
 using namespace std;
+using namespace boost::algorithm;
 
 unordered_map<string, keycodes> namemap;
 
@@ -192,6 +196,40 @@ keycodes string_to_key(const string& keyname) {
     return K_NONE;
   
   return search->second;
+}
+
+struct rgb { int R, G, B; };
+unordered_map<string, rgb> colornames;
+
+void load_colornames() {
+  // XXX this is on Ubuntu 18.  Other systems may be different.  This needs to
+  // be more sophisticated.
+  string filename = "/usr/share/X11/rgb.txt";
+  ifstream ins(filename);
+  if (!ins)
+    throw runtime_error(string("Failed to load color names from ") + filename);
+  string line;
+  while (getline(ins, line)) {
+    // Skip non-colorname lines
+    if (line.empty() || !isdigit(line[0]))
+      continue;
+    // num num num name ...
+    vector<string> bits;
+    split(bits, line, is_space(), token_compress_on);
+    if (bits.size() < 4)
+      throw runtime_error("Bad line format");
+    // Check first 3 are numbers
+    for (int i=0; i < 2; i++)
+      if (!all(bits[i], is_digit()))
+	throw runtime_error("Bad line format");
+    int R = stoi(bits[0]);
+    int G = stoi(bits[1]);
+    int B = stoi(bits[2]);
+    bits.erase(bits.begin(), bits.begin()+3);
+    string name = join(bits, " ");
+
+    colornames[name] = {R, G, B};
+  }
 }
 
 
