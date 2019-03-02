@@ -2107,6 +2107,13 @@ I don't yet know what indicates monochrome, RGB cycle, or breathing.
 
 ### Experiment on lighting
 
+IMPORTANT: it is possible to force a program on the driver layer.  Using layer
+code 0x01, driver layer acts the same as a custom layer.
+
+It seems that this overrides the default backlight programs in driver layer
+selectable through Fn F5.
+
+
 I'm trying this on custom layer 2.
 
 I have 2 frames of keyboard animation:
