@@ -112,10 +112,9 @@ driver:
 	steps: []	
 	  
   flashlight:
-    id: 1			# unique id for the flashlight
-	frames:
-	- colormap: {...}
-	- colormap: {...}
+    - id: 1			# unique id for the flashlight program
+	  - colormap: {...}
+	  - colormap: {...}
 	
 	
 ---
