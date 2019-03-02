@@ -18,6 +18,14 @@ ExternalProject_Add(crc
 set(CRC_PATH "${CMAKE_SOURCE_DIR}/libcrc")
 find_library(CRC_LIBRARY crc PATHS "${CRC_PATH}/lib")
 
+# Set up yaml-cpp
+find_library(YAML_LIBRARY yaml-cpp)
+if (YAML_LIBRARY-NOTFOUND)
+  error("Please install libyaml-cpp 0.5 or greated.  On Ubuntu, the package is libyaml-cpp-dev")
+else()
+  message("-- libyaml-cpp ${YAML_LIBRARY}")
+endif()
+
 add_subdirectory(src)
 
 #add_executable(kbdtest kbdtest.cc packet.cc)
