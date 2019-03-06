@@ -466,6 +466,34 @@ Generally, the driver keeps sending
 0c0000000000a70d00000000000000000000000000000000... when there's nothing to
 do.  It does this about every 0.3 seconds.
 
+# Reset keyboard
+
+It appears that 0b020000 a311 0000... does a factory reset to the keyboard.
+Very helpful for when I mess up the programming.
+
+Win driver believes DeviceID is 18446744069414584000 or
+16#FFFFFFFEFFFFFEC0
+
+# Device info
+
+When the Win driver first talks to the keyboard, it sends several commands to
+query information:
+
+send 010900000000 crc 00...
+recv 010901000000 crc 0f 08 00...
+send 010100000000 crc 00...
+recv 010101000000 crc 01 61 10 02 16 01 00...
+send 010800000000 crc 00...
+recv 010801000000 crc 6c 00 12 27 00 00 72 af
+send 0102
+recv 010201000000 crc ff ff ff ff ff ff ff ff
+
+From device interface doc:
+0101 requests firmware info.  8-11 is FW id.  12-15 is FW ver.  Here 01 16 -> 1.22.
+0102 requests device id.  This is -1.
+0108 requests model id.  I don't understand this
+0109 requests something.  I don't understand this.
+
 # Switching layers
 
 The windows driver can tell the keyboard to switch between layers.  Looking
