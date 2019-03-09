@@ -186,7 +186,7 @@ int main(int ac, char* av[]) {
 
   // XXX test driver keymap program
   // Start with a default keymap
-  drv_keymap kmap;
+  keymap kmap;
   kmap.assign(K_Z, K_Q);
   
   // vector<packet> kprog = driver_keymap_program(kmap);

@@ -14,20 +14,6 @@
 #include "layer.hh"
 
 
-// This contains the full set of key positions for a driver keymap
-// XXX 120 needs to become a constant somewhere
-struct cus_keymap {
-  uint32_t keys[MAX_KEYMAP];
-  int size() const { return MAX_KEYMAP; }
-
-  // This function tells keyboard to send emits when key is pressed.
-  void assign(keycodes key, keycodes emits);
-
-  void clear();
-
-  cus_keymap() { clear(); }
-};
-
 // A step is either an action or a delay.  Actions have key and down, with
 // duration 0.  Delay has nonzero duration.
 struct cus_macro_step {
@@ -140,7 +126,7 @@ struct custom_light_prog {
 
 // Complete program for a layer
 struct custom_layer_prog {
-  cus_keymap kmap;
+  keymap kmap;
   custom_light_prog lights;
 };
 

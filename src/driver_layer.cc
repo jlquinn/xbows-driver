@@ -269,44 +269,7 @@ vector<drv_light_frame> make_trail() {
 
 //////////////////////
 
-// Set up the default keymap
-void drv_keymap::clear() {
-  // Iterate through table and assign values to kmap
-
-  // I need to assign LCtrl position 3 with value 01000002, etc.
-  // Unused/unknown slots get 0xffffffff.
-
-  // How do I track the position mapping?  keymap_assign.
-
-  // There is a keyid map that is shared between driver and custom.
-  // That gives me the value to write into the slot.
-
-  // First fill with 0xff for unused/unknown slots
-  memset(keys, 0xff, MAX_KEYMAP * 4);
-
-  // Now set specific key slots
-  for (int i=0; i < MAX_KEYCODE; i++) {
-    uint16_t id = keyid[i];	// 2 of the 4 bytes we need
-    int pos = keymap_assign[i];
-
-    if (id == 0xffff) continue;
-    if (pos == 0xff) continue;
-
-    // Each value looks like id 00 02
-    keys[pos] = 0x02000000 | (uint32_t)htobe16(id);
-  }
-
-}
-
-
-// Map from keycode to position in drv_keymap
-void drv_keymap::assign(keycodes key, keycodes emits) {
-  keys[keymap_assign[K_Z]] =
-    htobe16(keyid[K_Q]) | 0x02000000;
-}
-
-
-vector<packet> driver_keymap_program(drv_keymap& kmap) {
+vector<packet> driver_keymap_program(keymap& kmap) {
   // For each key, we want an RGB value.  Convert to a sequence of packets.
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109

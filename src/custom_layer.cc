@@ -16,50 +16,12 @@ uint16_t& addr_to_16(unsigned char* addr) { return *(uint16_t*)addr; }
 uint32_t& addr_to_32(unsigned char* addr) { return *(uint32_t*)addr; }
 
 
-// Map from keycode to position in drv_keymap
-void cus_keymap::assign(keycodes key, keycodes emits) {
-  keys[keymap_assign[K_Z]] =
-    htobe16(keyid[K_Q]) | 0x02000000;
-}
-
-
-// Set up the default keymap.  Gets called when a cus_keymap is created.
-// This code is identical to the default driver keymap.
-void cus_keymap::clear() {
-  // Iterate through table and assign values to kmap
-
-  // I need to assign LCtrl position 3 with value 01000002, etc.
-  // Unused/unknown slots get 0xffffffff.
-
-  // How do I track the position mapping?  keymap_assign.
-
-  // There is a keyid map that is shared between driver and custom.
-  // That gives me the value to write into the slot.
-
-  // First fill with 0xff for unused/unknown slots
-  memset(keys, 0xff, MAX_KEYMAP * 4);
-
-  // Now set specific key slots
-  for (int i=0; i < MAX_KEYCODE; i++) {
-    uint16_t id = keyid[i];	// 2 of the 4 bytes we need
-    int pos = keymap_assign[i];
-
-    if (id == 0xffff) continue;
-    if (pos == 0xff) continue;
-
-    // Each value looks like id 00 02
-    keys[pos] = 0x02000000 | (uint32_t)htobe16(id);
-  }
-
-}
-
-
 // For custom layer commands, the subcommand indicates the layer 0x01, 0x02,
 // 0x03 are custom layers 1-3.
 //
 // Handles rebinding and disabling keys.
 //
-vector<packet> custom_keymap_program(int layer, cus_keymap& kmap) {
+vector<packet> custom_keymap_program(int layer, keymap& kmap) {
   if (layer < 1 || layer > 3)
     throw runtime_error("Bad layer");
   

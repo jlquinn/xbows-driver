@@ -4,6 +4,7 @@
 #include <cctype>
 #include <stdexcept>
 #include <istream>
+#include <iostream>
 #include <fstream>
 #include <string>
 #include <unordered_map>
@@ -256,7 +257,7 @@ void parse_driver_cfg(YAML::Node node) {
       throw runtime_error("not sequence");
     }
     for (auto frame: lt) {
-      int id = frame["id"].as<int>();
+      // int id = frame["id"].as<int>();
       auto steps = frame["steps"];
       for (auto step: steps) {
 	// process each macro step
@@ -284,22 +285,45 @@ void parse_custom_cfg(YAML::Node node) {
 
 }
 
+void parse_light_cfg(YAML::Node cfg) {
+  auto cm = cfg["colormap"];
+  auto anim = cfg["animation"];
+  auto lite = cfg["lighting"];
+
+  if (cm) {
+    // read sequence of key color frames
+    cout << "light colormap has " << cm.size() << " frames\n";
+  }
+  if (anim) {
+    cout << "lighting has " << anim.size() << " animation frames\n";
+  }
+  if (lite) {
+    cout << "lighting has " << lite.size() << " lighting frames\n";
+  }
+  
+}
+
 // Treat driver mode and custom mode configs as separate streams
 void read_config(istream& is) {
-  YAML::Node cfglist = YAML::Load(is);
+  YAML::Node cfg = YAML::Load(is);
 
-  // Each config is separate
-  for (unsigned i=0; i < cfglist.size(); i++)  {
-    auto cfg = cfglist[i];
-    if (cfg["driver"])
-      parse_driver_cfg(cfg);
-    else if (cfg["custom"])
-      parse_custom_cfg(cfg);
-    else {
-      throw runtime_error("unknown config");
-    }
+  if (!cfg["layer"])
+    throw runtime_error("No layer defined");
+
+  parse_light_cfg(cfg["lights"]);
+  
+  // // Each config is separate
+  // for (unsigned i=0; i < cfglist.size(); i++)  {
+  //   auto cfg = cfglist[i];
+  //   if (cfg["driver"])
+  //     parse_driver_cfg(cfg);
+  //   else if (cfg["custom"])
+  //     parse_custom_cfg(cfg);
+  //   else {
+  //     throw runtime_error("unknown config");
+  //   }
     
-  }
+  // }
   
 }
 
