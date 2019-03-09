@@ -4,7 +4,8 @@ add_compile_options(-Wall)
 
 include_directories("${HIDAPI_PATH}/hidapi")
 
-set(SRCS xbows.cc packet.cc driver_layer.cc keymap.cc custom_layer.cc driver_parse.cc)
+set(SRCS xbows.cc packet.cc layer.cc driver_layer.cc keymap.cc custom_layer.cc
+  driver_parse.cc)
 add_library(xbows SHARED ${SRCS})
 
 
