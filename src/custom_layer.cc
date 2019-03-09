@@ -349,7 +349,6 @@ vector<packet> custom_light_program(int layer,
 
 // We have to assemble a complete program to send
 vector<packet> custom_program(char layer, custom_layer_prog& cus_prog) {
-  init_xbows();
 
   vector<packet> program;
 

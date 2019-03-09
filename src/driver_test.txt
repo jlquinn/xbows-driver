@@ -1,0 +1,37 @@
+# Sample driver mode configuration
+
+# I can depend on x11-common here.
+# Use either /etc/X11/rgb.txt or /usr/share/X11/rgb.txt for mappings
+# Allow overriding color table but same format
+
+# light frame
+8 green
+9 00ff00
+U 0 255 0
+I green
+O green
+P green
+J green
+K green
+L green
+Semi green
+M green
+Comma green
+Period green
+slash green
+
+delay 5ms
+
+# keymap
+8 9
+9 0
+K 1
+RSpc LSpc
+
+# All mappings get applied at once, so no issues with how to remap things.
+
+
+# How do macros get specified?
+
+# TODO
+# Finalize set of singleword key names

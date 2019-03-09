@@ -1,3 +1,6 @@
+#ifndef CUSTOM_LAYER_HH
+#define CUSTOM_LAYER_HH
+
 // Custom layer programming
 //
 // Custom layer is different from driver layer.  It seems all bits have to be
@@ -8,11 +11,11 @@
 
 #include "keymap.hh"
 #include "packet.hh"
+#include "layer.hh"
 
 
 // This contains the full set of key positions for a driver keymap
 // XXX 120 needs to become a constant somewhere
-const int MAX_KEYMAP=120;
 struct cus_keymap {
   uint32_t keys[MAX_KEYMAP];
   int size() const { return MAX_KEYMAP; }
@@ -150,3 +153,4 @@ std::vector<packet> custom_program(char layer, custom_layer_prog& cus_prog);
 
 extern int cus_keymap_assign[MAX_KEYCODE];
 
+#endif

@@ -62,7 +62,7 @@ enum commands {
 
 
 vector<packet> drv_attn;
-void init_xbows() {
+void init_packet() {
   if (drv_attn.empty()) {
     // Initial program packets.  This gets the keyboard's attention.
     drv_attn.push_back(packet(0x0b, 0x03)); // 03 is the layer selection

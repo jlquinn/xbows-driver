@@ -302,3 +302,9 @@ void read_config(istream& is) {
   }
   
 }
+
+
+void init_parse() {
+  init_namemap();
+  load_colornames();
+}
