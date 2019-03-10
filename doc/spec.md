@@ -1196,6 +1196,10 @@ The sequence is terminated with the 0x0b command.
 Question: if the keyboard were programmed with 2201 commands, would this
 permanently write to the driver layer?
 
+Question: is there a way to do rgb frame sequences in custom layer?  Just
+sending 0x1a packets to custom after using 0x0b03 (layer 2) doesn't work.  The
+keyboard hangs.
+
 ## Custom Layer Keyboard Programming
 
 As mentioned above, the sequence of 0x22 commands remaps the keyboard of a
