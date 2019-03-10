@@ -12,9 +12,47 @@
 #include <yaml-cpp/yaml.h>
 
 #include "keymap.hh"
+#include "xbows.hh"
 
 using namespace std;
 using namespace boost::algorithm;
+
+string lower(const string& s) {
+  // lowercase the name
+  string v = s;
+  for (auto& c : v)
+    c = tolower(c);
+  return v;
+}
+
+
+void dump(YAML::Node node) {
+  switch (node.Type()) {
+  case YAML::NodeType::Null: // ...
+    cout << "node null" << endl;
+    break;
+  case YAML::NodeType::Scalar: // ...
+    cout << "node scalar " << node.Scalar() << endl;
+    break;
+  case YAML::NodeType::Sequence: // ...
+    cout << "node seq len " << node.size() << endl;
+    for (unsigned i=0; i < node.size(); i++)
+      dump(node[i]);
+    break;
+  case YAML::NodeType::Map: // ...
+    cout << "node map " << node.size() << endl;
+    for (auto it: node) {
+      cout << " key "; dump(it.first); cout << endl;
+      cout << " val "; dump(it.second); cout << endl;
+    }
+    break;
+  case YAML::NodeType::Undefined: // ...
+    cout << "node undefined " << endl;
+    break;
+  }
+}
+
+
 
 unordered_map<string, keycodes> namemap;
 
@@ -199,7 +237,10 @@ keycodes string_to_key(const string& keyname) {
   return search->second;
 }
 
-struct rgb { int R, G, B; };
+struct rgb {
+  int R, G, B;
+  operator uint32_t() const { return R + (G << 8) + (B << 16); }
+};
 unordered_map<string, rgb> colornames;
 
 void load_colornames() {
@@ -212,13 +253,15 @@ void load_colornames() {
   string line;
   while (getline(ins, line)) {
     // Skip non-colorname lines
-    if (line.empty() || !isdigit(line[0]))
+    if (line.empty() || line[0]=='!')
       continue;
     // num num num name ...
     vector<string> bits;
     split(bits, line, is_space(), token_compress_on);
     if (bits.size() < 4)
       throw runtime_error("Bad line format");
+    // lines that have leading spaces create an extra entry up front
+    if (bits[0].empty()) bits.erase(bits.begin());
     // Check first 3 are numbers
     for (int i=0; i < 2; i++)
       if (!all(bits[i], is_digit()))
@@ -228,10 +271,45 @@ void load_colornames() {
     int B = stoi(bits[2]);
     bits.erase(bits.begin(), bits.begin()+3);
     string name = join(bits, " ");
+    // lowercase the name
+    name = lower(name);
+    // cout << "colorname name " << name << endl;
 
     colornames[name] = {R, G, B};
   }
 }
+
+void bad_color(const string& color) {
+  string msg = "Illegal color name specified: " + color;
+  throw runtime_error(msg);
+}
+
+rgb string_to_color(const string& color) {
+  // Look up color name
+  auto rgbiter = colornames.find(lower(color));
+  if (rgbiter == colornames.end())
+    bad_color(color);
+  rgb RGB = rgbiter->second;
+  return RGB;
+}
+
+rgb node_to_color(YAML::Node node) {
+  if (node.IsSequence()) {
+    dump(node);
+    if (node.size() != 3)
+      throw runtime_error("RGB color sequence must be 3 values ");
+    rgb RGB = {
+      stoi(node[0].as<string>(), 0, 16),
+      stoi(node[1].as<string>(), 0, 16),
+      stoi(node[2].as<string>(), 0, 16),
+    };
+    // cout << "read rgb " << hex << RGB << endl;
+    return RGB;
+  }
+  // Color name
+  return string_to_color(node.as<string>());
+}
+
 
 
 // Define a format
@@ -245,9 +323,6 @@ void load_colornames() {
 // allow color names?  If so, where to get them from?  Can I leverage X color
 // tables?
 
-void read_light_program(istream& is) {
-  
-}
 
 void parse_driver_cfg(YAML::Node node) {
   if (node["lights"]) {
@@ -293,15 +368,95 @@ void parse_light_cfg(YAML::Node cfg) {
   if (cm) {
     // read sequence of key color frames
     cout << "light colormap has " << cm.size() << " frames\n";
+    // Parse a set of colorframes
+    vector<drv_light_frame> lights;
+    for (size_t i=0; i < cm.size(); i++) {
+      drv_light_frame frame;
+      auto cmframe = cm[i];
+      for (auto it: cmframe) {
+	string key = it.first.as<string>();
+	string color = it.second.as<string>();
+	keycodes keyc = string_to_key(key);
+
+	auto rgbiter = colornames.find(lower(color));
+	if (rgbiter == colornames.end()) {
+	  string msg = "Illegal color name specified: " + color;
+	  throw runtime_error(msg);
+	}
+	rgb RGB = rgbiter->second;
+	frame.setkey(keyc, RGB);
+	// cout << "Frame " << i << " " << key << " -> " << color;
+	// cout << "  codes k: " << keyc << " c: " << RGB.R << " " << RGB.G << " " << RGB.B << endl;
+      }
+      lights.push_back(frame);
+    }
+
+    // return lights
+    
   }
   if (anim) {
     cout << "lighting has " << anim.size() << " animation frames\n";
+    // Parse a set of animation frames
+    custom_light_prog lights;
+    for (size_t i=0; i < anim.size(); i++) {
+      cus_anim_frame frame;
+      if (!anim[i].IsSequence())
+	throw runtime_error("Bad format for animation frame");
+      // build a key bitmap
+      for (auto keynode : anim[i]) {
+	keycodes key = string_to_key(keynode.as<string>());
+	frame.enable(key);
+      }
+      lights.aframes.push_back(frame);
+    }
+    // return lights
   }
   if (lite) {
-    cout << "lighting has " << lite.size() << " lighting frames\n";
+    cout << "lights has " << lite.size() << " lighting frames\n";
+    // Parse a set of lighting frames
+    custom_light_prog lights;
+    for (size_t i=0; i < lite.size(); i++) {
+      cus_light_frame frame;
+      
+      auto knode = lite[i]["keys"];
+
+      // Parse the color
+      auto cnode = lite[i]["color"];
+      rgb RGB = node_to_color(cnode);
+
+      // Parse the lighting pattern and duration
+      auto pattern = lite[i]["pattern"];
+      auto duration = lite[i]["duration"];
+      auto gapnode = lite[i]["gap"];
+      string type = pattern.as<string>();
+      if (type == "monochrome") {
+	frame.monochrome(RGB.R, RGB.G, RGB.B);
+      }
+      else if (type == "cycle") {
+	if (!duration)
+	  throw runtime_error("missing duration field");
+	int dur = duration.as<int>();
+	frame.rgb_cycle(RGB.R, RGB.G, RGB.B, dur);
+      }
+      else if (type == "breathe") {
+	if (!duration)
+	  throw runtime_error("missing duration field");
+	if (!gapnode)
+	  throw runtime_error("missing gap field");
+	int dur = duration.as<int>();
+	int gap = gapnode.as<int>();
+	frame.breathe(RGB.R, RGB.G, RGB.B, dur, gap);
+      }
+      else
+	throw runtime_error(string("Unknown light frame pattern " + type));
+      
+      
+      
+      lights.lframes.push_back(frame);
+    }
   }
-  
 }
+
 
 // Treat driver mode and custom mode configs as separate streams
 void read_config(istream& is) {
@@ -311,19 +466,8 @@ void read_config(istream& is) {
     throw runtime_error("No layer defined");
 
   parse_light_cfg(cfg["lights"]);
-  
-  // // Each config is separate
-  // for (unsigned i=0; i < cfglist.size(); i++)  {
-  //   auto cfg = cfglist[i];
-  //   if (cfg["driver"])
-  //     parse_driver_cfg(cfg);
-  //   else if (cfg["custom"])
-  //     parse_custom_cfg(cfg);
-  //   else {
-  //     throw runtime_error("unknown config");
-  //   }
-    
-  // }
+
+  // Doesn't seem to be able to read multiple docs correctly from the same yaml file
   
 }
 
