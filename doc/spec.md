@@ -494,6 +494,10 @@ From device interface doc:
 0108 requests model id.  I don't understand this
 0109 requests something.  I don't understand this.
 
+A bit more info when I run the Firmware upgrade tool, it shows current FirmID
+as 02-1061-01.  So the bytes returned by the 0101 command correspond to this.
+I assume this code isn't useful to anyone but the firmware maker.
+
 # Switching layers
 
 The windows driver can tell the keyboard to switch between layers.  Looking
@@ -1094,6 +1098,7 @@ going.
 Q: Is sending 0c periodically enough?
 A: Yes.  We don't have to send light frames to keep the driver program alive.
 Just sending an idle command every 2 seconds is adequate.
+
 
 
 
@@ -2505,3 +2510,19 @@ breathing can be adapted to do the right thing.
 Early on, the 0x27 lighting program section has 120 0xff values.  This is the
 right size to contain an RGB frame.  Initial tests suggest it doesn't work,
 but there may be something else that needs to change.
+
+
+# firmware upgrade
+
+There's a lot I don't know about this.  For starters, firmware upgrade on my
+keyboard times out and leaves the keyboard dead.  I have to use CDBoot to
+bring it back to life.
+
+After querying device info, I see:
+
+030200000000 crc 00... send
+030201000000 crc 00... recv
+3.23.1 -> host
+3.23.2 -> host
+3.23.3 -> host
+get descriptor
