@@ -11,6 +11,7 @@ using std::vector;
 
 // This will contain one rgb int for each valid keycode.
 struct rgb_frame {
+  int delay;			// delay in ms before this frame, default 0
   // 528 bytes, 132 keys
   // All default to 0 unless set.
   unsigned int keys[MAX_KEYCODE];

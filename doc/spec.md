@@ -498,6 +498,11 @@ A bit more info when I run the Firmware upgrade tool, it shows current FirmID
 as 02-1061-01.  So the bytes returned by the 0101 command correspond to this.
 I assume this code isn't useful to anyone but the firmware maker.
 
+0109 is used in driver mode attention sequence of 0x0b05 0x0109.  The 0b05
+selects the driver layer, but 0109 is still a bit of a mystery.  Perhaps it is
+telling the keyboard to pay attention that something interesting is about to
+happen?
+
 # Switching layers
 
 The windows driver can tell the keyboard to switch between layers.  Looking

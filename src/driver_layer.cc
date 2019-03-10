@@ -14,7 +14,7 @@
 
 using namespace std;
 
-rgb_frame::rgb_frame() {
+rgb_frame::rgb_frame() : delay(0) {
   memset(keys, 0, sizeof(keys));
 }
 
@@ -56,6 +56,7 @@ vector<packet> driver_light_program(const rgb_lights& framelist) {
   
     // Light program.  14 key rgb per packet
     int remaining = frame.size();
+    size_t pos = program.size();
     for (int i=0; i < frame.size(); i+=14, remaining-=14) {
       packet pkt(0x1a, 0x01);
 
@@ -73,6 +74,8 @@ vector<packet> driver_light_program(const rgb_lights& framelist) {
       }
       program.push_back(pkt);
     }
+    // Copy delay to lead packet for frame
+    program[pos].delay = frame.delay;
 
     // Terminator packet
     program.push_back(packet(0x1a, 0x02));

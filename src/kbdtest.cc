@@ -94,6 +94,7 @@ void send_program(hid_device* dev, const vector<packet>& prog) {
     //// Send and receive xbows light program command
     cout << "\nSENDING PACKET\n";
 #ifdef REALRUN
+    if (pkt.delay) usleep(pkt.delay * 1000);
     int numwr = hid_write(dev, pkt.bytes, 64);
     if (numwr == -1) {
       hid_close(dev);

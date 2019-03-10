@@ -441,8 +441,16 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
     // read sequence of key color frames
     cout << "light colormap has " << cm.size() << " frames\n";
     // Parse a set of colorframes
+    int delay = 0;
     for (size_t i=0; i < cm.size(); i++) {
+      if (cm[i].IsScalar()) {
+	delay = cm[i].as<int>();
+	continue;
+      }
+      
       rgb_frame frame;
+      frame.delay = delay;
+      delay = 0;
       auto cmframe = cm[i];
       for (auto it: cmframe) {
 	string key = it.first.as<string>();

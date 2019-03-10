@@ -9,10 +9,11 @@ lights:
     J: green, K: green, L: green, Semicolon: green,
     M: green, Comma: green, Period: green, Slash: green,
     Space_R: green, Alt_R: green }
-    #- {8: red, 9: red, U: red, I: red, O: red, P: red,
-    #    J: red, K: red, L: red, Semicolon: red,
-    #    M: red, Comma: red, Period: red, Slash: red,
-    #    Space_R: red, Alt_R: red }
+    - 500
+    - {8: red, 9: red, U: red, I: red, O: red, P: red,
+        J: red, K: red, L: red, Semicolon: red,
+        M: red, Comma: red, Period: red, Slash: red,
+        Space_R: red, Alt_R: red }
   
   # define key mapping
 keymap:

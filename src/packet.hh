@@ -17,6 +17,7 @@
 // data is little-endian byte order
 typedef std::array<unsigned char, 64> pktarray;
 struct packet {
+  int delay;			// delay in ms before sending this packet
   union {
     unsigned char bytes[64];	// This is a HID packet sent to the keyboard
     struct {
@@ -28,11 +29,13 @@ struct packet {
     };
   };
 
-  packet() {}
-  packet(unsigned char cmd, unsigned char subcmd) : cmd(cmd), sub(subcmd) {
+  packet() : delay(0) {}
+  packet(unsigned char cmd, unsigned char subcmd)
+    : delay(0), cmd(cmd), sub(subcmd)
+  {
     memset(bytes+2, 0, 62);
   }
-  packet(const std::array<unsigned char, 64> a) {
+  packet(const std::array<unsigned char, 64> a) : delay(0) {
     memcpy(bytes, a.data(), a.size());
   }
   
