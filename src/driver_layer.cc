@@ -14,18 +14,18 @@
 
 using namespace std;
 
-drv_light_frame::drv_light_frame() {
+rgb_frame::rgb_frame() {
   memset(keys, 0, sizeof(keys));
 }
 
 // RGB is 3 bytes with top byte = 00.  Red is lowest byte, Blue is highest.
-void drv_light_frame::setkey(keycodes key, uint32_t rgb) {
+void rgb_frame::setkey(keycodes key, uint32_t rgb) {
   assert((rgb & 0xff000000) == 0);
   int pos = drv_light_assign[key];
   keys[pos] = rgb | 0x64000000;
 }
 
-void drv_light_frame::clear() {
+void rgb_frame::clear() {
   memset(keys, 0, sizeof(keys));
 }
 
@@ -35,7 +35,7 @@ void drv_light_frame::clear() {
 // assign each key an RGB value.  The return needs to contain the full packet
 // sequence, as well as expected return codes from the keyboard to make sure
 // nothing is going wrong.
-vector<packet> driver_light_program(const vector<drv_light_frame>& framelist) {
+vector<packet> driver_light_program(const vector<rgb_frame>& framelist) {
   // For each key, we want an RGB value.  Convert to a sequence of packets.
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109
@@ -135,13 +135,13 @@ int drv_light_assign[MAX_KEYCODE] = {
 };
 
 
-vector<drv_light_frame> make_calc() {
+vector<rgb_frame> make_calc() {
   // Start with a green calculator light map.
-  vector<drv_light_frame> framelist;
+  vector<rgb_frame> framelist;
 
   // To write the program, user needs to be able to specify that K8 is green.
   // This means that K8->34 finds rgb[9] and sets it to 00ff0064.
-  drv_light_frame frame;
+  rgb_frame frame;
   uint32_t green = 0x00ff00;
   frame.setkey(K_8, green);
   frame.setkey(K_9, green);
@@ -166,13 +166,13 @@ vector<drv_light_frame> make_calc() {
 }
 
 // JQ just activate each key one frame at a time
-vector<drv_light_frame> make_trail() {
+vector<rgb_frame> make_trail() {
   // Start with a green calculator light map.
-  vector<drv_light_frame> framelist;
+  vector<rgb_frame> framelist;
 
   // To write the program, user needs to be able to specify that K8 is green.
   // This means that K8->34 finds rgb[9] and sets it to 00ff0064.
-  drv_light_frame frame;
+  rgb_frame frame;
   uint32_t green = 0x00ff00;
 
   frame.setkey(K_Esc, green);
@@ -260,7 +260,7 @@ vector<drv_light_frame> make_trail() {
   frame.setkey(K_Backquote, green);
   framelist.push_back(frame);
 
-  vector<drv_light_frame> framelist2(framelist);
+  vector<rgb_frame> framelist2(framelist);
   framelist2.insert(framelist2.end(), framelist.begin(), framelist.end());
   
   return framelist2;

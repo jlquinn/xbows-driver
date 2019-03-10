@@ -10,12 +10,12 @@
 using std::vector;
 
 // This will contain one rgb int for each valid keycode.
-struct drv_light_frame {
+struct rgb_frame {
   // 528 bytes, 132 keys
   // All default to 0 unless set.
   unsigned int keys[MAX_KEYCODE];
 
-  drv_light_frame();
+  rgb_frame();
   void setkey(keycodes key, uint32_t rgb);
   int size() const { return MAX_KEYCODE; }
   void clear();
@@ -23,12 +23,12 @@ struct drv_light_frame {
 
 //// These calls create sets of light frames for different patterns.
 // Build a calculator light program.
-vector<drv_light_frame> make_calc();
-vector<drv_light_frame> make_trail();
+vector<rgb_frame> make_calc();
+vector<rgb_frame> make_trail();
 
 
 
-vector<packet> driver_light_program(const vector<drv_light_frame>& framelist);
+vector<packet> driver_light_program(const vector<rgb_frame>& framelist);
 
 
 
@@ -40,7 +40,7 @@ vector<packet> driver_light_program(const vector<drv_light_frame>& framelist);
 extern int drv_light_assign[MAX_KEYCODE];
 
 
-// Similar to drv_light_assign, this maps keycode to position in a driver
+// Similar to rgb_assign, this maps keycode to position in a driver
 // keymap.
 extern int drv_keymap_assign[MAX_KEYCODE];
 

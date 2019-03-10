@@ -443,9 +443,9 @@ void parse_light_cfg(YAML::Node cfg) {
     // read sequence of key color frames
     cout << "light colormap has " << cm.size() << " frames\n";
     // Parse a set of colorframes
-    vector<drv_light_frame> lights;
+    vector<rgb_frame> lights;
     for (size_t i=0; i < cm.size(); i++) {
-      drv_light_frame frame;
+      rgb_frame frame;
       auto cmframe = cm[i];
       for (auto it: cmframe) {
 	string key = it.first.as<string>();
