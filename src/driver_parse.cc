@@ -295,7 +295,7 @@ rgb string_to_color(const string& color) {
 
 rgb node_to_color(YAML::Node node) {
   if (node.IsSequence()) {
-    dump(node);
+    // dump(node);
     if (node.size() != 3)
       throw runtime_error("RGB color sequence must be 3 values ");
     rgb RGB = {
@@ -356,14 +356,88 @@ void parse_driver_cfg(YAML::Node node) {
   }
 }
 
-void parse_custom_cfg(YAML::Node node) {
+// Returning empty keymap?  No, default keymap.
+keymap parse_keymap_cfg(YAML::Node node) {
+  keymap kmap;
+  if (!node) return kmap;
+  if (!node.IsMap())
+    throw("keymap node is not a map");
+
+  for (auto it : node) {
+    string keystr = it.first.as<string>();
+    keycodes key = string_to_key(keystr);
+    if (it.second.IsMap()) {
+      // handle macro assigned to key
+      cout << "XXX unhandled macro\n";
+    }
+    else {
+      string emitstr = it.second.as<string>();
+      keycodes emit = string_to_key(emitstr);
+      kmap.assign(key, emit);
+    }
+  }
+
+  return kmap;
+}
+
+// Parse config such as
+//
+// macros:
+// - id: 1
+//   mode: once   # hold, toggle
+//   steps: [down:A, ms:5, up:A, ms:5]
+//
+// A list of macros, each with id, mode, and set of steps.  Each step is an
+// event, one of down key, up key, or delay.  Value is the key or delay in
+// milliseconds.
+vector<cus_macro> parse_macros_cfg(YAML::Node node) {
+  vector<cus_macro> macros;
+  for (auto macronode : node) {
+    cus_macro macro;
+    macro.id = macros.size();
+    // cout << "XXX dumping macro mode:\n";
+    // dump(macronode["mode"]);
+
+    string mode = macronode["mode"].as<string>("once");
+    if (mode == "once") macro.play_mode = 0;
+    if (mode == "hold") macro.play_mode = 1;
+    if (mode == "toggle") macro.play_mode = 2;
+    
+    vector<string> bits;
+    for (auto it : macronode["steps"]) {
+      // cout << "XXX dumping macro steps:\n";
+      // dump(it);
+      string val = it.as<string>();
+      split(bits, val, is_space(), token_compress_on);
+      if (bits.size() != 2)
+	throw runtime_error("Bad macro step format: should be keyname/int down/up/ms");
+      
+      cus_macro_step step;
+      string event = bits[1];
+      if (event == "ms")
+	step.duration = stoi(bits[0]);
+      else {
+	step.key = string_to_key(bits[0]);
+	step.down = (event == "down");
+	step.duration = 0;
+      }
+      macro.steps.push_back(step);
+    }
+    macros.push_back(macro);
+  }
+  return macros;
+}
+
+void parse_flashlight_cfg(YAML::Node node) {
 
 }
 
+// Parse the lights stanza.  Driver layer uses a sequence of color frames,
+// under colormap.  Custom layers use animation and pattern frames.
 void parse_light_cfg(YAML::Node cfg) {
   auto cm = cfg["colormap"];
   auto anim = cfg["animation"];
-  auto lite = cfg["lighting"];
+  auto lite = cfg["pattern"];
 
   if (cm) {
     // read sequence of key color frames
@@ -399,7 +473,7 @@ void parse_light_cfg(YAML::Node cfg) {
     // Parse a set of animation frames
     custom_light_prog lights;
     for (size_t i=0; i < anim.size(); i++) {
-      cus_anim_frame frame;
+      animation_frame frame;
       if (!anim[i].IsSequence())
 	throw runtime_error("Bad format for animation frame");
       // build a key bitmap
@@ -416,7 +490,7 @@ void parse_light_cfg(YAML::Node cfg) {
     // Parse a set of lighting frames
     custom_light_prog lights;
     for (size_t i=0; i < lite.size(); i++) {
-      cus_light_frame frame;
+      pattern_frame frame;
       
       auto knode = lite[i]["keys"];
 
@@ -425,7 +499,7 @@ void parse_light_cfg(YAML::Node cfg) {
       rgb RGB = node_to_color(cnode);
 
       // Parse the lighting pattern and duration
-      auto pattern = lite[i]["pattern"];
+      auto pattern = lite[i]["type"];
       auto duration = lite[i]["duration"];
       auto gapnode = lite[i]["gap"];
       string type = pattern.as<string>();
@@ -466,6 +540,10 @@ void read_config(istream& is) {
     throw runtime_error("No layer defined");
 
   parse_light_cfg(cfg["lights"]);
+  parse_keymap_cfg(cfg["keymap"]);
+  parse_macros_cfg(cfg["macros"]);
+  parse_flashlight_cfg(cfg["flashlight"]);
+  
 
   // Doesn't seem to be able to read multiple docs correctly from the same yaml file
   

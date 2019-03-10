@@ -23,16 +23,19 @@ struct cus_macro_step {
 };
 
 struct cus_macro {
+  int id;			// id to connect macro with keymap
   keycodes key;			// key the macro is assigned to
   int play_mode;		// 0 - auto stop
 				// 1 - release stop
 				// 2 - press again to stop
   std::vector<cus_macro_step> steps;	// macro sequence
+  cus_macro() : id(-1), play_mode(0) {}
+  size_t size() const { return steps.size(); }
 };
 
 // One animation frame of a custom light program.  This is just a bitmask of
 // keys that allow lighting to shine through.
-struct cus_anim_frame {
+struct animation_frame {
   union {
     unsigned char data[26];
     struct {
@@ -41,7 +44,7 @@ struct cus_anim_frame {
     };
   };
 
-  cus_anim_frame();
+  animation_frame();
   
   // Turn on key for this frame.
   void enable(keycodes key);
@@ -50,7 +53,7 @@ struct cus_anim_frame {
 };
 
 
-struct cus_light_frame {
+struct pattern_frame {
   union {
     unsigned char data[32];
     struct {
@@ -70,7 +73,7 @@ struct cus_light_frame {
   };
 
   // Set up monochrome by default
-  cus_light_frame() {
+  pattern_frame() {
     header = htole16(0x2000);
     memset(data+2, 0, 30);
     gapcode = 0x79;                        // monochrome terminator
@@ -120,8 +123,8 @@ struct cus_light_frame {
 };
 
 struct custom_light_prog {
-  std::vector<cus_anim_frame> aframes;
-  std::vector<cus_light_frame> lframes;
+  std::vector<animation_frame> aframes;
+  std::vector<pattern_frame> lframes;
 };
 
 // Complete program for a layer

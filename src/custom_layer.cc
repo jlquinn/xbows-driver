@@ -90,7 +90,7 @@ vector<packet> custom_flashlight_program(int layer) {
 }
 
 // Constructor
-cus_anim_frame::cus_anim_frame() {
+animation_frame::animation_frame() {
   header = htole32(0x00160003);
   clear();
 }
@@ -103,7 +103,7 @@ cus_anim_frame::cus_anim_frame() {
 // because the bitmap is 22 bytes long.
 //
 // 0xff is unassigned.
-int cus_anim_assign[MAX_KEYCODE] = {
+int animation_assign[MAX_KEYCODE] = {
   // Position 0 is empty
   0xff,				  // K_NONE
   // Letters
@@ -156,7 +156,7 @@ int cus_anim_assign[MAX_KEYCODE] = {
 // Enable the bit associated with key in keymap.  keymap is a 22 char bitmap.
 // Same for both animation and light frame keymaps.
 void enable_key(uint8_t* keymap, keycodes key) {
-  int code = cus_anim_assign[key];
+  int code = animation_assign[key];
   int byte = code >> 4;                // byte position is everything but lowest 4 bits
   int bit = code & 0xf;                // Low 4 bits is the bit to enable
   int mask = 1 << bit;
@@ -165,16 +165,16 @@ void enable_key(uint8_t* keymap, keycodes key) {
 
 
 // Enable the bit associated with key in keymap.  keymap is a 22 char bitmap.
-void cus_anim_frame::enable(keycodes key) { enable_key(keymap, key); }
+void animation_frame::enable(keycodes key) { enable_key(keymap, key); }
 
 // Clear the bitmap
-void cus_anim_frame::clear() { memset(keymap, 0, 22); }
+void animation_frame::clear() { memset(keymap, 0, 22); }
 
 // Enable the bit associated with key in keymap.  keymap is a 22 char bitmap.
-void cus_light_frame::enable(keycodes key) { enable_key(keymap, key); }
+void pattern_frame::enable(keycodes key) { enable_key(keymap, key); }
 
 // Clear the bitmap
-void cus_light_frame::clear() { memset(keymap, 0, 22); }
+void pattern_frame::clear() { memset(keymap, 0, 22); }
 
 
 // Pack bytes into program, adding more packets as needed.

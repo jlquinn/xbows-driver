@@ -193,7 +193,7 @@ int main(int ac, char* av[]) {
   custom_layer_prog cprog;
   custom_light_prog& lightprog = cprog.lights;
   
-  cus_anim_frame aframe1;
+  animation_frame aframe1;
   aframe1.enable(K_MEnter);
   aframe1.enable(K_Esc);
   lightprog.aframes.push_back(aframe1);
@@ -202,7 +202,7 @@ int main(int ac, char* av[]) {
   // enable_key(aframe2.keymap, K_Esc);
   // lightprog.aframes.push_back(aframe2);
 
-  cus_light_frame lframe1;
+  pattern_frame lframe1;
   lframe1.enable(K_Esc);
   lframe1.enable(K_MEnter);
   // lframe1.monochrome(0xff, 0, 0);
