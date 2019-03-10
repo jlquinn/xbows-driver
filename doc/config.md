@@ -29,25 +29,27 @@ Colormaps are defined as follows:
 
 ```
 	colormap:
-	  keyname: #RRGGBB
-	  keyname: colorname
-	  ...
+	  - { keyname: color, keyname: color ... }
+	  - delay
+	  - { keyname: color, keyname: color ... }
+	  
 ```
 
-Both forms are valid ways of specifying an RGB color.  #RRGGBB is the hex code
-for the color.  Both hex codes and color names are case insensitive.  For example:
+This is a sequence of rgb frames and optional delays.  The delay is an integer
+number of milliseconds before the next frame is displayed.  The default is 0.
+
+Each frame is a map of keyname to color.  Keyname strings are the same as for
+keymaps.  Color can be either a color name or an RR GG BB hex code sequence.
+Both forms are valid ways of specifying an RGB color.  Both hex codes and
+color names are case insensitive.  For example:
 
 For example
 ```
 	colormap:
-	  F1: #ff00EE
+	  - {F1: [ff,00,EE], Equal: white}
 ```
 	
-assigns F1 a purple color.  Keyname can be a symbol, so you might have:
-
-	Equal: white
-	
-This assigned white to the = key.
+assigns F1 a purple color.  The Equal key is assigned a white color.
 
 ## Macro specification
 
