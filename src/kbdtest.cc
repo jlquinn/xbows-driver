@@ -5,6 +5,7 @@
 #include <cstring>
 #include <ctime>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <unistd.h>
@@ -13,6 +14,7 @@
 
 #include "custom_layer.hh"
 #include "driver_layer.hh"
+#include "driver_parse.hh"
 #include "timer.hh"
 #include "xbows.hh"
 
@@ -178,39 +180,48 @@ int main(int ac, char* av[]) {
 #if 1
   init_xbows();
 
+  if (ac < 2) {
+    cerr << av[0] << " <cfg.yaml>\n";
+    return -1;
+  }
 
-  // XXX test driver light program
-  //  vector<drv_light_frame> calc = make_calc();
-  // vector<drv_light_frame> calc = make_trail();
-  // vector<packet> lgtprog = driver_light_program(calc);
+  ifstream ifs(av[1]);
+  program prog = read_config(ifs);
 
-  // XXX test driver keymap program
-  // Start with a default keymap
-  keymap kmap;
-  kmap.assign(K_Z, K_Q);
+  vector<packet> kprog = driver_light_program(prog.lights);
   
-  // vector<packet> kprog = driver_keymap_program(kmap);
-  custom_layer_prog cprog;
-  custom_light_prog& lightprog = cprog.lights;
-  
-  animation_frame aframe1;
-  aframe1.enable(K_MEnter);
-  aframe1.enable(K_Esc);
-  lightprog.aframes.push_back(aframe1);
-  
-  // cus_anim_frame aframe2;
-  // enable_key(aframe2.keymap, K_Esc);
-  // lightprog.aframes.push_back(aframe2);
+  // // XXX test driver light program
+  // //  vector<drv_light_frame> calc = make_calc();
+  // // vector<drv_light_frame> calc = make_trail();
+  // // vector<packet> lgtprog = driver_light_program(calc);
 
-  pattern_frame lframe1;
-  lframe1.enable(K_Esc);
-  lframe1.enable(K_MEnter);
-  // lframe1.monochrome(0xff, 0, 0);
-  // lframe1.rgb_cycle(0xff, 0, 0, 100);
-  lframe1.breathe(0, 0xff, 0, 30, 5);
-  lightprog.lframes.push_back(lframe1);
+  // // XXX test driver keymap program
+  // // Start with a default keymap
+  // keymap kmap;
+  // kmap.assign(K_Z, K_Q);
+  
+  // // vector<packet> kprog = driver_keymap_program(kmap);
+  // custom_layer_prog cprog;
+  // custom_light_prog& lightprog = cprog.lights;
+  
+  // animation_frame aframe1;
+  // aframe1.enable(K_MEnter);
+  // aframe1.enable(K_Esc);
+  // lightprog.aframes.push_back(aframe1);
+  
+  // // cus_anim_frame aframe2;
+  // // enable_key(aframe2.keymap, K_Esc);
+  // // lightprog.aframes.push_back(aframe2);
 
-  vector<packet> kprog = custom_program(3, cprog);
+  // pattern_frame lframe1;
+  // lframe1.enable(K_Esc);
+  // lframe1.enable(K_MEnter);
+  // // lframe1.monochrome(0xff, 0, 0);
+  // // lframe1.rgb_cycle(0xff, 0, 0, 100);
+  // lframe1.breathe(0, 0xff, 0, 30, 5);
+  // lightprog.lframes.push_back(lframe1);
+
+  // vector<packet> kprog = custom_program(3, cprog);
 
   send_program(dev, kprog);
 
