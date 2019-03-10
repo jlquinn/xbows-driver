@@ -3,7 +3,9 @@
 
 #include <istream>
 
-void read_config(std::istream& is);
+#include "xbows.hh"
+
+program read_config(std::istream& is);
 void init_parse();
 
 #endif	// DRIVER_PARSE_HH

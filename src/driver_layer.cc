@@ -35,7 +35,7 @@ void rgb_frame::clear() {
 // assign each key an RGB value.  The return needs to contain the full packet
 // sequence, as well as expected return codes from the keyboard to make sure
 // nothing is going wrong.
-vector<packet> driver_light_program(const vector<rgb_frame>& framelist) {
+vector<packet> driver_light_program(const rgb_lights& framelist) {
   // For each key, we want an RGB value.  Convert to a sequence of packets.
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109
@@ -48,6 +48,8 @@ vector<packet> driver_light_program(const vector<rgb_frame>& framelist) {
 
   // Get the keyboard's attention.
   program.assign(drv_attn.begin(), drv_attn.end());
+  // driver layer is 0x5.
+  program[0].sub = 0x5;
 
 
   for (const auto& frame: framelist) {
@@ -135,9 +137,9 @@ int drv_light_assign[MAX_KEYCODE] = {
 };
 
 
-vector<rgb_frame> make_calc() {
+rgb_lights make_calc() {
   // Start with a green calculator light map.
-  vector<rgb_frame> framelist;
+  rgb_lights framelist;
 
   // To write the program, user needs to be able to specify that K8 is green.
   // This means that K8->34 finds rgb[9] and sets it to 00ff0064.
@@ -166,9 +168,9 @@ vector<rgb_frame> make_calc() {
 }
 
 // JQ just activate each key one frame at a time
-vector<rgb_frame> make_trail() {
+rgb_lights make_trail() {
   // Start with a green calculator light map.
-  vector<rgb_frame> framelist;
+  rgb_lights framelist;
 
   // To write the program, user needs to be able to specify that K8 is green.
   // This means that K8->34 finds rgb[9] and sets it to 00ff0064.
@@ -260,7 +262,7 @@ vector<rgb_frame> make_trail() {
   frame.setkey(K_Backquote, green);
   framelist.push_back(frame);
 
-  vector<rgb_frame> framelist2(framelist);
+  rgb_lights framelist2(framelist);
   framelist2.insert(framelist2.end(), framelist.begin(), framelist.end());
   
   return framelist2;

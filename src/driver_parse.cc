@@ -357,9 +357,8 @@ void parse_driver_cfg(YAML::Node node) {
 }
 
 // Returning empty keymap?  No, default keymap.
-keymap parse_keymap_cfg(YAML::Node node) {
-  keymap kmap;
-  if (!node) return kmap;
+void parse_keymap_cfg(YAML::Node node, program& prog) {
+  if (!node) return;
   if (!node.IsMap())
     throw("keymap node is not a map");
 
@@ -373,12 +372,11 @@ keymap parse_keymap_cfg(YAML::Node node) {
     else {
       string emitstr = it.second.as<string>();
       keycodes emit = string_to_key(emitstr);
-      kmap.assign(key, emit);
+      prog.kmap.assign(key, emit);
     }
   }
-
-  return kmap;
 }
+
 
 // Parse config such as
 //
@@ -434,7 +432,7 @@ void parse_flashlight_cfg(YAML::Node node) {
 
 // Parse the lights stanza.  Driver layer uses a sequence of color frames,
 // under colormap.  Custom layers use animation and pattern frames.
-void parse_light_cfg(YAML::Node cfg) {
+void parse_light_cfg(YAML::Node cfg, program& prog) {
   auto cm = cfg["colormap"];
   auto anim = cfg["animation"];
   auto lite = cfg["pattern"];
@@ -443,7 +441,6 @@ void parse_light_cfg(YAML::Node cfg) {
     // read sequence of key color frames
     cout << "light colormap has " << cm.size() << " frames\n";
     // Parse a set of colorframes
-    vector<rgb_frame> lights;
     for (size_t i=0; i < cm.size(); i++) {
       rgb_frame frame;
       auto cmframe = cm[i];
@@ -462,7 +459,7 @@ void parse_light_cfg(YAML::Node cfg) {
 	// cout << "Frame " << i << " " << key << " -> " << color;
 	// cout << "  codes k: " << keyc << " c: " << RGB.R << " " << RGB.G << " " << RGB.B << endl;
       }
-      lights.push_back(frame);
+      prog.lights.push_back(frame);
     }
 
     // return lights
@@ -471,7 +468,6 @@ void parse_light_cfg(YAML::Node cfg) {
   if (anim) {
     cout << "lighting has " << anim.size() << " animation frames\n";
     // Parse a set of animation frames
-    custom_light_prog lights;
     for (size_t i=0; i < anim.size(); i++) {
       animation_frame frame;
       if (!anim[i].IsSequence())
@@ -481,14 +477,13 @@ void parse_light_cfg(YAML::Node cfg) {
 	keycodes key = string_to_key(keynode.as<string>());
 	frame.enable(key);
       }
-      lights.aframes.push_back(frame);
+      prog.custom_lights.aframes.push_back(frame);
     }
     // return lights
   }
   if (lite) {
     cout << "lights has " << lite.size() << " lighting frames\n";
     // Parse a set of lighting frames
-    custom_light_prog lights;
     for (size_t i=0; i < lite.size(); i++) {
       pattern_frame frame;
       
@@ -524,29 +519,29 @@ void parse_light_cfg(YAML::Node cfg) {
       else
 	throw runtime_error(string("Unknown light frame pattern " + type));
       
-      
-      
-      lights.lframes.push_back(frame);
+      prog.custom_lights.lframes.push_back(frame);
     }
   }
 }
 
 
 // Treat driver mode and custom mode configs as separate streams
-void read_config(istream& is) {
+program read_config(istream& is) {
   YAML::Node cfg = YAML::Load(is);
 
   if (!cfg["layer"])
     throw runtime_error("No layer defined");
 
-  parse_light_cfg(cfg["lights"]);
-  parse_keymap_cfg(cfg["keymap"]);
+  program prog;
+  parse_keymap_cfg(cfg["keymap"], prog);
+  parse_light_cfg(cfg["lights"], prog);
   parse_macros_cfg(cfg["macros"]);
   parse_flashlight_cfg(cfg["flashlight"]);
   
+  // validate();
 
   // Doesn't seem to be able to read multiple docs correctly from the same yaml file
-  
+  return prog;
 }
 
 

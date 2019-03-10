@@ -21,14 +21,17 @@ struct rgb_frame {
   void clear();
 };
 
+// Sequence of rgb light frames
+typedef vector<rgb_frame> rgb_lights;
+
 //// These calls create sets of light frames for different patterns.
 // Build a calculator light program.
-vector<rgb_frame> make_calc();
-vector<rgb_frame> make_trail();
+rgb_lights make_calc();
+rgb_lights make_trail();
 
 
 
-vector<packet> driver_light_program(const vector<rgb_frame>& framelist);
+vector<packet> driver_light_program(const rgb_lights& framelist);
 
 
 
