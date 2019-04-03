@@ -455,7 +455,11 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
       for (auto it: cmframe) {
 	string key = it.first.as<string>();
 	string color = it.second.as<string>();
-	keycodes keyc = string_to_key(key);
+	keycodes keycode = string_to_key(key);
+	if (keycode == K_NONE) {
+	  string msg = "Illegal key specified: " + key;
+	  throw runtime_error(msg);
+	}
 
 	auto rgbiter = colornames.find(lower(color));
 	if (rgbiter == colornames.end()) {
@@ -463,7 +467,7 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
 	  throw runtime_error(msg);
 	}
 	rgb RGB = rgbiter->second;
-	frame.setkey(keyc, RGB);
+	frame.setkey(keycode, RGB);
 	// cout << "Frame " << i << " " << key << " -> " << color;
 	// cout << "  codes k: " << keyc << " c: " << RGB.R << " " << RGB.G << " " << RGB.B << endl;
       }
