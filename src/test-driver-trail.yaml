@@ -1,0 +1,143 @@
+
+layer: driver
+# id: 1 (only for custom)
+
+# defines light program.  Just a sequence of color frames
+lights:
+  colormap:
+    - 200
+    - {Escape: green}
+    - 200
+    - {F1: green}
+    - 200
+    - {F2: green}
+    - 200
+    - {F3: green}
+    - 200
+    - {F4: green}
+    - 200
+    - {F5: green}
+    - 200
+    - {F6: green}
+    - 200
+    - {F7: green}
+    - 200
+    - {F8: green}
+    - 200
+    - {F9: green}
+    - 200
+    - {F10: green}
+    - 200
+    - {F11: green}
+    - 200
+    - {F12: green}
+    - 200
+    - {Delete: green}
+    - 200
+    - {PrintScreen: green}
+    - 200
+    - {BackSpace_R: green}
+    - 200
+    - {Equal: green}
+    - 200
+    - {Minus: green}
+    - 200
+    - {0: green}
+    - 200
+    - {9: green}
+    - 200
+    - {8: green}
+    - 200
+    - {7: green}
+    - 200
+    - {6: green}
+    - 200
+    - {5: green}
+    - 200
+    - {4: green}
+    - 200
+    - {3: green}
+    - 200
+    - {2: green}
+    - 200
+    - {1: green}
+    - 200
+    - {BackQuote: green}
+    - 200
+    # 2nd copy
+    - 200
+    - {Escape: green}
+    - 200
+    - {F1: green}
+    - 200
+    - {F2: green}
+    - 200
+    - {F3: green}
+    - 200
+    - {F4: green}
+    - 200
+    - {F5: green}
+    - 200
+    - {F6: green}
+    - 200
+    - {F7: green}
+    - 200
+    - {F8: green}
+    - 200
+    - {F9: green}
+    - 200
+    - {F10: green}
+    - 200
+    - {F11: green}
+    - 200
+    - {F12: green}
+    - 200
+    - {Delete: green}
+    - 200
+    - {PrintScreen: green}
+    - 200
+    - {BackSpace_R: green}
+    - 200
+    - {Equal: green}
+    - 200
+    - {Minus: green}
+    - 200
+    - {0: green}
+    - 200
+    - {9: green}
+    - 200
+    - {8: green}
+    - 200
+    - {7: green}
+    - 200
+    - {6: green}
+    - 200
+    - {5: green}
+    - 200
+    - {4: green}
+    - 200
+    - {3: green}
+    - 200
+    - {2: green}
+    - 200
+    - {1: green}
+    - 200
+    - {BackQuote: green}
+  
+  # define key mapping
+#keymap:
+#  Z: Q            # assign Q to the Z key
+#  # C: { macro: 0 }                # assign macro 0 to C key
+#        
+#macros:
+#- steps: [A down, 5 ms, A up, 5 ms]
+#  mode: once   #, hold, toggle
+#- steps: [Q down, 5 ms, Q up, 5 ms]
+#  mode: once   #, hold, toggle
+#        
+#flashlight:
+#  - id: 1                        # unique id for the flashlight program
+#    frames:
+#    - colormap: {...}
+#    - colormap: {...}
+        
