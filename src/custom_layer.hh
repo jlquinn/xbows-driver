@@ -134,7 +134,8 @@ struct custom_layer_prog {
 };
 
 // How do I get mappings into this function to be converted to a program?
-std::vector<packet> custom_program(char layer, custom_layer_prog& cus_prog);
+struct program;
+std::vector<packet> custom_program(char layer, program& cus_prog);
 
 
 // Similar to drv_light_assign, this maps keycode to position in a driver

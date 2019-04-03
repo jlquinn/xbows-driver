@@ -1,3 +1,6 @@
+#ifndef TIMER_HH
+#define TIMER_HH
+
 #include <sys/time.h>
 
 struct timestamp {
@@ -19,3 +22,5 @@ inline timestamp now() {
   gettimeofday(&t.t, nullptr);
   return t;
 }
+
+#endif

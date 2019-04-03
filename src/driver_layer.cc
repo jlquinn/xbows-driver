@@ -40,19 +40,21 @@ vector<packet> driver_light_program(const rgb_lights& framelist) {
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109
 
-  // Driver mode light program is 10 packets.
+  // Driver mode light program is 10 packets + 2 attn + 1 terminator.
   vector<packet> program;
 
 
   // Convert to packet program
 
-  // Get the keyboard's attention.
-  program.assign(drv_attn.begin(), drv_attn.end());
-  // driver layer is 0x5.
-  program[0].sub = 0x5;
-
-
   for (const auto& frame: framelist) {
+    // Get the keyboard's attention at the start of each frame in case driver
+    // layer resets itself.
+    // XXX does idle help?
+    program.push_back(packet(0x0c, 0x00));
+    // program.insert(program.end(), drv_attn.begin(), drv_attn.end());
+    // driver layer is 0x5.
+    // program[0].sub = 0x5;
+
   
     // Light program.  14 key rgb per packet
     int remaining = frame.size();
@@ -289,7 +291,7 @@ vector<packet> driver_keymap_program(keymap& kmap) {
   // Convert to packet program
 
   // Get the keyboard's attention.
-  program.assign(drv_attn.begin(), drv_attn.end());
+  // program.assign(drv_attn.begin(), drv_attn.end());
 
   // XXXXX DEBUG WRITING KEYMAP TO PACKETS
 

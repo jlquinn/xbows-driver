@@ -52,6 +52,10 @@ struct packet {
 // mode.
 extern std::vector<packet> drv_attn;
 
+// It can be useful to send this to keep the keyboard program alive between
+// rgb frames.
+extern std::vector<packet> drv_idle;
+
 // Set up default settings to talk to keyboard in driver mode.
 void init_packet();
 

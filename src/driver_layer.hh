@@ -31,7 +31,6 @@ rgb_lights make_calc();
 rgb_lights make_trail();
 
 
-
 vector<packet> driver_light_program(const rgb_lights& framelist);
 
 

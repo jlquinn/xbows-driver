@@ -62,14 +62,25 @@ enum commands {
 
 
 vector<packet> drv_attn;
+vector<packet> drv_idle;
 void init_packet() {
   if (drv_attn.empty()) {
     // Initial program packets.  This gets the keyboard's attention.
-    drv_attn.push_back(packet(0x0b, 0x03)); // 03 is the layer selection
+    drv_attn.push_back(packet(0x0b, 0x05)); // 03 is the layer selection
     drv_attn.push_back(packet(0x01, 0x09));
 
     // Compute crc for each packet
     for (auto& pkt: drv_attn)
+      pkt.compute_crc();
+  }
+
+  if (drv_idle.empty()) {
+    // Keyboard idle.  It always seems safe to send this between programs.
+    drv_idle.push_back(packet(0x0c, 0x00));
+    drv_idle.back().delay = 100;	// Set a basic delay of 100ms
+
+    // Compute crc for each packet
+    for (auto& pkt: drv_idle)
       pkt.compute_crc();
   }
 }

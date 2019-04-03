@@ -5,30 +5,30 @@ layer: driver
 # defines light program.  Just a sequence of color frames
 lights:
   colormap:
-    - {8: green, 9: green, U: green, I: green, O: green, P: green,
-    J: green, K: green, L: green, Semicolon: green,
-    M: green, Comma: green, Period: green, Slash: green,
-    Space_R: green, Alt_R: green }
-    - 500
+#    - {8: green, 9: green, U: green, I: green, O: green, P: green,
+#    J: green, K: green, L: green, Semicolon: green,
+#    M: green, Comma: green, Period: green, Slash: green,
+#    Space_R: green, Alt_R: green }
+#    - 500
     - {8: red, 9: red, U: red, I: red, O: red, P: red,
         J: red, K: red, L: red, Semicolon: red,
         M: red, Comma: red, Period: red, Slash: red,
         Space_R: red, Alt_R: red }
   
   # define key mapping
-keymap:
-  Z: Q            # assign Q to the Z key
-  C: { macro: 0 }                # assign macro 0 to C key
-        
-macros:
-- steps: [A down, 5 ms, A up, 5 ms]
-  mode: once   #, hold, toggle
-- steps: [Q down, 5 ms, Q up, 5 ms]
-  mode: once   #, hold, toggle
-        
-flashlight:
-  - id: 1                        # unique id for the flashlight program
-    frames:
-    - colormap: {...}
-    - colormap: {...}
+#keymap:
+#  Z: Q            # assign Q to the Z key
+#  # C: { macro: 0 }                # assign macro 0 to C key
+#        
+#macros:
+#- steps: [A down, 5 ms, A up, 5 ms]
+#  mode: once   #, hold, toggle
+#- steps: [Q down, 5 ms, Q up, 5 ms]
+#  mode: once   #, hold, toggle
+#        
+#flashlight:
+#  - id: 1                        # unique id for the flashlight program
+#    frames:
+#    - colormap: {...}
+#    - colormap: {...}
         

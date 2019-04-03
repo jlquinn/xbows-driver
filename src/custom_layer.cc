@@ -7,6 +7,7 @@
 #include <cmath>
 #include <vector>
 
+#include "xbows.hh"
 #include "custom_layer.hh"
 #include "keymap.hh"
 
@@ -260,7 +261,7 @@ vector<packet> custom_light_program(int layer,
 
 
 // We have to assemble a complete program to send
-vector<packet> custom_program(char layer, custom_layer_prog& cus_prog) {
+vector<packet> custom_program(char layer, program& prog) {
 
   vector<packet> program;
 
@@ -273,7 +274,7 @@ vector<packet> custom_program(char layer, custom_layer_prog& cus_prog) {
   keymap_intro.bytes[2] = 0x01;
   program.push_back(keymap_intro);
   
-  vector<packet> keyprog = custom_keymap_program(layer, cus_prog.kmap);
+  vector<packet> keyprog = custom_keymap_program(layer, prog.kmap);
   program.insert(program.end(), keyprog.begin(), keyprog.end());
 
 
@@ -303,7 +304,7 @@ vector<packet> custom_program(char layer, custom_layer_prog& cus_prog) {
 
 
   // Construct the lighting program
-  vector<packet> lightprogram = custom_light_program(layer, cus_prog.lights);
+  vector<packet> lightprogram = custom_light_program(layer, prog.custom_lights);
   program.insert(program.end(), lightprogram.begin(), lightprogram.end());
 
 

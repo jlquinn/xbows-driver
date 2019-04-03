@@ -3,8 +3,9 @@ cmake_minimum_required(VERSION 3.5)
 include(ExternalProject)
 
 # Set up hidapi library
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_subdirectory(hidapi)
-set(HIDAPI_PATH "/home/jlquinn/projects/kbd/hidapi")
+set(HIDAPI_PATH "${CMAKE_SOURCE_DIR}/hidapi")
 find_library(HIDAPI_LIBRARY hidapi PATHS "${HIDAPI_PATH}/linux")
 
 # Set up crc library
