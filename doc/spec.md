@@ -1086,6 +1086,32 @@ Q: is the 0101 portion of mouse click buttons in the key id map spurious and wro
 
 
 
+Different example.  Macro sequence 12345 is assigned to the Z key in driver
+mode.  When the keymap is sent to xbows, I see:
+
+```
+160170000038 crc 00160002 00170002						S T
+				 00180002 00190002 001a0002 001b0002	U V W X
+	     		 001c0002 2400010a 001e0002 001f0002	Y Z 1 2
+				 00200002 00210002 00220002 00230002	3 4 5 6
+```
+The normal Z key int 001d0002 is replaced with 2400010a.  
+
+Adding another macro QWERTY assigned to X in driver mode.  Now the keymap
+shows:
+
+```
+160170000038 crc 00160002 00170002						S T
+				 00180002 00190002 001a0002 2200010a	U V W X
+	     		 001c0002 2400010a 001e0002 001f0002	Y Z 1 2
+				 00200002 00210002 00220002 00230002	3 4 5 6
+```
+
+X gets 2200010a.  This suggests that 010a indicates a macro.  However, we
+don't know what 22 and 24 indicate.
+
+
+
 
 ## Driver Mode must stay active
 
