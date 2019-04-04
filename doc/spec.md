@@ -468,11 +468,216 @@ do.  It does this about every 0.3 seconds.
 
 # Reset keyboard
 
-It appears that 0b020000 a311 0000... does a factory reset to the keyboard.
-Very helpful for when I mess up the programming.
-
 Win driver believes DeviceID is 18446744069414584000 or
 16#FFFFFFFEFFFFFEC0
+
+Reset from the windows driver sends a bunch of stuff to the keyboard.
+
+Here's the first sequence of packets. I suspect this is reprogramming the
+driver layer preprogrammed patterns, though I'm not yet sure.
+
+```
+		This looks very similar to a standard custom light program.  Except
+		2701 instead of 02, 03, 04.  6e02 etc is unusual.
+		
+27010000 00386a8d 00020000 03000000
+4e020000 01000000 6e020000 01000000
+88020000 01000000 a8020000 01000000
+c2020000 06000000 82030000 01000000
+		 
+		 Looks like ffff is just fill in case more programs are specified.
+		 
+27013800 00385a7e 9c030000 0b000000
+fc040000 01000000 16050000 10000000
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+		 
+27017000 003841d9 ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+		 
+2701a800 0038e4f7 ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+		 
+2701e000 0038981d ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+		 
+27011801 0038e2e0 ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+		 
+27015001 00389e0a ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+		 
+27018801 00383b24 ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+		 
+2701c001 003847ce ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+ffffffff ffffffff ffffffff ffffffff
+		 
+2701f801 003899cf ffffffff ffffffff
+03001600 ffffffff ffffffff ffffffff		03 is 0x200 bytes into packet data
+ffffffff 0f000000 00000300 1600ffff     03001600 starts animation
+ffffffff ffffffff ffffffff ffff0f00
+		 
+27013002 00380932 00000000 03001600
+ffffffff ffffffff ffffffff ffffffff
+0f000000 00000020 ffffffff ffffffff		0020 starts a lighting frame @ 0x24e
+ffffffff ffffffff 0f000000 000000ff
+		 
+27016802 00380c24 00000000 8c000300		0x26e is start of next anim 03001600
+1600ffff ffffffff ffffffff ffffffff
+ffff0f00 00000000 0120ffff ffffffff		0120 is start of lighting frame
+ffffffff ffffffff ffff0f00 00000000
+		 
+2701a002 0038729f ff000000 03008c00		
+03001600 ffffffff ffffffff ffffffff		03001600 is start of anim 0x288
+ffffffff 0f000000 00000120 00000000		0120 is start of lighting frame
+00000000 00000000 00c0d9ff 05000000
+		 
+2701d802 0038f56e 0000ff00 00000300
+8c000120 00000000 00000000 000000ff		0120 is start of lighting frame
+7f3d0000 00000000 0000ff00 55000300
+8c000120 00000000 00000000 fcff7b00		0120 is start of lighting frame
+		 
+27011003 003850c4 00000000 00000000
+0000ff00 aa000300 8c000120 00000000		0120 is start of lighting frame
+00f0ffff 03000000 00000000 00000000
+0000ff00 ff000300 8c000120 0000c0ff		0120 is start of lighting frame
+		 
+27014803 0038f0e3 ff0f0000 00000000
+00000000 00000000 0000aa00 ff000300
+8c000120 ffff0300 00000000 00000000      0120 starts 6th lighting frame in a row
+00000000 00000000 00005500 ff000300
+		 
+27018003 003828e9 8c000300 1600ffff      03001600 starts anim 0x328?
+ffffffff ffffffff ffffffff ffff0f00
+00000000 01200000 00000000 02007000      0120 starts lighting
+000f00c0 00000000 00000000 ff000000
+		 
+2701b803 0038d800 06008c00 01200000      0120 starts lighting
+c00000f0 03000c00 00000000 00000000
+00000000 ff009900 06008c00 01203f00      0120 starts lighting
+001f0000 04000000 00000000 00000000
+		 
+2701f003 0038f79d 00000000 cc00ff00
+06008c00 0120c007 00e00000 00000000      0120 starts lighting
+00000000 00000000 00000000 3300ff00
+06008c00 012000f8 0f000700 18000000      0120 starts lighting
+		 
+27012804 0038096e 00000000 00000000
+00000000 0066ff00 06008c00 01200000      0120 starts lighting
+3000f80f f0ff0100 00000000 00000000
+00000000 00ffff00 06008c00 01200000      0120 starts lighting
+		 
+27016004 0038948f 00000000 000002f8
+7b000020 00000000 00000000 00ff6600
+06008c00 01200000 00000000 00000008      0120 starts lighting
+00007c1d 00e00500 00000000 33ff0000
+		 
+27019804 0038471d 06008c00 01200000      0120 starts lighting
+00000000 00000004 00000600 001f0000
+00000000 ccff0000 06008c00 01200000      0120 starts lighting
+00000000 00000003 00800100 c0000000
+		 
+2701d004 00388295 00000000 ff990000
+06008c00 01200000 00000000 0000c000      0120 starts lighting
+00700000 1b000000 00000000 ff000000
+06008c00 03001600 ffffffff ffffffff      03001600 starts anim 0xfc04
+		 
+27010805 003818be ffffffff ffffffff
+0f000000 00000120 01004000 00100000      0120 starts lighting 0x516
+04000001 00400000 00000000 0000ff00
+00000c00 8c000120 06008000 00200000      0120 starts lighting
+		 
+27014005 0038d156 08000002 00800000
+00000000 0000ff40 00000c00 8c000120      0120 starts lighting
+08000001 00400000 1000000c 00000100
+00000000 0000ff99 00000c00 8c000120      0120 starts lighting
+		 
+27017805 0038422d 10000004 00000100
+40000010 00000100 00000000 0000ffe5
+00000c00 8c000120 20000008 00000200      0120 starts lighting
+80000020 00000800 00000000 0000ccff
+		 
+2701b005 0038af9e 00000c00 8c000120      0120 starts lighting
+40000010 00000400 00010040 00000800
+00000000 000080ff 00000c00 8c000120      0120 starts lighting
+00010000 00000000 00020080 00005000
+		 
+2701e805 0038c850 00000000 000033ff
+00000c00 8c000120 80010060 00001800      0120 starts lighting
+00040000 01008000 00000000 000000ff
+19000c00 8c000120 00020080 00002000      0120 starts lighting
+		 
+27012006 00388f86 00080000 02008000
+00000000 000000ff 66000c00 8c000120      0120 starts lighting
+000c0000 01004000 00100000 04000002
+00000000 000000ff b3000c00 8c000120      0120 starts lighting
+		 
+27015806 0038eaf6 00100000 04000001
+00400000 18000005 00000000 000000ff
+ff000c00 8c000120 00200000 0a008002      0120 starts lighting
+00a00000 20000008 00000000 000000b2
+		 
+27019006 0038c846 ff000c00 8c000120      0120 starts lighting
+00400000 10000004 00000100 40000010
+00000000 00000066 ff000c00 8c000120      0120 starts lighting
+00c00000 20000008 00000200 00000020
+		 
+2701c806 0038d2e5 00000000 00000019
+ff000c00 8c000120 00000100 40000010      0120 starts lighting
+00000200 00010040 00000000 00003300
+ff000c00 8c000120 00000200 80000020      0120 starts lighting
+		 
+27010007 001635b6 00000800 00000080
+00000000 00008000 ff000c00 8c000000
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000000
+
+```
+
+This sequence defines 9 static patterns stored under F5 and F6 in driver mode.
+
+4e02 01 indicates that there are 3 animation frames and 1 lighting frame.  The
+lighting frame starts 0x24e bytes from start of data.
+
+now.
+
+
+4e02 01  3 x 1a stanzas.  Then 0020.
+6e02 01
+8802 01
+a802 01
+c202 06
+8203 01
+9c03 0b
+fc04 01
+1605 01
+
+Only 9 animations currently packed into the static patterns.  NO this seems to
+be only 5 animations.  These blocks alternate between animation frames and
+lighting frames.  So offset and frame count.  The first animation offset and
+count is implicit.
+
+Since 5 animations, this only reprograms F5.  It's not clear how or if F6 gets
+fixed up.
+
+
+
+
 
 # Device info
 
@@ -2361,11 +2566,13 @@ short, I have 0x0208.  0x0208 / 20 gives 0x1a, which is the number I see in
 duration 1 animations.
 
 So this suggests that those 2 bytes are 0x0200 + 0x1a * duration.
-The 0x0200 is very specific.  Changing it makes the lighting effect fall back
-to white.
+0x0200 is the number of data bytes to reach the first animation frame.
 
-IMPORTANT: 0x1a is 26.  I *think* this is 4 bytes bitmap leader and 22 bytes
-of bitmap.
+IMPORTANT: 0x1a is 26.  This is 4 bytes bitmap leader and 22 bytes of
+bitmap of an animation frame.
+
+After 0804, there is 01000000.  I believe this is the number of lighting frames.
+
 
 I next see 20 copies of 03001600 followed by a 22 byte keymap.  After that is:
 
@@ -2527,11 +2734,10 @@ duration by repeating the frame.  So if you have 2 animations frames, with
 frame 1 having duration 2, and frame 2 having duration 1, the program sent to
 the keyboard contains 2 copies of frame 1 and 1 copy of frame 2.
 
-The first lighting packet contains 0x1a * frame count + 0x200.  I suspect 0x1a
-tunes the overall frame duration.
+The first lighting packet contains 0x1a * frame count + 0x200.  0x1a
+represents the number of bytes in an animation frame.  0x200 is the number of
+bytes to the first frame byte.
 
-Unfortunately, tweaking this value causes the lighting to revert to white.  So
-there doesn't seem to be flexibility here to play with durations.
 
 
 ### Simulating driver style lighting program
