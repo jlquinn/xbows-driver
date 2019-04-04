@@ -477,6 +477,24 @@ Here's the first sequence of packets. I suspect this is reprogramming the
 driver layer preprogrammed patterns, though I'm not yet sure.
 
 ```
+010900000000 crc 00000000 x 14
+
+0040  21 01 04 00 00 00 3f 8d 00 00 00 00 00 00 00 00   !.....?.........
+0050  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+0060  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+0070  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+
+0040  21 01 05 00 00 00 e3 f6 00 00 00 00 00 00 00 00   !...............
+0050  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+0060  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+0070  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+
+0040  21 01 06 00 00 00 87 7a 00 00 00 00 00 00 00 00   !......z........
+0050  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+0060  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+0070  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+
+
 		This looks very similar to a standard custom light program.  Except
 		2701 instead of 02, 03, 04.  6e02 etc is unusual.
 		
@@ -649,6 +667,24 @@ ff000c00 8c000120 00000200 80000020      0120 starts lighting
 
 ```
 
+At the very front, we have:
+0109
+210104
+210105
+210106
+
+0109 is the recurring attention signal.
+I'm not sure, but I think 21010x defines what kind of data shows up next.  In
+custom programming, 210306 indicates that light programming comes next.  And
+that seems to hold here with 210106.
+
+It does suggest that 210104 and 210105 could be used similar to custom layer
+programming.
+
+
+
+
+
 This sequence defines 9 static patterns stored under F5 and F6 in driver mode.
 
 4e02 01 indicates that there are 3 animation frames and 1 lighting frame.  The
@@ -676,7 +712,11 @@ Since 5 animations, this only reprograms F5.  It's not clear how or if F6 gets
 fixed up.
 
 
+After this, the windows driver sets up each custom layer with a default
+lighting program and sets the keymap back to default.
 
+Then it comes back to life and sends the current keymap to driver layer and
+starts running the RGB lighting program.
 
 
 # Device info
