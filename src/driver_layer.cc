@@ -30,6 +30,8 @@ void rgb_frame::clear() {
 }
 
 
+// Number of packets that make up one frame for a driver mode light program.
+int drv_frame_packets = 12;
 
 // Generate packets for a driver mode light program.  To do this, I need to
 // assign each key an RGB value.  The return needs to contain the full packet

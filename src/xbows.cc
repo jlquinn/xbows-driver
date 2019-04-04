@@ -202,7 +202,7 @@ void xbows_close(xbows_state& state) {
 }
 
 
-void xbows_send(xbows_state* state, program& prog, int layer) {
+bool xbows_send(xbows_state* state, program& prog, int layer) {
   send_program(state->dev, state->suppress, drv_idle);
   // First convert prog to packet sequences
 
@@ -213,7 +213,7 @@ void xbows_send(xbows_state* state, program& prog, int layer) {
   // Driver layer
   if (layer == 1) {
     // convert kmap to sequence
-    // state->drv_kmap = driver_keymap_program(prog.kmap);
+    state->drv_kmap = driver_keymap_program(prog.kmap);
 
     // convert light prog to frame sequence
     state->drv_lights = driver_light_program(prog.lights);
@@ -223,12 +223,11 @@ void xbows_send(xbows_state* state, program& prog, int layer) {
     send_program(state->dev, state->suppress, drv_attn);
     
     
-    // send keymap
-    if (state->drv_kmap.size())
-      send_program(state->dev, state->suppress, state->drv_kmap);
+    // Send keymap
+    send_program(state->dev, state->suppress, state->drv_kmap);
 
     // send first light frame
-    xbows_update(state);
+    return xbows_update(state);
   }
 
   // Custom layer 2 3 4
@@ -238,23 +237,25 @@ void xbows_send(xbows_state* state, program& prog, int layer) {
   }
 
   // Bad layer
+  return false;
 }
 
 
 // Send next frame of driver animation.
-int frame_packets = 12;
-void xbows_update(xbows_state* state) {
+bool xbows_update(xbows_state* state) {
   if (state->drv_lights.empty()) {
     send_program(state->dev, state->suppress, drv_idle);
-    return;
+    return false;
   }
 
   // send next frame
   send_program(state->dev, state->suppress,
 	       state->drv_lights, state->drv_frame,
-	       state->drv_frame + frame_packets);
+	       state->drv_frame + drv_frame_packets);
 
   // Advance counter and timestamp.  Driver light frame is 13 packets.
-  state->drv_frame = (state->drv_frame+frame_packets) % state->drv_lights.size();
+  state->drv_frame = (state->drv_frame+drv_frame_packets) % state->drv_lights.size();
   state->lastcmd = now();
+
+  return true;
 }

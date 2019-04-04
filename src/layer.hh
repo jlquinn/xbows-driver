@@ -9,6 +9,7 @@ extern int keymap_assign[];
 struct keymap {
 public:
   uint32_t keys[MAX_KEYMAP];
+
   int size() const { return MAX_KEYMAP; }
 
   // This function tells keyboard to send emits when key is pressed.

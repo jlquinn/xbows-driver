@@ -61,10 +61,10 @@ int main(int ac, char* av[]) {
   program prog = read_config(ifs);
 
   // Autoselect layer?
-  xbows_send(&state, prog);
+  bool more = xbows_send(&state, prog);
 
-  while (true) {
-    xbows_update(&state);
+  while (more) {
+    more = xbows_update(&state);
     // sleep some
     // break eventually
     // break;

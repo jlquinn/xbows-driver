@@ -65,7 +65,8 @@ void xbows_close(xbows_state& state);
 // If layer is specified, send to that layer.  Else send to layer selected in
 // switch_layer.  No way to query kbd what layer we're on as far as I know.
 // if program is clearly driver or custom we should use that
-void xbows_send(xbows_state* state, program& prog, int layer=-1);
+// Return true if update should be called to send more packets
+bool xbows_send(xbows_state* state, program& prog, int layer=-1);
 
 
 // Take the next step for layer.  Switch to the layer
@@ -75,7 +76,10 @@ void xbows_send(xbows_state* state, program& prog, int layer=-1);
 // If there's nothing new to send, send an idle command
 
 // For custom mode, update the layer with the program in state.
-void xbows_update(xbows_state* state);
+
+// Return true if update should be called again to send more packets -
+// normally driver mode rgb light frames.
+bool xbows_update(xbows_state* state);
 
 void xbows_factory_reset();
 

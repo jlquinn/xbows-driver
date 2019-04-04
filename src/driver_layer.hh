@@ -32,7 +32,7 @@ rgb_lights make_trail();
 
 
 vector<packet> driver_light_program(const rgb_lights& framelist);
-
+extern int drv_frame_packets;
 
 
 // Map from keycode to driver mode light program position.  This is inversion
