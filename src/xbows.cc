@@ -259,3 +259,13 @@ bool xbows_update(xbows_state* state) {
 
   return true;
 }
+
+
+void xbows_factory_reset(xbows_state* state) {
+  // Get keyboard attention
+  send_program(state->dev, state->suppress, drv_idle);
+
+  vector<packet> reset(1, packet(0x0b, 0x02));
+  reset.back().compute_crc();
+  send_program(state->dev, state->suppress, reset);
+}

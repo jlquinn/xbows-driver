@@ -20,6 +20,13 @@
 
 using namespace std;
 
+void usage(char* prog) {
+    cerr << prog << "[options] <cfg.yaml>\n";
+    cerr << "-n    Don't sent programming packets to the keyboard\n";
+    cerr << "-v    Print verbose messages\n";
+    cerr << "-r    Reset XBows keyboard\n";
+    exit(-1);
+}
 
 int main(int ac, char* av[]) {
 
@@ -44,20 +51,28 @@ int main(int ac, char* av[]) {
   // mode
 
 
-  if (ac < 2) {
-    cerr << av[0] << " <cfg.yaml>\n";
-    return -1;
-  }
 
-  int filearg = 1;
   bool dryrun = false;
-  if (av[1] == string("-n")) {
-    dryrun = true;
-    filearg = 2;
+  
+  int c;
+  while ((c = getopt(ac, av, "nvr")) != -1) {
+    switch (c) {
+    case 'n': dryrun = true; break;
+    case 'r':
+      xbows_factory_reset(&state);
+      cerr << "Sent reset to XBows\n";
+      exit(0);
+    case 'v': break;
+    default:
+      usage(av[0]);
+    }
   }
+  if (optind == ac)
+    usage(av[0]);
+  
   state.suppress = dryrun;
 
-  ifstream ifs(av[filearg]);
+  ifstream ifs(av[optind]);
   program prog = read_config(ifs);
 
   // Autoselect layer?

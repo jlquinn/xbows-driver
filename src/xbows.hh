@@ -81,7 +81,7 @@ bool xbows_send(xbows_state* state, program& prog, int layer=-1);
 // normally driver mode rgb light frames.
 bool xbows_update(xbows_state* state);
 
-void xbows_factory_reset();
+void xbows_factory_reset(xbows_state* state);
 
 // Tell keyboard to use layer
 void xbows_switch_layer(xbows_state* state, int layer);
