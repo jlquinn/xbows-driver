@@ -557,12 +557,12 @@ ffffffff ffffffff 0f000000 000000ff
 		 
 27016802 00380c24 00000000 8c000300		0x26e is start of next anim 03001600
 1600ffff ffffffff ffffffff ffffffff
-ffff0f00 00000000 0120ffff ffffffff		0120 is start of lighting frame
+ffff0f00 00000000 0120ffff ffffffff		0120 is start of lighting frame @ 0x288
 ffffffff ffffffff ffff0f00 00000000
 		 
 2701a002 0038729f ff000000 03008c00		
-03001600 ffffffff ffffffff ffffffff		03001600 is start of anim 0x288
-ffffffff 0f000000 00000120 00000000		0120 is start of lighting frame
+03001600 ffffffff ffffffff ffffffff		03001600 is start of anim 0x2a8
+ffffffff 0f000000 00000120 00000000		0120 is start of 6 lighting frames @ 0x2c2
 00000000 00000000 00c0d9ff 05000000
 		 
 2701d802 0038f56e 0000ff00 00000300
@@ -580,9 +580,9 @@ ffffffff 0f000000 00000120 00000000		0120 is start of lighting frame
 8c000120 ffff0300 00000000 00000000      0120 starts 6th lighting frame in a row
 00000000 00000000 00005500 ff000300
 		 
-27018003 003828e9 8c000300 1600ffff      03001600 starts anim 0x328?
+27018003 003828e9 8c000300 1600ffff      03001600 starts anim @ 0x382
 ffffffff ffffffff ffffffff ffff0f00
-00000000 01200000 00000000 02007000      0120 starts lighting
+00000000 01200000 00000000 02007000      0120 starts lighting @ 0x39c
 000f00c0 00000000 00000000 ff000000
 		 
 2701b803 0038d800 06008c00 01200000      0120 starts lighting
@@ -613,7 +613,7 @@ c00000f0 03000c00 00000000 00000000
 2701d004 00388295 00000000 ff990000
 06008c00 01200000 00000000 0000c000      0120 starts lighting
 00700000 1b000000 00000000 ff000000
-06008c00 03001600 ffffffff ffffffff      03001600 starts anim 0xfc04
+06008c00 03001600 ffffffff ffffffff      03001600 starts anim 0x4fc
 		 
 27010805 003818be ffffffff ffffffff
 0f000000 00000120 01004000 00100000      0120 starts lighting 0x516
@@ -690,27 +690,27 @@ This sequence defines 9 static patterns stored under F5 and F6 in driver mode.
 4e02 01 indicates that there are 3 animation frames and 1 lighting frame.  The
 lighting frame starts 0x24e bytes from start of data.
 
-now.
 
 
-4e02 01  3 x 1a stanzas.  Then 0020.
-6e02 01
-8802 01
-a802 01
-c202 06
-8203 01
-9c03 0b
-fc04 01
-1605 01
+0002 03  start of animation  3 frames
+4e02 01  Start of lighting, 1 frame, 0x20 bytes per frame
+6e02 01  start of animation 1 frame
+8802 01  start of lighting 1 frame 0x20 bytes
+a802 01  start of animation 1 frame
+c202 06  start of lighting 6 frames
+8203 01  start of animation
+9c03 0b  start of lighting 11 frames
+fc04 01  start of animation 1 frame
+1605 10  start of lighting 16 frames
 
-Only 9 animations currently packed into the static patterns.  NO this seems to
-be only 5 animations.  These blocks alternate between animation frames and
-lighting frames.  So offset and frame count.  The first animation offset and
-count is implicit.
+Only 5 animations currently packed into the static patterns.  These blocks
+alternate between animation frames and lighting frames.  So offset and frame
+count.  The first animation offset and count is implicit.
 
 Since 5 animations, this only reprograms F5.  It's not clear how or if F6 gets
 fixed up.
 
+Q: If I added a 6th lighting program here, would it work?
 
 After this, the windows driver sets up each custom layer with a default
 lighting program and sets the keymap back to default.
