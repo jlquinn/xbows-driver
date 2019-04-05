@@ -719,6 +719,10 @@ Then it comes back to life and sends the current keymap to driver layer and
 starts running the RGB lighting program.
 
 
+F6 appears to enable different flashlight patterns that emanate out from
+whatever key is pressed.  I haven't yet found a way to program these effectively.
+
+
 # Device info
 
 When the Win driver first talks to the keyboard, it sends several commands to
