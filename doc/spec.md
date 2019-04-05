@@ -1699,9 +1699,10 @@ ff000000 RRGGBB00 for this frame
 So the key flashlight program immediately follows the default light program
 without the frame count info?
 
-48040000 03000000 96040000 01000000 looks like it might encode frame count
-info for the Nth flashlight program.  03 is the animation frame count.  01 is
-the light frame duration.  I don't know how 4804 and 9604 fit in yet.
+48040000 03000000 96040000 01000000 encodes frame count info for the Nth
+flashlight program.  4804 is the byte offset of the animation frames (0x448),
+03 is the animation frame count.  9604 is the byte offset of the lighting
+frame. 01 is the number of light frames.
 
 If I switch to calculator11, this is 2 animation frames, 2 lighting frames.
 The 4 ints in question are now 48040000 02000000 7c040000 02000000.  Unclear
