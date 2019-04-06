@@ -206,9 +206,12 @@ bool xbows_send(xbows_state* state, program& prog, int layer) {
   send_program(state->dev, state->suppress, drv_idle);
   // First convert prog to packet sequences
 
-  // Use last layer if not provided
-  if (layer == -1)
-    layer = state->layer;
+  // Use previous layer if not provided by parameter or program.
+  if (layer == -1) {
+    layer = prog.layer;
+    if (layer == -1)
+      layer = state->layer;
+  }
 
   // Driver layer
   if (layer == 1) {
@@ -232,8 +235,10 @@ bool xbows_send(xbows_state* state, program& prog, int layer) {
 
   // Custom layer 2 3 4
   if (layer > 1 && layer < 5) {
-
-    
+    // convert kmap to sequence
+    // convert light program to sequence
+    state->cust1 = custom_program(layer, prog);
+    send_program(state->dev, state->suppress, state->cust1);    
   }
 
   // Bad layer

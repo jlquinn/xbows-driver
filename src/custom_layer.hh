@@ -64,11 +64,12 @@ struct pattern_frame {
       uint8_t B;		       // blue 0-255
       uint8_t dummy;
       // type is monochrome, rgb cycle, breathing
-      uint8_t pattern;
       uint8_t inv_duration;                // inverse duration
-      // Gap between cycles for breathing pattern.  0x79 for mono and rgb cycle.
-      uint8_t gapcode;
       uint8_t dummy2;
+
+      // Gap frames between breathing pattern cycles.
+      uint8_t gapcode;
+      uint8_t dummy3;
     };
   };
 
@@ -89,7 +90,7 @@ struct pattern_frame {
     data[0] = 0;		// Enable monochrome
     R = red; G = green; B = blue;
     // 00007900
-    pattern = inv_duration = 0;
+    inv_duration = 0;
     gapcode = 0x79;    
   }
 
@@ -102,8 +103,7 @@ struct pattern_frame {
     // Actual duration value is inverse of specified value
     // Matching the windows driver
     int speed = floor(100 / duration);
-    pattern = speed;
-    inv_duration = 0;
+    inv_duration = speed;
     gapcode = gap;
   }
 
@@ -116,8 +116,7 @@ struct pattern_frame {
     // Actual duration value is inverse of specified value
     // Matching the windows driver
     int speed = floor(360 / duration);
-    pattern = speed;
-    inv_duration = 0;
+    inv_duration = speed;
     gapcode = 0x79;
   }
 };

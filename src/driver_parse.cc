@@ -438,6 +438,9 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
   auto lite = cfg["pattern"];
 
   if (cm) {
+    if (prog.layer > 0)
+      throw runtime_error("Custom layers don't allow colormap frames.");
+
     // read sequence of key color frames
     cout << "light colormap has " << cm.size() << " frames\n";
     // Parse a set of colorframes
@@ -478,6 +481,9 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
     
   }
   if (anim) {
+    if (prog.layer == 0)
+      throw runtime_error("Driver layer doesn't allow custom animation frames.");
+
     cout << "lighting has " << anim.size() << " animation frames\n";
     // Parse a set of animation frames
     for (size_t i=0; i < anim.size(); i++) {
@@ -494,12 +500,22 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
     // return lights
   }
   if (lite) {
+    if (prog.layer == 0)
+      throw runtime_error("Driver layer doesn't allow custom lighting frames.");
+
     cout << "lights has " << lite.size() << " lighting frames\n";
     // Parse a set of lighting frames
     for (size_t i=0; i < lite.size(); i++) {
       pattern_frame frame;
-      
+
+      // Parse the keymap
       auto knode = lite[i]["keys"];
+      if (!knode.IsSequence())
+	throw runtime_error("Bad format for animation frame keys");
+      for (auto keynode : knode) {
+	keycodes key = string_to_key(keynode.as<string>());
+	frame.enable(key);
+      }
 
       // Parse the color
       auto cnode = lite[i]["color"];
@@ -541,10 +557,19 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
 program read_config(istream& is) {
   YAML::Node cfg = YAML::Load(is);
 
-  if (!cfg["layer"])
-    throw runtime_error("No layer defined");
-
   program prog;
+
+  // Set program layer from cfg file
+  prog.layer = -1;
+  if (cfg["layer"].as<string>() == "driver")
+    prog.layer = 1;
+  if (cfg["layer"].as<string>() == "custom 1")
+    prog.layer = 2;
+  if (cfg["layer"].as<string>() == "custom 2")
+    prog.layer = 3;
+  if (cfg["layer"].as<string>() == "custom 3")
+    prog.layer = 4;
+  
   parse_keymap_cfg(cfg["keymap"], prog);
   parse_light_cfg(cfg["lights"], prog);
   parse_macros_cfg(cfg["macros"]);

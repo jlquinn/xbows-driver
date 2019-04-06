@@ -212,6 +212,7 @@ vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int coun
 // and light frames.
 
 // TODO automatically prep first packet based on program contents
+// TODO allow packing multiple light programs in for factory reset mode
 vector<packet> custom_light_program(int layer,
 				    custom_light_prog& frames
 				    ) {
@@ -231,22 +232,29 @@ vector<packet> custom_light_program(int layer,
   pkt.datasize = 16;
 
   // Start of lighting program.
-  addr_to_32(pkt.data) = htole32(0x0200);
+
+  // Animation frame info
+  unsigned int framestart = 0x0200;
+  addr_to_32(pkt.data) = htole32(framestart); // start of animation frames
   addr_to_32(pkt.data+4) = htole32(num_anim_frames);
 
-  // Animation frames duration
+  // Lighting frame count
   uint32_t anim_dur = num_anim_frames;
-  anim_dur *= 0x1a;
-  anim_dur += 0x0200;		// I don't know why we add 0x0200.
-  addr_to_32(pkt.data+8) = htole32(anim_dur);
+  framestart += anim_dur * 0x1a; // start of lighting frames
+  addr_to_32(pkt.data+8) = htole32(framestart);
   addr_to_32(pkt.data+12) = htole32(num_light_frames); // 1 lighting frame
   program.push_back(pkt);
 
+  // TODO if more lighting programs were being packed in, we would place the
+  // frame counts here.
+  int infosize = 8;	// bytes in a frame info field
+  int fillbytes = 0x200 - infosize * 2;
+
   // Fill in 124 ints of 0xffffffff into last packet, 8 full packets, and
   // start of another packet.
-  unsigned char ffs[124*4];
-  memset(ffs, 0xff, 124*4);
-  pack_data(program, ffs, 124*4);
+  unsigned char ffs[fillbytes];
+  memset(ffs, 0xff, fillbytes);
+  pack_data(program, ffs, fillbytes);
 
   // Add animation frames
   for (auto f: frames.aframes)

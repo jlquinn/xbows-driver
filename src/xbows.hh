@@ -14,6 +14,7 @@
 //
 // The user can create this programmatically, or by parsing yaml file
 struct program {
+  int layer;			// 0 driver, 1 custom1, 2 custom2, 3 custom3
   keymap kmap;		// driver or custom.
   rgb_lights lights;	// driver only
   custom_light_prog custom_lights; // custom only?  driver seems to support this
@@ -39,8 +40,8 @@ struct xbows_state {
 				// keymap once and keep sending light frames
  
   std::vector<packet> cust1;	// last program for cust1 layer
-  std::vector<packet> cust2;	// last program for cust1 layer
-  std::vector<packet> cust3;	// last program for cust1 layer
+  std::vector<packet> cust2;	// last program for cust2 layer
+  std::vector<packet> cust3;	// last program for cust3 layer
 
   uint32_t firmware_id;
   uint32_t firmware_ver;
