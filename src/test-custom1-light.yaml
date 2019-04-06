@@ -1,0 +1,37 @@
+
+layer: custom 1    # optional to choose the custom layer
+lights:
+  animation:  # list of frames
+  - [1,2,3]   # list of active keys for this frame
+  pattern:   # list of lighting pattern commands
+  - color: [ff,00,00]  #rgb in hex
+    keys: [1]          # list of keys for this pattern
+    type: monochrome   #/cycle/breathe
+  - color: [00,ee,00]  #rgb in hex
+    keys: [2]          # list of keys for this pattern
+    type: cycle   #/cycle/breathe
+    duration: 15
+  - color: [00,00,dd]  #rgb in hex
+    keys: [3]          # list of keys for this pattern
+    type: breathe   #/cycle/breathe
+    duration: 10
+    gap: 3
+
+
+keymap:
+  Z: Q            # assign Q to the Z key
+#  C: { macro: 1 }                # assign macro 1 to C key
+  
+#macros:
+#  - mode: once    #/hold/toggle    # default to once
+#    steps:
+#          - Q down
+#          - 5 ms
+#          - Q up
+#          - 6 ms
+#
+#  # sequence of steps for the macro          
+#  - steps: [ K down, 5 ms, K up, 6 ms ]
+#  
+#flashlight:
+#        # same as light program  
