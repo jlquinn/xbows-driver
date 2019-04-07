@@ -1605,6 +1605,62 @@ following:
 
 It looks like the byte is an index into a table of light programs.
 
+Index position is similar to keycodes mapping, but not quite
+
+```
+LCtrl	02
+LShift	03
+LAlt	04
+Win		05
+RCtrl	06
+RShift	07
+RAlt	08
+A		10		[a-z] in order
+Q   	26
+Z		35
+1		36
+0		45		[1-90] in order
+Enter	46
+Esc		47
+RBkSpc	48
+Tab		49
+LSpc	50
+Dash	51		jumps from 0
+Equal	52
+LBrckt	53
+RBrckt	54
+BkSlash	55
+Semi	56
+Quote	57
+Backqt	58
+Comma	59
+Period	60
+Slash	61
+Caps	62
+F1		63		8th of packet 2
+F12		74		[F1-F12] in order
+PrtSc	75
+PgUp	80
+Del		81
+PgDn	83
+Right	84
+Left	85
+Down	86
+Up		87
+MBkSpc	112
+MEnter	113
+MCtrl	114
+MShift	115
+RSpc	116
+```
+
+I suspect this is numbering from a standard 104 key keyboard, based on
+ordering of punctuation.
+
+
+
+
+
 QUESTION: where are the lighting programs stored?
 
 
@@ -2616,7 +2672,8 @@ So this suggests that those 2 bytes are 0x0200 + 0x1a * duration.
 IMPORTANT: 0x1a is 26.  This is 4 bytes bitmap leader and 22 bytes of
 bitmap of an animation frame.
 
-After 0804, there is 01000000.  I believe this is the number of lighting frames.
+After 0804, there is 01000000.  I believe this is the number of lighting
+frames.
 
 
 I next see 20 copies of 03001600 followed by a 22 byte keymap.  After that is:
