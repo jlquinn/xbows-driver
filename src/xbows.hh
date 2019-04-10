@@ -29,8 +29,6 @@ struct program {
   uint8_t flashlight_keys[MAX_KEYCODE];
 };
 
-// Converts prog into a sequence of packets targeted at layer.
-std::vector<packet> convert_program(char layer, program& prog);
 
 struct xbows_state {
   hid_device* dev;		// keyboard device

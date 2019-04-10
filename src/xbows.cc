@@ -11,34 +11,6 @@ using namespace std;
 
 #define REALRUN
 
-
-// Converts prog into a sequence of packets targeted at layer.
-// layer 1-3 are custom, 0 is driver
-vector<packet> convert_program(unsigned char layer, program& prog) {
-  vector<packet> pkts;
-
-  if (layer > 3)
-    throw runtime_error("Bad layer not 0-3");
-  
-  if (layer == 0)
-    return driver_light_program(prog.lights);
-
-  // XXX does nothing right now
-  if (layer == 0)
-    return driver_keymap_program(prog.kmap);
-
-  // Error checking here
-  if (layer >= 1 && layer <= 3) {
-    if (prog.lights.size())
-      throw runtime_error("Attempt to program custom layer with rgb frames");
-    
-    return custom_program(layer, prog);
-  }
-  
-  return pkts;
-}
-
-
 // 1ea7:0907  
 unsigned int xbows_vendor = 0x1ea7;
 unsigned int xbows_product = 0x0907;
