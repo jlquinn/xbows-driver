@@ -18,8 +18,8 @@ lights:
     gap: 3
 
 
-keymap:
-  Z: Q            # assign Q to the Z key
+#keymap:
+#  Z: Q            # assign Q to the Z key
 #  C: { macro: 1 }                # assign macro 1 to C key
   
 #macros:
@@ -33,5 +33,13 @@ keymap:
 #  # sequence of steps for the macro          
 #  - steps: [ K down, 5 ms, K up, 6 ms ]
 #  
-#flashlight:
-#        # same as light program  
+flashlight:
+  - keys: [Z]
+    animation:  # list of frames
+    - [Z,X,C,Shift_L]   # list of active keys for this frame
+    pattern:
+    - color: [00,00,ff]  #rgb in hex
+      keys: [Z,X,C,Shift_L]          # list of keys for this pattern
+      type: monochrome   #/cycle/breathe
+
+    #        # same as light program, but requires an 

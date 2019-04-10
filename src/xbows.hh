@@ -20,6 +20,13 @@ struct program {
   custom_light_prog custom_lights; // custom only?  driver seems to support this
   // We can have multiple flashlight progs?
   custom_light_prog flashlight; // custom only?  driver seems to support this
+
+  // For normal custom layers, cuslights[0] is custom light program.
+  // cuslights[1-n] are flashlight programs.
+  vector<custom_light_prog> flashlights;
+  // Indicates which flashlight program is assigned to a key.  Entries are
+  // 0xff if unassigned.  1 for flashlights[0], 2 for flashlights[1], etc.
+  uint8_t flashlight_keys[MAX_KEYCODE];
 };
 
 // Converts prog into a sequence of packets targeted at layer.

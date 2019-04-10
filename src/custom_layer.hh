@@ -77,7 +77,6 @@ struct pattern_frame {
   pattern_frame() {
     header = htole16(0x2000);
     memset(data+2, 0, 30);
-    gapcode = 0x79;                        // monochrome terminator
   }
 
   // Turn on key for this frame.
@@ -89,22 +88,9 @@ struct pattern_frame {
   void monochrome(uint8_t red, uint8_t green, uint8_t blue) {
     data[0] = 0;		// Enable monochrome
     R = red; G = green; B = blue;
-    // 00007900
     inv_duration = 0;
-    gapcode = 0x79;    
-  }
-
-  // Set lighting for keys in keymap to be breathing pattern with duration
-  // being how long the cycle lasts and gap frames between cycles.
-  void breathe(uint8_t red, uint8_t green, uint8_t blue, int duration, int gap) {
-    data[0] = 1;		// Enable breathing
-    R = red; G = green; B = blue;
-    // dur 00 gap 00
-    // Actual duration value is inverse of specified value
-    // Matching the windows driver
-    int speed = floor(100 / duration);
-    inv_duration = speed;
-    gapcode = gap;
+    gapcode = 0;		// This has to be nonzero
+    dummy3 = 0;
   }
 
   // Set lighting to RGB cycle starting with specified value.  Duration
@@ -117,7 +103,21 @@ struct pattern_frame {
     // Matching the windows driver
     int speed = floor(360 / duration);
     inv_duration = speed;
-    gapcode = 0x79;
+    gapcode = 0;
+    dummy3 = 0;
+  }
+
+  // Set lighting for keys in keymap to be breathing pattern with duration
+  // being how long the cycle lasts and gap frames between cycles.
+  void breathe(uint8_t red, uint8_t green, uint8_t blue, int duration, int gap) {
+    data[0] = 2;		// Enable breathing
+    R = red; G = green; B = blue;
+    // dur 00 gap 00
+    // Actual duration value is inverse of specified value
+    // Matching the windows driver
+    int speed = floor(100 / duration);
+    inv_duration = speed;
+    gapcode = gap;
   }
 };
 

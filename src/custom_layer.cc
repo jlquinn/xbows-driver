@@ -4,6 +4,7 @@
 // is similar but not identical to the driver layer program.
 
 #include <endian.h>
+#include <cassert>
 #include <cmath>
 #include <vector>
 
@@ -64,25 +65,25 @@ vector<packet> custom_macro_program(int layer) {
 // XXX for now we have a default inactive flashlight sequence
 // It seems there must be 3 packets of flashlight even when nothing is
 // programmed.  XXX Is this true?
-vector<packet> custom_flashlight_program(int layer) {
+vector<packet> custom_flashlight_program(int layer, program& prog) {
   if (layer < 1 || layer > 3)
     throw runtime_error("Bad layer");
   
   vector<packet> program;
 
   packet pkt1(0x26, layer);
-  memset(pkt1.data, 0xff, 56);
+  memcpy(pkt1.data, prog.flashlight_keys, 56);
   pkt1.nil = 0x38;		// Datasize is reversed here
   program.push_back(pkt1);
 
   packet pkt2(0x26, layer);
-  memset(pkt2.data, 0xff, 56);
+  memcpy(pkt2.data, prog.flashlight_keys + 56, 56);
   pkt2.progcount = htole16(0x38);
   pkt2.nil = 0x38;		// Datasize is reversed here
   program.push_back(pkt2);
 
   packet pkt3(0x26, layer);
-  memset(pkt3.data, 0xff, 8);
+  memcpy(pkt3.data, prog.flashlight_keys + 112, 8);
   pkt3.progcount = htole16(0x70);
   pkt3.nil = 0x8;		// Datasize is reversed here
   program.push_back(pkt3);
@@ -181,18 +182,26 @@ void pattern_frame::clear() { memset(keymap, 0, 22); }
 // Pack bytes into program, adding more packets as needed.
 vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int count) {
   // Assumes there is a packet at the end of program to look at
+  assert(program.size());
   while (count) {
     // Add new packet if needed.
-    if (program.empty() || program.back().datasize == 56)
-      program.push_back(packet());
+    if (program.back().datasize == 56) {
+      packet& pkt = program.back();
+      program.push_back(packet(pkt.cmd, pkt.sub));
 
-    // Copy command info forward
-    if (program.size() > 1) {
-      unsigned psz = program.size()-1;
-      program[psz].cmd = program[psz-1].cmd;
-      program[psz].sub = program[psz-1].sub;
-      program[psz].progcount = htole16(le16toh(program[psz-1].progcount) + 56);
+      // Update program bytes preceding this packet
+      uint16_t progcount = le16toh(pkt.progcount) + 56;
+      program.back().progcount = progcount;
     }
+    
+
+    // // Copy command info forward
+    // if (program.size() > 1) {
+    //   unsigned psz = program.size()-1;
+    //   program[psz].cmd = program[psz-1].cmd;
+    //   program[psz].sub = program[psz-1].sub;
+    //   program[psz].progcount = htole16(le16toh(program[psz-1].progcount) + 56);
+    // }
     
     // Try to fill the current packet
     packet& pkt = program.back();
@@ -201,6 +210,7 @@ vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int coun
     int pcount = min(count, 56-pkt.datasize);
     memcpy(pkt.data + pkt.datasize, data, pcount);
     pkt.datasize += pcount;
+    
     count -= pcount;
     data += pcount;
   }
@@ -208,54 +218,9 @@ vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int coun
 }
 
 
-// Light program is mode complex than driver mode.  We have animation frames
-// and light frames.
-
-// TODO automatically prep first packet based on program contents
-// TODO allow packing multiple light programs in for factory reset mode
-vector<packet> custom_light_program(int layer,
-				    custom_light_prog& frames
-				    ) {
-  if (layer < 1 || layer > 3)
-    throw runtime_error("Bad layer");
-
-  int num_light_frames = frames.lframes.size();
-  int num_anim_frames = frames.aframes.size();
-
-  vector<packet> program;
-
-  // Starting with alternating Esc and F1 in green.
-  // Mono green light, 2 animation frames
-  unsigned short bytes = 0;
-  packet pkt(0x27, layer);
-  pkt.progcount = bytes;
-  pkt.datasize = 16;
-
-  // Start of lighting program.
-
-  // Animation frame info
-  unsigned int framestart = 0x0200;
-  addr_to_32(pkt.data) = htole32(framestart); // start of animation frames
-  addr_to_32(pkt.data+4) = htole32(num_anim_frames);
-
-  // Lighting frame count
-  uint32_t anim_dur = num_anim_frames;
-  framestart += anim_dur * 0x1a; // start of lighting frames
-  addr_to_32(pkt.data+8) = htole32(framestart);
-  addr_to_32(pkt.data+12) = htole32(num_light_frames); // 1 lighting frame
-  program.push_back(pkt);
-
-  // TODO if more lighting programs were being packed in, we would place the
-  // frame counts here.
-  int infosize = 8;	// bytes in a frame info field
-  int fillbytes = 0x200 - infosize * 2;
-
-  // Fill in 124 ints of 0xffffffff into last packet, 8 full packets, and
-  // start of another packet.
-  unsigned char ffs[fillbytes];
-  memset(ffs, 0xff, fillbytes);
-  pack_data(program, ffs, fillbytes);
-
+// Store a single custom light program into packets
+void custom_light_program(vector<packet>& program,
+			  custom_light_prog& frames) {
   // Add animation frames
   for (auto f: frames.aframes)
     pack_data(program, f.data, 26);
@@ -263,9 +228,80 @@ vector<packet> custom_light_program(int layer,
   // Add light frames
   for (auto f: frames.lframes)
     pack_data(program, f.data, 32);
-
-  return program;
 }
+
+
+// Multiple lighting programs can actually be set up.  First is for the
+// regular custom light.  The others are flashlight programs.  They all get
+// assembled into packets here.
+vector<packet> custom_light_programs(int layer, program& prog) {
+  if (layer < 2 || layer > 4)
+    throw runtime_error("Bad layer");
+
+  // Initialize packet sequence with 1 empty packet.
+  vector<packet> packets(1, packet(0x27, (unsigned char)layer));
+
+  // Construct frame info bytes
+  int infosize = prog.flashlights.size() + 1; // +1 for custom_lights
+  infosize *= 16;			 // bytes consumed by frame info
+  unsigned char info[infosize];
+  uint32_t* info_p = (uint32_t*)info;
+
+  // Frame info for custom lights
+  int anim_ct = prog.custom_lights.aframes.size();
+  int lite_ct = prog.custom_lights.lframes.size();
+
+  unsigned int framestart = 0x0200; // Start of anim frames for custom light.
+  *info_p++ = htole32(framestart);
+  *info_p++ = htole32(anim_ct);
+  framestart += anim_ct * 0x1a;	// start of light frames
+  *info_p++ = htole32(framestart);
+  *info_p++ = htole32(lite_ct);
+  framestart += lite_ct * 0x20;	// start of light frames
+
+  // Frame info for flashlights
+  for (unsigned i=0; i < prog.flashlights.size(); i++) {
+    // Frame info for custom lights
+    int anim_ct = prog.flashlights[i].aframes.size();
+    int lite_ct = prog.flashlights[i].lframes.size();
+
+    *info_p++ = htole32(framestart);
+    *info_p++ = htole32(anim_ct);
+    framestart += anim_ct * 0x1a;	// start of light frames
+    *info_p++ = htole32(framestart);
+    *info_p++ = htole32(lite_ct);
+    framestart += lite_ct * 0x20;	// start of light frames
+  }
+
+  // Pack frame info
+  pack_data(packets, info, infosize);
+
+  
+  // Fill remaining space before lighting programs
+  if (infosize > 0x200)
+    throw runtime_error("No more than 128 lighting programs can be specified");
+  int fillbytes = 0x200 - infosize;
+
+  // Fill in 124 ints of 0xffffffff into last packet, 8 full packets, and
+  // start of another packet.
+  unsigned char ffs[fillbytes];
+  memset(ffs, 0xff, fillbytes);
+  pack_data(packets, ffs, fillbytes);
+  
+
+  // Prepare lighting programs
+
+  // First store custom_lights
+  custom_light_program(packets, prog.custom_lights);
+  
+  
+  // Now store flashlights
+  for (auto flash : prog.flashlights)
+    custom_light_program(packets, flash);
+  
+  return packets; 
+}
+
 
 
 // We have to assemble a complete program to send
@@ -300,7 +336,7 @@ vector<packet> custom_program(char layer, program& prog) {
   flash_intro.bytes[2] = 0x05;
   program.push_back(flash_intro);
   
-  vector<packet> flashprog = custom_flashlight_program(layer);
+  vector<packet> flashprog = custom_flashlight_program(layer, prog);
   program.insert(program.end(), flashprog.begin(), flashprog.end());
 
 
@@ -312,8 +348,8 @@ vector<packet> custom_program(char layer, program& prog) {
 
 
   // Construct the lighting program
-  vector<packet> lightprogram = custom_light_program(layer, prog.custom_lights);
-  program.insert(program.end(), lightprogram.begin(), lightprogram.end());
+  vector<packet> lightprograms = custom_light_programs(layer, prog);
+  program.insert(program.end(), lightprograms.begin(), lightprograms.end());
 
 
   packet terminator(0x0b, layer);

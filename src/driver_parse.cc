@@ -426,9 +426,111 @@ vector<cus_macro> parse_macros_cfg(YAML::Node node) {
   return macros;
 }
 
-void parse_flashlight_cfg(YAML::Node node) {
 
+// Parse a custom layer light program.  Uses animation and pattern frames.
+custom_light_prog parse_custom_lights(YAML::Node anim, YAML::Node lite) {
+  custom_light_prog custom_lights;
+
+  // Parse animation frames
+  if (!anim.IsSequence())
+    throw runtime_error("custom lights animation must be a sequence");
+  
+  cout << "lighting has " << anim.size() << " animation frames\n";
+  // Parse a set of animation frames
+  for (size_t i=0; i < anim.size(); i++) {
+    animation_frame frame;
+    if (!anim[i].IsSequence())
+      throw runtime_error("Bad format for animation frame");
+    // build a key bitmap
+    for (auto keynode : anim[i]) {
+      keycodes key = string_to_key(keynode.as<string>());
+      frame.enable(key);
+    }
+    custom_lights.aframes.push_back(frame);
+  }
+
+  if (!lite.IsSequence())
+    throw runtime_error("custom lights pattern must be a sequence");
+
+  cout << "lights has " << lite.size() << " lighting frames\n";
+  // Parse a set of lighting frames
+  for (size_t i=0; i < lite.size(); i++) {
+    pattern_frame frame;
+
+    // Parse the keymap
+    auto knode = lite[i]["keys"];
+    if (!knode.IsSequence())
+      throw runtime_error("Bad format for animation frame keys");
+    for (auto keynode : knode) {
+      keycodes key = string_to_key(keynode.as<string>());
+      frame.enable(key);
+    }
+
+    // Parse the color
+    auto cnode = lite[i]["color"];
+    rgb RGB = node_to_color(cnode);
+
+    // Parse the lighting pattern and duration
+    auto pattern = lite[i]["type"];
+    auto duration = lite[i]["duration"];
+    auto gapnode = lite[i]["gap"];
+    string type = pattern.as<string>();
+    if (type == "monochrome") {
+      frame.monochrome(RGB.R, RGB.G, RGB.B);
+    }
+    else if (type == "cycle") {
+      if (!duration)
+	throw runtime_error("missing duration field");
+      int dur = duration.as<int>();
+      frame.rgb_cycle(RGB.R, RGB.G, RGB.B, dur);
+    }
+    else if (type == "breathe") {
+      if (!duration)
+	throw runtime_error("missing duration field");
+      if (!gapnode)
+	throw runtime_error("missing gap field");
+      int dur = duration.as<int>();
+      int gap = gapnode.as<int>();
+      frame.breathe(RGB.R, RGB.G, RGB.B, dur, gap);
+    }
+    else
+      throw runtime_error(string("Unknown light frame pattern " + type));
+      
+    custom_lights.lframes.push_back(frame);
+  }
+
+  return custom_lights;
 }
+
+
+// Parse a list of flashlight programs starting at the flashlight yaml node.
+// Place resulting light programs and data into prog.
+void parse_flashlight_cfg(YAML::Node cfg, program& prog) {
+  memset(prog.flashlight_keys, 0xff, MAX_KEYMAP);
+  if (!cfg.IsDefined())
+    return;
+  
+  if (!cfg.IsSequence())
+    throw runtime_error("flashlight must contain a sequence of custom light programs");
+
+  for (auto lightprog : cfg) {
+    // Read in the flashlight program
+    auto anim = lightprog["animation"];
+    auto lite = lightprog["pattern"];
+    prog.flashlights.push_back(parse_custom_lights(anim, lite));
+    uint8_t flashct = prog.flashlights.size();
+
+    // Set keys that get this flashlight program
+    auto keys = lightprog["keys"];
+    if (!keys.IsSequence())
+      throw runtime_error("flashlight keys must be sequence of keynames");
+    for (auto key : keys) {
+      keycodes keycode = string_to_key(key.as<string>());
+      prog.flashlight_keys[keycode] = flashct;
+    }
+  }
+}
+
 
 // Parse the lights stanza.  Driver layer uses a sequence of color frames,
 // under colormap.  Custom layers use animation and pattern frames.
@@ -480,76 +582,12 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
     // return lights
     
   }
-  if (anim) {
-    if (prog.layer == 0)
-      throw runtime_error("Driver layer doesn't allow custom animation frames.");
 
-    cout << "lighting has " << anim.size() << " animation frames\n";
-    // Parse a set of animation frames
-    for (size_t i=0; i < anim.size(); i++) {
-      animation_frame frame;
-      if (!anim[i].IsSequence())
-	throw runtime_error("Bad format for animation frame");
-      // build a key bitmap
-      for (auto keynode : anim[i]) {
-	keycodes key = string_to_key(keynode.as<string>());
-	frame.enable(key);
-      }
-      prog.custom_lights.aframes.push_back(frame);
-    }
-    // return lights
-  }
-  if (lite) {
-    if (prog.layer == 0)
-      throw runtime_error("Driver layer doesn't allow custom lighting frames.");
+  // Set up the custom light pattern
+  if (prog.layer == 0)
+    throw runtime_error("Driver layer doesn't allow custom animation frames.");
 
-    cout << "lights has " << lite.size() << " lighting frames\n";
-    // Parse a set of lighting frames
-    for (size_t i=0; i < lite.size(); i++) {
-      pattern_frame frame;
-
-      // Parse the keymap
-      auto knode = lite[i]["keys"];
-      if (!knode.IsSequence())
-	throw runtime_error("Bad format for animation frame keys");
-      for (auto keynode : knode) {
-	keycodes key = string_to_key(keynode.as<string>());
-	frame.enable(key);
-      }
-
-      // Parse the color
-      auto cnode = lite[i]["color"];
-      rgb RGB = node_to_color(cnode);
-
-      // Parse the lighting pattern and duration
-      auto pattern = lite[i]["type"];
-      auto duration = lite[i]["duration"];
-      auto gapnode = lite[i]["gap"];
-      string type = pattern.as<string>();
-      if (type == "monochrome") {
-	frame.monochrome(RGB.R, RGB.G, RGB.B);
-      }
-      else if (type == "cycle") {
-	if (!duration)
-	  throw runtime_error("missing duration field");
-	int dur = duration.as<int>();
-	frame.rgb_cycle(RGB.R, RGB.G, RGB.B, dur);
-      }
-      else if (type == "breathe") {
-	if (!duration)
-	  throw runtime_error("missing duration field");
-	if (!gapnode)
-	  throw runtime_error("missing gap field");
-	int dur = duration.as<int>();
-	int gap = gapnode.as<int>();
-	frame.breathe(RGB.R, RGB.G, RGB.B, dur, gap);
-      }
-      else
-	throw runtime_error(string("Unknown light frame pattern " + type));
-      
-      prog.custom_lights.lframes.push_back(frame);
-    }
-  }
+  prog.custom_lights = parse_custom_lights(anim, lite);
 }
 
 
@@ -573,7 +611,7 @@ program read_config(istream& is) {
   parse_keymap_cfg(cfg["keymap"], prog);
   parse_light_cfg(cfg["lights"], prog);
   parse_macros_cfg(cfg["macros"]);
-  parse_flashlight_cfg(cfg["flashlight"]);
+  parse_flashlight_cfg(cfg["flashlight"], prog);
   
   // validate();
 

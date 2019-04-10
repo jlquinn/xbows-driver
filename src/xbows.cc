@@ -238,7 +238,8 @@ bool xbows_send(xbows_state* state, program& prog, int layer) {
     // convert kmap to sequence
     // convert light program to sequence
     state->cust1 = custom_program(layer, prog);
-    send_program(state->dev, state->suppress, state->cust1);    
+    send_program(state->dev, state->suppress, state->cust1);
+    send_program(state->dev, state->suppress, drv_idle);
   }
 
   // Bad layer
