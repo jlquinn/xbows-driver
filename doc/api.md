@@ -155,11 +155,12 @@ to send the program to the keyboard.
 
 If you are sending a driver mode program, it will send the keymap and the
 first light program frame and return true.  Repeatedly calling
-xbows_update(&state) will send successive light frames to the keyboard.  If a
-light frame has a delay, it will wait this long before sending the frame.
+xbows_update(&state) will send successive light frames to the keyboard and
+keep the driver mode program alive.  If a light frame has a delay, it will
+wait this long before sending the frame.  If you wait too long, the driver
+layer will revert to its default.
 
 If you are sending a custom mode program, xbows_send() will return false.
-
 
 Call xbows_switch_layer() if you wish to change layers from software.  Call
 xbows_factory_reset() to restore the default programs to the keyboard.  XXX

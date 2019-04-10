@@ -84,7 +84,9 @@ bool xbows_send(xbows_state* state, program& prog, int layer=-1);
 // For custom mode, update the layer with the program in state.
 
 // Return true if update should be called again to send more packets -
-// normally driver mode rgb light frames.
+// normally driver mode rgb light frames.  This must be called within about 2
+// seconds to maintain the driver mode programming.  This is true whether or
+// not there is a light program.
 bool xbows_update(xbows_state* state);
 
 void xbows_factory_reset(xbows_state* state);
