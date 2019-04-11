@@ -25,6 +25,7 @@ void usage(char* prog) {
     cerr << "-n    Don't sent programming packets to the keyboard\n";
     cerr << "-v    Print verbose messages\n";
     cerr << "-r    Reset XBows keyboard\n";
+    cerr << "-l n  Switch XBows to layer n (1,2,3,4) (ignores config file)\n";
     exit(-1);
 }
 
@@ -55,7 +56,7 @@ int main(int ac, char* av[]) {
   bool dryrun = false;
   
   int c;
-  while ((c = getopt(ac, av, "nvr")) != -1) {
+  while ((c = getopt(ac, av, "nvrl:")) != -1) {
     switch (c) {
     case 'n': dryrun = true; break;
     case 'r':
@@ -63,6 +64,9 @@ int main(int ac, char* av[]) {
       cerr << "Sent reset to XBows\n";
       exit(0);
     case 'v': break;
+    case 'l':
+      xbows_switch_layer(&state, atoi(optarg));
+      exit(0);
     default:
       usage(av[0]);
     }

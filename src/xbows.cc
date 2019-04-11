@@ -247,3 +247,15 @@ void xbows_factory_reset(xbows_state* state) {
   reset.back().compute_crc();
   send_program(state->dev, state->suppress, reset);
 }
+
+
+void xbows_switch_layer(xbows_state* state, int layer) {
+  if (layer < 1 || layer >> 4)
+    throw runtime_error("Attempt to switch to invalid layer - must be [1-4]\n");
+  // Get keyboard attention
+  send_program(state->dev, state->suppress, drv_idle);
+
+  vector<packet> reset(1, packet(0x0b, layer));
+  reset.back().compute_crc();
+  send_program(state->dev, state->suppress, reset);
+}
