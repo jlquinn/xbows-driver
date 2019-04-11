@@ -1,0 +1,19 @@
+
+layer: custom 1    # optional to choose the custom layer
+flashlight:
+  - keys: [Z]
+    animation:  # list of frames
+    - [Z,X,C,Shift_L]   # list of active keys for this frame
+    pattern:
+    - color: [00,00,ff]  #rgb in hex
+      keys: [Z,X,C,Shift_L]          # list of keys for this pattern
+      type: monochrome   #/cycle/breathe
+  - keys: [X]
+    animation:  # list of frames
+    - [Z,X,C,Shift_L,V,S,Alt_L]   # list of active keys for this frame
+    pattern:
+    - color: red  #rgb in hex
+      keys: [Z,X,C,Shift_L,V,S,Alt_L]          # list of keys for this pattern
+      type: monochrome   #/cycle/breathe
+
+    #        # same as light program, but requires an 
