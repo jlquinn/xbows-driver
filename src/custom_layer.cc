@@ -303,10 +303,24 @@ vector<packet> custom_light_programs(int layer, program& prog) {
 }
 
 
+custom_light_prog no_lights() {
+  custom_light_prog prog;
+  prog.aframes.push_back(animation_frame());
+  prog.lframes.push_back(pattern_frame());
+  return prog;
+}
+
 
 // We have to assemble a complete program to send
 vector<packet> custom_program(char layer, program& prog) {
 
+  // Make sure things are consistent
+
+  // If there is a flashlight program, there must also be a base light program
+  // or else first flashlight will become the base light program.
+  if (prog.flashlights.size() && prog.custom_lights.aframes.empty())
+    prog.custom_lights = no_lights();
+  
   vector<packet> program;
 
   // Get the keyboard's attention.
@@ -362,4 +376,5 @@ vector<packet> custom_program(char layer, program& prog) {
 
   return program;
 }
+
 

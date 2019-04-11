@@ -1605,7 +1605,7 @@ following:
 
 It looks like the byte is an index into a table of light programs.
 
-Index position is similar to keycodes mapping, but not quite
+Index position is similar to keycodes mapping.
 
 ```
 LCtrl	02
@@ -1654,9 +1654,14 @@ MShift	115
 RSpc	116
 ```
 
+IMPORTANT: This is the same ordering used in keymap_assign.
+
 I suspect this is numbering from a standard 104 key keyboard, based on
 ordering of punctuation.
 
+
+When sending a flashlight, there MUST be a default custom light program as
+well.  Otherwise the first flashlight will be used as the custom light.
 
 
 

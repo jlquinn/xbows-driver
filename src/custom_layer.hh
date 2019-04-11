@@ -126,6 +126,11 @@ struct custom_light_prog {
   std::vector<pattern_frame> lframes;
 };
 
+// Construct a light program with 1 animation frame with all keys disabled,
+// one monochrome light frame with no keys enabled.  This is useful if setting
+// a flashlight with no other lighting.
+custom_light_prog no_lights();
+
 // Complete program for a layer
 struct custom_layer_prog {
   keymap kmap;

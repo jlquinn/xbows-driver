@@ -432,8 +432,9 @@ custom_light_prog parse_custom_lights(YAML::Node anim, YAML::Node lite) {
   custom_light_prog custom_lights;
 
   // Parse animation frames
-  if (!anim.IsSequence())
+  if (!anim.IsSequence()) {
     throw runtime_error("custom lights animation must be a sequence");
+  }
   
   cout << "lighting has " << anim.size() << " animation frames\n";
   // Parse a set of animation frames
@@ -507,7 +508,7 @@ custom_light_prog parse_custom_lights(YAML::Node anim, YAML::Node lite) {
 // Place resulting light programs and data into prog.
 void parse_flashlight_cfg(YAML::Node cfg, program& prog) {
   memset(prog.flashlight_keys, 0xff, MAX_KEYMAP);
-  if (!cfg.IsDefined())
+  if (!cfg)
     return;
   
   if (!cfg.IsSequence())
@@ -526,7 +527,8 @@ void parse_flashlight_cfg(YAML::Node cfg, program& prog) {
       throw runtime_error("flashlight keys must be sequence of keynames");
     for (auto key : keys) {
       keycodes keycode = string_to_key(key.as<string>());
-      prog.flashlight_keys[keycode] = flashct;
+      int pos = keymap_assign[keycode];
+      prog.flashlight_keys[pos] = flashct;
     }
   }
 }
@@ -535,6 +537,8 @@ void parse_flashlight_cfg(YAML::Node cfg, program& prog) {
 // Parse the lights stanza.  Driver layer uses a sequence of color frames,
 // under colormap.  Custom layers use animation and pattern frames.
 void parse_light_cfg(YAML::Node cfg, program& prog) {
+  if (!cfg)
+    return;
   auto cm = cfg["colormap"];
   auto anim = cfg["animation"];
   auto lite = cfg["pattern"];
