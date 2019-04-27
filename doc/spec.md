@@ -1044,7 +1044,11 @@ With LCtrl slot set to 0x0200070a.  Setting to Custom Layer 2 gives
 0x0300070a.  Custom Layer 3 gives 0x0400070a.  Setting to Standard (driver
 layer) gives 0x0100070a.
 
+Setting up this mapping causes the keyboard to switch layers while the key is
+being held.
 
+NOTE: this behavior cannot be combined with a macro on the same key or other
+remapping.
 
 
 
@@ -2021,8 +2025,8 @@ I programmed a macro to type 12345.  The full 19 element sequence is:
 ```
 
 I then attached it to F1, normally 003a0002.  Now, the F1 spot gets 0000010a.
-I assume that 01 is the macro number and 0a indicates macro vs normal key.
-
+010a indicates macro vs normal key.  The first 2 bytes are 00.  This is the
+little-endian index of the macro assigned to this key.
 
 Before, there was a fixed sequence between the keymap and lighting program:
 
@@ -2180,6 +2184,11 @@ format.
 
 The sequence start has two 0 ints, then aa551b2d.  I don't know what this
 means yet.  I suspect the 2 ints may be part of the previous sequence.
+
+The aa55 bytes start a macro sequence.  The next int contains macro length
+(max 255) in byte 0.  ?? Macro index appears to be byte 1.  Macro mode appears
+to be byte 2.  Macro repeat count is byte 3.
+
 
 OK, the last packet of 0 is partial.  Only 16 valid bytes here.  Then, the
 first macro is 9 packets * 56 bytes + 8 bytes = 512 bytes = 128 ints.  The
