@@ -25,11 +25,12 @@ struct cus_macro_step {
 struct cus_macro {
   int id;			// id to connect macro with keymap
   keycodes key;			// key the macro is assigned to
-  int play_mode;		// 0 - auto stop
-				// 1 - release stop
-				// 2 - press again to stop
+  int play_mode;		// 1 - auto stop
+				// 2 - release stop
+				// 3 - press again to stop
+  int count;			// how many times to play the macro
   std::vector<cus_macro_step> steps;	// macro sequence
-  cus_macro() : id(-1), play_mode(0) {}
+  cus_macro() : id(-1), play_mode(1), count(1) {}
   size_t size() const { return steps.size(); }
 };
 
@@ -89,7 +90,7 @@ struct pattern_frame {
     data[0] = 0;		// Enable monochrome
     R = red; G = green; B = blue;
     inv_duration = 0;
-    gapcode = 0;		// This has to be nonzero
+    gapcode = 0;
     dummy3 = 0;
   }
 
@@ -142,9 +143,5 @@ struct program;
 std::vector<packet> custom_program(char layer, program& cus_prog);
 
 
-// Similar to drv_light_assign, this maps keycode to position in a driver
-// keymap.
-
-extern int cus_keymap_assign[MAX_KEYCODE];
 
 #endif

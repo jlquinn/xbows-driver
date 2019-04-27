@@ -43,10 +43,6 @@ extern int drv_frame_packets;
 extern int drv_light_assign[MAX_KEYCODE];
 
 
-// Similar to rgb_assign, this maps keycode to position in a driver
-// keymap.
-extern int drv_keymap_assign[MAX_KEYCODE];
-
 // Build a driver mode keymap program
 vector<packet> driver_keymap_program(keymap& kmap);
 

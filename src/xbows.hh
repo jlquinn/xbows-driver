@@ -27,6 +27,10 @@ struct program {
   // Indicates which flashlight program is assigned to a key.  Entries are
   // 0xff if unassigned.  1 for flashlights[0], 2 for flashlights[1], etc.
   uint8_t flashlight_keys[MAX_KEYCODE];
+
+  // Custom layer macros
+  vector<cus_macro> macros;
+
 };
 
 

@@ -356,6 +356,7 @@ void parse_driver_cfg(YAML::Node node) {
   }
 }
 
+
 // Returning empty keymap?  No, default keymap.
 void parse_keymap_cfg(YAML::Node node, program& prog) {
   if (!node) return;
@@ -366,10 +367,25 @@ void parse_keymap_cfg(YAML::Node node, program& prog) {
     string keystr = it.first.as<string>();
     keycodes key = string_to_key(keystr);
     if (it.second.IsMap()) {
-      // handle macro assigned to key
-      cout << "XXX unhandled macro\n";
+      if (it.second["macro"]) {
+	// handle macro assigned to key
+	int macro = it.second["macro"].as<int>();
+	cout << "Assign macro "<< macro << " to key " << keystr << "\n";
+	prog.kmap.assign_macro(key, macro);
+      }
+      else if (it.second["layer"]) {
+	// handle layer switching assigned to key
+	int layer = it.second["layer"].as<int>();
+	cout << "Assign Fnx layer "<< layer << " to key " << keystr << "\n";
+	prog.kmap.assign_layer_switch(key, layer);
+      }
+      else {
+	throw runtime_error("Unknown keymap assignment type: "
+			    + it.second.as<string>());
+      }
     }
     else {
+      // Regular key assignment
       string emitstr = it.second.as<string>();
       keycodes emit = string_to_key(emitstr);
       prog.kmap.assign(key, emit);
@@ -388,7 +404,7 @@ void parse_keymap_cfg(YAML::Node node, program& prog) {
 // A list of macros, each with id, mode, and set of steps.  Each step is an
 // event, one of down key, up key, or delay.  Value is the key or delay in
 // milliseconds.
-vector<cus_macro> parse_macros_cfg(YAML::Node node) {
+void parse_macros_cfg(YAML::Node node, program& prog) {
   vector<cus_macro> macros;
   for (auto macronode : node) {
     cus_macro macro;
@@ -396,10 +412,12 @@ vector<cus_macro> parse_macros_cfg(YAML::Node node) {
     // cout << "XXX dumping macro mode:\n";
     // dump(macronode["mode"]);
 
-    string mode = macronode["mode"].as<string>("once");
-    if (mode == "once") macro.play_mode = 0;
-    if (mode == "hold") macro.play_mode = 1;
-    if (mode == "toggle") macro.play_mode = 2;
+    string mode = "once";
+    if (macronode["mode"])
+      mode = macronode["mode"].as<string>("once");
+    if (mode == "once") macro.play_mode = 1;
+    if (mode == "hold") macro.play_mode = 2;
+    if (mode == "toggle") macro.play_mode = 3;
     
     vector<string> bits;
     for (auto it : macronode["steps"]) {
@@ -421,9 +439,8 @@ vector<cus_macro> parse_macros_cfg(YAML::Node node) {
       }
       macro.steps.push_back(step);
     }
-    macros.push_back(macro);
+    prog.macros.push_back(macro);
   }
-  return macros;
 }
 
 
@@ -595,6 +612,21 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
 }
 
 
+void validate(program& prog) {
+  // Make sure assigned macros actually exist
+  if (prog.layer != 0) {
+    for (int key = 1; key < MAX_KEYCODE; key++) {
+      if (prog.kmap.is_macro(keycodes(key))) {
+	int macro = prog.kmap.macro(keycodes(key));
+	if (macro >= (int)prog.macros.size())
+	  throw runtime_error("Illegal macro number " + to_string(macro)
+			      + " assigned to key " + to_string(key));
+      }
+      
+    }
+  }
+}
+
 // Treat driver mode and custom mode configs as separate streams
 program read_config(istream& is) {
   YAML::Node cfg = YAML::Load(is);
@@ -614,10 +646,10 @@ program read_config(istream& is) {
   
   parse_keymap_cfg(cfg["keymap"], prog);
   parse_light_cfg(cfg["lights"], prog);
-  parse_macros_cfg(cfg["macros"]);
+  parse_macros_cfg(cfg["macros"], prog);
   parse_flashlight_cfg(cfg["flashlight"], prog);
   
-  // validate();
+  validate(prog);
 
   // Doesn't seem to be able to read multiple docs correctly from the same yaml file
   return prog;

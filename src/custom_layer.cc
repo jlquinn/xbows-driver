@@ -4,12 +4,17 @@
 // is similar but not identical to the driver layer program.
 
 #include <endian.h>
+extern "C" {
+#include <checksum.h>
+}
 #include <cassert>
 #include <cmath>
 #include <vector>
 
 #include "xbows.hh"
 #include "custom_layer.hh"
+// For keymap_assign[]
+#include "layer.hh"
 #include "keymap.hh"
 
 using namespace std;
@@ -18,15 +23,48 @@ uint16_t& addr_to_16(unsigned char* addr) { return *(uint16_t*)addr; }
 uint32_t& addr_to_32(unsigned char* addr) { return *(uint32_t*)addr; }
 
 
+// Pack bytes into program, adding more packets as needed.
+vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int count) {
+  // Assumes there is a packet at the end of program to look at
+  assert(program.size());
+  while (count) {
+    // Add new packet if needed.
+    if (program.back().datasize == 56) {
+      packet& pkt = program.back();
+      program.push_back(packet(pkt.cmd, pkt.sub));
+
+      // Update program bytes preceding this packet
+      uint16_t progcount = le16toh(pkt.progcount) + 56;
+      program.back().progcount = progcount;
+    }
+    
+    // Try to fill the current packet
+    packet& pkt = program.back();
+
+    // Pack up to 56 bytes of data into packet
+    int pcount = min(count, 56-pkt.datasize);
+    memcpy(pkt.data + pkt.datasize, data, pcount);
+    pkt.datasize += pcount;
+    
+    count -= pcount;
+    data += pcount;
+  }
+  return program;
+}
+
+
 // For custom layer commands, the subcommand indicates the layer 0x01, 0x02,
 // 0x03 are custom layers 1-3.
 //
 // Handles rebinding and disabling keys.
 //
-vector<packet> custom_keymap_program(int layer, keymap& kmap) {
+vector<packet> custom_keymap_program(int layer, program& prog) {
   if (layer < 1 || layer > 3)
     throw runtime_error("Bad layer");
-  
+
+  // Make a copy so macros can override the basic keymap data.
+  keymap kmap = prog.kmap;
+
   vector<packet> program;
 
   // Light program.  14 key rgb per packet
@@ -49,16 +87,71 @@ vector<packet> custom_keymap_program(int layer, keymap& kmap) {
     program.push_back(pkt);
     // cout << "push packet " << pkt.to_string();
   }
+
   
   return program;
 }
 
-// XXX empty macros for now
-vector<packet> custom_macro_program(int layer) {
+
+vector<packet> custom_macro_program(int layer, program& prog) {
   if (layer < 1 || layer > 3)
     throw runtime_error("Bad layer");
 
-  return vector<packet>();
+  vector<uint32_t> macro_codes;
+  // macro header + crc in bytes 2,3
+  uint32_t code;
+  for (auto& macro : prog.macros) {
+    unsigned start = macro_codes.size();
+    // Add macro header and space for crc code.
+    macro_codes.push_back(0x000055aa);
+    // Set macro length, mode, and loop count.
+    if (macro.steps.size() > 255 || macro.id > 255 || macro.count > 255)
+      throw runtime_error("Macro field is out of range > 255\n");
+    code = htole32(macro.steps.size());
+    code |= macro.id << 8;
+    int count = (macro.count & 0xff) << 24;
+    int mode = (macro.play_mode & 0xff) << 16;
+    code |= htole32(count|mode);
+    macro_codes.push_back(code);
+    // Add each macro step
+    for (auto& step : macro.steps) {
+      if (step.duration) {
+	// Add a delay step
+	code = htole32(step.duration);
+	code |= htole32(0x03000000);
+      }
+      else {
+	// Add a key press/release step
+	code = keyid[step.key];
+	code |= htole32(0x01000000);
+	code |= step.down
+	  ? htole32(0x00010000)
+	  : htole32(0x00020000);
+      }
+      macro_codes.push_back(code);
+    }
+
+    // Compute crc on macro sequence before converting to packets
+    // CRC goes in upper 2 bytes of the 0xaa55 int.
+    uint16_t crc = crc_ccitt_ffff((unsigned char*)macro_codes.data(), 64);
+    macro_codes[start] |= htole16(crc) << 16;
+
+    // Pad macro to 128 ints
+    unsigned end = macro_codes.size();
+    unsigned pad = 128 - (end-start);
+    macro_codes.insert(macro_codes.end(), pad, 0);
+  }
+  
+
+  // Copy macro sequence data into packets
+  // xxx make sure this gets injected after 0x210x04, before 0x210x05.
+  vector<packet> packets;
+  packet pkt(0x25, layer);
+  packets.push_back(pkt);
+  pack_data(packets, (unsigned char*)macro_codes.data(),
+	    macro_codes.size() * sizeof(uint32_t));
+  
+  return packets;
 }
 
 
@@ -179,45 +272,6 @@ void pattern_frame::enable(keycodes key) { enable_key(keymap, key); }
 void pattern_frame::clear() { memset(keymap, 0, 22); }
 
 
-// Pack bytes into program, adding more packets as needed.
-vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int count) {
-  // Assumes there is a packet at the end of program to look at
-  assert(program.size());
-  while (count) {
-    // Add new packet if needed.
-    if (program.back().datasize == 56) {
-      packet& pkt = program.back();
-      program.push_back(packet(pkt.cmd, pkt.sub));
-
-      // Update program bytes preceding this packet
-      uint16_t progcount = le16toh(pkt.progcount) + 56;
-      program.back().progcount = progcount;
-    }
-    
-
-    // // Copy command info forward
-    // if (program.size() > 1) {
-    //   unsigned psz = program.size()-1;
-    //   program[psz].cmd = program[psz-1].cmd;
-    //   program[psz].sub = program[psz-1].sub;
-    //   program[psz].progcount = htole16(le16toh(program[psz-1].progcount) + 56);
-    // }
-    
-    // Try to fill the current packet
-    packet& pkt = program.back();
-
-    // Pack up to 56 bytes of data into packet
-    int pcount = min(count, 56-pkt.datasize);
-    memcpy(pkt.data + pkt.datasize, data, pcount);
-    pkt.datasize += pcount;
-    
-    count -= pcount;
-    data += pcount;
-  }
-  return program;
-}
-
-
 // Store a single custom light program into packets
 void custom_light_program(vector<packet>& program,
 			  custom_light_prog& frames) {
@@ -332,7 +386,7 @@ vector<packet> custom_program(char layer, program& prog) {
   keymap_intro.bytes[2] = 0x01;
   program.push_back(keymap_intro);
   
-  vector<packet> keyprog = custom_keymap_program(layer, prog.kmap);
+  vector<packet> keyprog = custom_keymap_program(layer, prog);
   program.insert(program.end(), keyprog.begin(), keyprog.end());
 
 
@@ -341,7 +395,7 @@ vector<packet> custom_program(char layer, program& prog) {
   macro_intro.bytes[2] = 0x04;
   program.push_back(macro_intro);
   
-  vector<packet> macroprog = custom_macro_program(layer);
+  vector<packet> macroprog = custom_macro_program(layer, prog);
   program.insert(program.end(), macroprog.begin(), macroprog.end());
 
 

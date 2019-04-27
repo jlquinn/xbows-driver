@@ -56,7 +56,16 @@ int keymap_assign[MAX_KEYCODE] = {
 
 
 void keymap::assign(keycodes key, keycodes emits) {
+  // XXX CHECK THIS!  It should probably be htole16
   keys[keymap_assign[key]] = htobe16(keyid[emits]) | 0x02000000;
+}
+
+void keymap::assign_macro(keycodes key, int n) {
+  keys[keymap_assign[key]] = htole16(n) | 0x0a010000;
+}
+
+void keymap::assign_layer_switch(keycodes key, int n) {
+  keys[keymap_assign[key]] = htole16(n) | 0x0a070000;
 }
 
 
@@ -89,3 +98,28 @@ void keymap::clear() {
   }
 
 }
+
+
+bool keymap::is_macro(keycodes key) {
+  uint32_t val = keys[keymap_assign[key]];
+  uint32_t masked = val &= 0xffff0000;
+  return masked == 0x0a010000;
+}
+
+int keymap::macro(keycodes key) {
+  uint32_t val = keys[keymap_assign[key]];
+  return val &= 0xffff;
+}
+
+bool keymap::is_layer_switch(keycodes key) {
+  uint32_t val = keys[keymap_assign[key]];
+  uint32_t masked = val &= 0xffff0000;
+  return masked == 0x0a070000;
+}
+
+// Returns 2, 3, 4 for custom, 1 for driver
+int keymap::layer(keycodes key) {
+  uint32_t val = keys[keymap_assign[key]];
+  return val &= 0xffff;
+}
+

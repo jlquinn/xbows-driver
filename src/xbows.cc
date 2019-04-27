@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#define REALRUN
+//#define REALRUN
 
 // 1ea7:0907  
 unsigned int xbows_vendor = 0x1ea7;
@@ -38,13 +38,13 @@ void do_interval() {
   usleep(1000);
 }
 
-// Don't send empty subprograms and expect nothing to be sent
-void send_program(hid_device* dev, bool suppress, const vector<packet>& prog,
+// Don't send empty sequences and expect nothing to be sent
+void send_packets(hid_device* dev, bool suppress, const vector<packet>& prog,
 		  unsigned start=0, unsigned end=0) {
   // OK, we have a handle to the xbows programming interface.
   packet data;
 
-  cout << "Sending program now..." << endl;
+  cout << "Sending packets now..." << endl;
   timestamp t = now();
   for (end = !end ? prog.size() : end; start < end; start++) {
     const auto& pkt = prog[start];
@@ -175,7 +175,7 @@ void xbows_close(xbows_state& state) {
 
 
 bool xbows_send(xbows_state* state, program& prog, int layer) {
-  send_program(state->dev, state->suppress, drv_idle);
+  send_packets(state->dev, state->suppress, drv_idle);
   // First convert prog to packet sequences
 
   // Use previous layer if not provided by parameter or program.
@@ -194,12 +194,12 @@ bool xbows_send(xbows_state* state, program& prog, int layer) {
     state->drv_lights = driver_light_program(prog.lights);
 
     // Switch keyboard to driver layer and get its attention
-    send_program(state->dev, state->suppress, drv_idle);
-    send_program(state->dev, state->suppress, drv_attn);
+    send_packets(state->dev, state->suppress, drv_idle);
+    send_packets(state->dev, state->suppress, drv_attn);
     
     
     // Send keymap
-    send_program(state->dev, state->suppress, state->drv_kmap);
+    send_packets(state->dev, state->suppress, state->drv_kmap);
 
     // send first light frame
     return xbows_update(state);
@@ -210,8 +210,8 @@ bool xbows_send(xbows_state* state, program& prog, int layer) {
     // convert kmap to sequence
     // convert light program to sequence
     state->cust1 = custom_program(layer, prog);
-    send_program(state->dev, state->suppress, state->cust1);
-    send_program(state->dev, state->suppress, drv_idle);
+    send_packets(state->dev, state->suppress, state->cust1);
+    send_packets(state->dev, state->suppress, drv_idle);
   }
 
   // Bad layer
@@ -222,12 +222,12 @@ bool xbows_send(xbows_state* state, program& prog, int layer) {
 // Send next frame of driver animation.
 bool xbows_update(xbows_state* state) {
   if (state->drv_lights.empty()) {
-    send_program(state->dev, state->suppress, drv_idle);
+    send_packets(state->dev, state->suppress, drv_idle);
     return false;
   }
 
   // send next frame
-  send_program(state->dev, state->suppress,
+  send_packets(state->dev, state->suppress,
 	       state->drv_lights, state->drv_frame,
 	       state->drv_frame + drv_frame_packets);
 
@@ -241,11 +241,11 @@ bool xbows_update(xbows_state* state) {
 
 void xbows_factory_reset(xbows_state* state) {
   // Get keyboard attention
-  send_program(state->dev, state->suppress, drv_idle);
+  send_packets(state->dev, state->suppress, drv_idle);
 
   vector<packet> reset(1, packet(0x0b, 0x02));
   reset.back().compute_crc();
-  send_program(state->dev, state->suppress, reset);
+  send_packets(state->dev, state->suppress, reset);
 }
 
 
@@ -253,9 +253,9 @@ void xbows_switch_layer(xbows_state* state, int layer) {
   if (layer < 1 || layer >> 4)
     throw runtime_error("Attempt to switch to invalid layer - must be [1-4]\n");
   // Get keyboard attention
-  send_program(state->dev, state->suppress, drv_idle);
+  send_packets(state->dev, state->suppress, drv_idle);
 
   vector<packet> reset(1, packet(0x0b, layer));
   reset.back().compute_crc();
-  send_program(state->dev, state->suppress, reset);
+  send_packets(state->dev, state->suppress, reset);
 }

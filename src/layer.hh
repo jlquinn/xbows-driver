@@ -1,5 +1,5 @@
-#ifndef LAYER_HH
-#define LAYER_HH
+#ifndef BASE_LAYER_HH
+#define BASE_LAYER_HH
 
 #include "keymap.hh"
 
@@ -14,8 +14,24 @@ public:
 
   // This function tells keyboard to send emits when key is pressed.
   void assign(keycodes key, keycodes emits);
+  // This function tells keyboard to play the n'th macro when key is pressed.
+  void assign_macro(keycodes key, int n);
+  // This function tells keyboard to switch to layer n when key is pressed.  N
+  // is 1 for driver layer, 2-4 for custom layers.
+  void assign_layer_switch(keycodes key, int n);
 
   void clear();
+
+  // Return true if key is assigned a macro
+  bool is_macro(keycodes key);
+  // Return macro index for key
+  int macro(keycodes key);
+
+  // Return true if key is assigned a layer switch
+  bool is_layer_switch(keycodes key);
+  // Return layer this key switches to
+  // Returns 2, 3, 4 for custom, 1 for driver
+  int layer(keycodes key);
 
   keymap() { clear(); }
 };
