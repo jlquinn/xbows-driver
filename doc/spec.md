@@ -2258,7 +2258,7 @@ aa557cfc.  So those bytes don't appear to be included in the crc-like value.
 OK, installed libcrc and played with the bytes and found the answer.  Similar
 to the whole packet crc, the aa55 crc is computed with CRC-CCITT-false (or
 0xffff) on the bytes in the active steps of the macro.  Trailing 0's are
-ignored.
+ignored.  The aa55xxxx is ignored, and the macro length int is ignored.
 
 So for 00000101 06000003 00000201, the crc is 0x18c5, matching aa55c518.
 For 00000101 07000003 00000201, the crc is 0x5016, matching aa55165f.

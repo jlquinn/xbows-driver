@@ -9,7 +9,7 @@
 
 using namespace std;
 
-//#define REALRUN
+#define REALRUN
 
 // 1ea7:0907  
 unsigned int xbows_vendor = 0x1ea7;

@@ -11,6 +11,8 @@ extern "C" {
 #include <cmath>
 #include <vector>
 
+#include <iostream>
+
 #include "xbows.hh"
 #include "custom_layer.hh"
 // For keymap_assign[]
@@ -23,13 +25,17 @@ uint16_t& addr_to_16(unsigned char* addr) { return *(uint16_t*)addr; }
 uint32_t& addr_to_32(unsigned char* addr) { return *(uint32_t*)addr; }
 
 
-// Pack bytes into program, adding more packets as needed.
-vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int count) {
+// Pack bytes into program, adding more packets as needed.  This function also
+// fills in packet byte counts as needed.
+vector<packet>& pack_data(vector<packet>& program,
+			  unsigned char* data, int count, bool datasize2=false) {
   // Assumes there is a packet at the end of program to look at
   assert(program.size());
   while (count) {
     // Add new packet if needed.
-    if (program.back().datasize == 56) {
+    if ((datasize2 && program.back().nil == 56)
+	||
+	(!datasize2 && program.back().datasize == 56)) {
       packet& pkt = program.back();
       program.push_back(packet(pkt.cmd, pkt.sub));
 
@@ -42,9 +48,13 @@ vector<packet>& pack_data(vector<packet>& program, unsigned char* data, int coun
     packet& pkt = program.back();
 
     // Pack up to 56 bytes of data into packet
-    int pcount = min(count, 56-pkt.datasize);
-    memcpy(pkt.data + pkt.datasize, data, pcount);
-    pkt.datasize += pcount;
+    int datasize = datasize2 ? pkt.nil : pkt.datasize;
+    int pcount = min(count, 56-datasize);
+    memcpy(pkt.data + datasize, data, pcount);
+    if (datasize2)
+      pkt.nil += pcount;
+    else
+      pkt.datasize += pcount;
     
     count -= pcount;
     data += pcount;
@@ -131,9 +141,11 @@ vector<packet> custom_macro_program(int layer, program& prog) {
       macro_codes.push_back(code);
     }
 
-    // Compute crc on macro sequence before converting to packets
-    // CRC goes in upper 2 bytes of the 0xaa55 int.
-    uint16_t crc = crc_ccitt_ffff((unsigned char*)macro_codes.data(), 64);
+    // Compute crc on macro sequence before converting to packets CRC goes in
+    // upper 2 bytes of the 0xaa55 int.  First 2 ints are ignored for
+    // computing the CRC.
+    uint16_t crc = crc_ccitt_ffff((unsigned char*)(macro_codes.data()+2),
+				  sizeof(uint32_t) * (macro_codes.size()-2));
     macro_codes[start] |= htole16(crc) << 16;
 
     // Pad macro to 128 ints
@@ -149,7 +161,7 @@ vector<packet> custom_macro_program(int layer, program& prog) {
   packet pkt(0x25, layer);
   packets.push_back(pkt);
   pack_data(packets, (unsigned char*)macro_codes.data(),
-	    macro_codes.size() * sizeof(uint32_t));
+	    macro_codes.size() * sizeof(uint32_t), true);
   
   return packets;
 }
