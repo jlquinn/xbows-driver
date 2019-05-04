@@ -163,7 +163,7 @@ xbows_state init_xbows() {
   xbows_state state;
   state.dev = dev;
   state.suppress = false;
-  state.layer = 1;
+  state.layer = DRIVER;
   state.drv_frame = 0;
   state.lastcmd = now();
   return state;
@@ -174,19 +174,19 @@ void xbows_close(xbows_state& state) {
 }
 
 
-bool xbows_send(xbows_state* state, program& prog, int layer) {
+bool xbows_send(xbows_state* state, program& prog, layercode layer) {
   send_packets(state->dev, state->suppress, drv_idle);
   // First convert prog to packet sequences
 
   // Use previous layer if not provided by parameter or program.
-  if (layer == -1) {
+  if (layer == NONE) {
     layer = prog.layer;
-    if (layer == -1)
+    if (layer == NONE)
       layer = state->layer;
   }
 
   // Driver layer
-  if (layer == 1) {
+  if (layer == DRIVER) {
     // convert kmap to sequence
     state->drv_kmap = driver_keymap_program(prog.kmap);
 
@@ -206,7 +206,7 @@ bool xbows_send(xbows_state* state, program& prog, int layer) {
   }
 
   // Custom layer 2 3 4
-  if (layer > 1 && layer < 5) {
+  if (layer >= CUSTOM1 && layer <= CUSTOM3) {
     // convert kmap to sequence
     // convert light program to sequence
     state->cust1 = custom_program(layer, prog);
@@ -249,9 +249,9 @@ void xbows_factory_reset(xbows_state* state) {
 }
 
 
-void xbows_switch_layer(xbows_state* state, int layer) {
-  if (layer < 1 || layer >> 4)
-    throw runtime_error("Attempt to switch to invalid layer - must be [1-4]\n");
+void xbows_switch_layer(xbows_state* state, layercode layer) {
+  if (layer < CUSTOM1 || layer > DRIVER)
+    throw runtime_error("Attempt to switch to invalid layer - must be DRIVER or CUSTOM1-3\n");
   // Get keyboard attention
   send_packets(state->dev, state->suppress, drv_idle);
 

@@ -3,6 +3,9 @@
 
 #include "keymap.hh"
 
+// Layer codes
+enum layercode { NONE=0, STATIC=1, CUSTOM1=2, CUSTOM2=3, CUSTOM3=4, DRIVER=5 };
+
 // This contains the full set of key positions for a driver keymap
 const int MAX_KEYMAP=120;
 extern int keymap_assign[];
@@ -18,7 +21,7 @@ public:
   void assign_macro(keycodes key, int n);
   // This function tells keyboard to switch to layer n when key is pressed.  N
   // is 1 for driver layer, 2-4 for custom layers.
-  void assign_layer_switch(keycodes key, int n);
+  void assign_layer_switch(keycodes key, layercode layer);
 
   void clear();
 

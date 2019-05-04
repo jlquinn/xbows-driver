@@ -25,7 +25,7 @@ void usage(char* prog) {
     cerr << "-n    Don't sent programming packets to the keyboard\n";
     cerr << "-v    Print verbose messages\n";
     cerr << "-r    Reset XBows keyboard\n";
-    cerr << "-l n  Switch XBows to layer n (1,2,3,4) (ignores config file)\n";
+    cerr << "-l n  Switch XBows to layer n (2,3,4,5) (ignores config file)\n";
     exit(-1);
 }
 
@@ -65,7 +65,7 @@ int main(int ac, char* av[]) {
       exit(0);
     case 'v': break;
     case 'l':
-      xbows_switch_layer(&state, atoi(optarg));
+      xbows_switch_layer(&state, layercode(atoi(optarg)));
       exit(0);
     default:
       usage(av[0]);

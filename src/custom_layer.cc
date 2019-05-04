@@ -69,7 +69,7 @@ vector<packet>& pack_data(vector<packet>& program,
 // Handles rebinding and disabling keys.
 //
 vector<packet> custom_keymap_program(int layer, program& prog) {
-  if (layer < 1 || layer > 3)
+  if (layer < CUSTOM1 || layer > CUSTOM3)
     throw runtime_error("Bad layer");
 
   // Make a copy so macros can override the basic keymap data.
@@ -104,7 +104,7 @@ vector<packet> custom_keymap_program(int layer, program& prog) {
 
 
 vector<packet> custom_macro_program(int layer, program& prog) {
-  if (layer < 1 || layer > 3)
+  if (layer < CUSTOM1 || layer > CUSTOM3)
     throw runtime_error("Bad layer");
 
   vector<uint32_t> macro_codes;
@@ -171,7 +171,7 @@ vector<packet> custom_macro_program(int layer, program& prog) {
 // It seems there must be 3 packets of flashlight even when nothing is
 // programmed.  XXX Is this true?
 vector<packet> custom_flashlight_program(int layer, program& prog) {
-  if (layer < 1 || layer > 3)
+  if (layer < CUSTOM1 || layer > CUSTOM3)
     throw runtime_error("Bad layer");
   
   vector<packet> program;
@@ -301,7 +301,7 @@ void custom_light_program(vector<packet>& program,
 // regular custom light.  The others are flashlight programs.  They all get
 // assembled into packets here.
 vector<packet> custom_light_programs(int layer, program& prog) {
-  if (layer < 2 || layer > 4)
+  if (layer < CUSTOM1 || layer > CUSTOM3)
     throw runtime_error("Bad layer");
 
   // Initialize packet sequence with 1 empty packet.

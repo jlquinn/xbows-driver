@@ -14,7 +14,7 @@
 //
 // The user can create this programmatically, or by parsing yaml file
 struct program {
-  int layer;			// 0 driver, 1 custom1, 2 custom2, 3 custom3
+  layercode layer;		   // driver or custom 1,2,3
   keymap kmap;		// driver or custom.
   rgb_lights lights;	// driver only
   custom_light_prog custom_lights; // custom only?  driver seems to support this
@@ -37,7 +37,7 @@ struct program {
 struct xbows_state {
   hid_device* dev;		// keyboard device
   int suppress;			// suppress sending packets to device for testing
-  int layer;			// layer keyboard will work on. this may be
+  layercode layer;		// layer keyboard will work on. this may be
 				// different than the real kbd but the next
 				// xbows_update() will switch to this layer.
   
@@ -76,7 +76,7 @@ void xbows_close(xbows_state& state);
 // switch_layer.  No way to query kbd what layer we're on as far as I know.
 // if program is clearly driver or custom we should use that
 // Return true if update should be called to send more packets
-bool xbows_send(xbows_state* state, program& prog, int layer=-1);
+bool xbows_send(xbows_state* state, program& prog, layercode layer=NONE);
 
 
 // Take the next step for layer.  Switch to the layer
@@ -96,7 +96,7 @@ bool xbows_update(xbows_state* state);
 void xbows_factory_reset(xbows_state* state);
 
 // Tell keyboard to use layer
-void xbows_switch_layer(xbows_state* state, int layer);
+void xbows_switch_layer(xbows_state* state, layercode layer);
 
 
 #endif

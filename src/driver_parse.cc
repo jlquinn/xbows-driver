@@ -13,6 +13,7 @@
 
 #include "keymap.hh"
 #include "xbows.hh"
+#include "layer.hh"
 
 using namespace std;
 using namespace boost::algorithm;
@@ -377,7 +378,7 @@ void parse_keymap_cfg(YAML::Node node, program& prog) {
 	// handle layer switching assigned to key
 	int layer = it.second["layer"].as<int>();
 	cout << "Assign Fnx layer "<< layer << " to key " << keystr << "\n";
-	prog.kmap.assign_layer_switch(key, layer);
+	prog.kmap.assign_layer_switch(key, (layercode)layer);
       }
       else {
 	throw runtime_error("Unknown keymap assignment type: "
@@ -561,7 +562,7 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
   auto lite = cfg["pattern"];
 
   if (cm) {
-    if (prog.layer > 0)
+    if (prog.layer > STATIC && prog.layer < DRIVER)
       throw runtime_error("Custom layers don't allow colormap frames.");
 
     // read sequence of key color frames
@@ -605,7 +606,7 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
   }
 
   // Set up the custom light pattern
-  if (prog.layer == 0)
+  if (prog.layer == DRIVER)
     throw runtime_error("Driver layer doesn't allow custom animation frames.");
 
   prog.custom_lights = parse_custom_lights(anim, lite);
@@ -614,7 +615,7 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
 
 void validate(program& prog) {
   // Make sure assigned macros actually exist
-  if (prog.layer != 0) {
+  if (prog.layer > STATIC && prog.layer < DRIVER) {
     for (int key = 1; key < MAX_KEYCODE; key++) {
       if (prog.kmap.is_macro(keycodes(key))) {
 	int macro = prog.kmap.macro(keycodes(key));
@@ -634,15 +635,15 @@ program read_config(istream& is) {
   program prog;
 
   // Set program layer from cfg file
-  prog.layer = -1;
+  prog.layer = NONE;
   if (cfg["layer"].as<string>() == "driver")
-    prog.layer = 1;
+    prog.layer = DRIVER;
   if (cfg["layer"].as<string>() == "custom 1")
-    prog.layer = 2;
+    prog.layer = CUSTOM1;
   if (cfg["layer"].as<string>() == "custom 2")
-    prog.layer = 3;
+    prog.layer = CUSTOM2;
   if (cfg["layer"].as<string>() == "custom 3")
-    prog.layer = 4;
+    prog.layer = CUSTOM3;
   
   parse_keymap_cfg(cfg["keymap"], prog);
   parse_light_cfg(cfg["lights"], prog);

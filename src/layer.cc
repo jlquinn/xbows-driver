@@ -64,8 +64,8 @@ void keymap::assign_macro(keycodes key, int n) {
   keys[keymap_assign[key]] = htole16(n) | 0x0a010000;
 }
 
-void keymap::assign_layer_switch(keycodes key, int n) {
-  keys[keymap_assign[key]] = htole16(n) | 0x0a070000;
+void keymap::assign_layer_switch(keycodes key, layercode layer) {
+  keys[keymap_assign[key]] = htole16(layer) | 0x0a070000;
 }
 
 

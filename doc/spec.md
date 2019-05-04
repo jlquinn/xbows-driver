@@ -681,6 +681,9 @@ that seems to hold here with 210106.
 It does suggest that 210104 and 210105 could be used similar to custom layer
 programming.
 
+We know that generally layers 2,3,4 are custom and 5 is driver mode.  So
+perhaps layer 1 is a base layer.  It's different, since it at least programs
+the F5 patterns.
 
 
 
@@ -1478,7 +1481,8 @@ length.
 The sequence is terminated with the 0x0b command.
 
 Question: if the keyboard were programmed with 2201 commands, would this
-permanently write to the driver layer?
+permanently write to the driver layer?  How about 2205 since 05 seems to be
+driver layer sometimes?
 
 Question: is there a way to do rgb frame sequences in custom layer?  Just
 sending 0x1a packets to custom after using 0x0b03 (layer 2) doesn't work.  The
