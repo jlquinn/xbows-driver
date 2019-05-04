@@ -17,7 +17,7 @@ lights:
   
   # define key mapping
 keymap:
-  Shift_L: { layer: 2 }
+  Control_L: { layer: 3 }
   Z: Q            # assign Q to the Z key
 #  # C: { macro: 0 }                # assign macro 0 to C key
 #        

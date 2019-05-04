@@ -601,15 +601,14 @@ void parse_light_cfg(YAML::Node cfg, program& prog) {
       prog.lights.push_back(frame);
     }
 
-    // return lights
-    
   }
+  else {
+    // Set up the custom light pattern
+    if (prog.layer == DRIVER)
+      throw runtime_error("Driver layer doesn't allow custom animation frames.");
 
-  // Set up the custom light pattern
-  if (prog.layer == DRIVER)
-    throw runtime_error("Driver layer doesn't allow custom animation frames.");
-
-  prog.custom_lights = parse_custom_lights(anim, lite);
+    prog.custom_lights = parse_custom_lights(anim, lite);
+  }
 }
 
 

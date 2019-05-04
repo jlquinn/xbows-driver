@@ -223,6 +223,7 @@ bool xbows_send(xbows_state* state, program& prog, layercode layer) {
 bool xbows_update(xbows_state* state) {
   if (state->drv_lights.empty()) {
     send_packets(state->dev, state->suppress, drv_idle);
+    usleep(300000);
     return false;
   }
 

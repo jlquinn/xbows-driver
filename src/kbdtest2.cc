@@ -26,6 +26,7 @@ void usage(char* prog) {
     cerr << "-v    Print verbose messages\n";
     cerr << "-r    Reset XBows keyboard\n";
     cerr << "-l n  Switch XBows to layer n (2,3,4,5) (ignores config file)\n";
+    cerr << "-c    Continuous - keep sending idle packets in driver mode\n";
     exit(-1);
 }
 
@@ -54,9 +55,10 @@ int main(int ac, char* av[]) {
 
 
   bool dryrun = false;
+  bool continuous = false;
   
   int c;
-  while ((c = getopt(ac, av, "nvrl:")) != -1) {
+  while ((c = getopt(ac, av, "nvrl:c")) != -1) {
     switch (c) {
     case 'n': dryrun = true; break;
     case 'r':
@@ -67,6 +69,7 @@ int main(int ac, char* av[]) {
     case 'l':
       xbows_switch_layer(&state, layercode(atoi(optarg)));
       exit(0);
+    case 'c': continuous = true; break;
     default:
       usage(av[0]);
     }
@@ -81,9 +84,11 @@ int main(int ac, char* av[]) {
 
   // Autoselect layer?
   bool more = xbows_send(&state, prog);
+  if (continuous) more = true;
 
   while (more) {
     more = xbows_update(&state);
+    if (continuous) more = true;
     // sleep some
     // break eventually
     // break;
