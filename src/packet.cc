@@ -68,6 +68,7 @@ void init_packet() {
     // Initial program packets.  This gets the keyboard's attention.
     drv_attn.push_back(packet(0x0b, 0x05)); // 03 is the layer selection
     drv_attn.push_back(packet(0x01, 0x09));
+    drv_attn[1].delay = 100;
 
     // Compute crc for each packet
     for (auto& pkt: drv_attn)

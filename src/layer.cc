@@ -58,14 +58,17 @@ int keymap_assign[MAX_KEYCODE] = {
 void keymap::assign(keycodes key, keycodes emits) {
   // XXX CHECK THIS!  It should probably be htole16
   keys[keymap_assign[key]] = htobe16(keyid[emits]) | 0x02000000;
+  dflt = false;
 }
 
 void keymap::assign_macro(keycodes key, int n) {
   keys[keymap_assign[key]] = htole16(n) | 0x0a010000;
+  dflt = false;
 }
 
 void keymap::assign_layer_switch(keycodes key, layercode layer) {
   keys[keymap_assign[key]] = htole16(layer) | 0x0a070000;
+  dflt = false;
 }
 
 
@@ -97,6 +100,7 @@ void keymap::clear() {
     keys[pos] = 0x02000000 | (uint32_t)htobe16(id);
   }
 
+  dflt = true;
 }
 
 

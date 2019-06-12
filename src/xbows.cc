@@ -189,6 +189,7 @@ bool xbows_send(xbows_state* state, program& prog, layercode layer) {
   if (layer == DRIVER) {
     // convert kmap to sequence
     state->drv_kmap = driver_keymap_program(prog.kmap);
+    state->drv_kmap_default = prog.kmap.is_default();
 
     // convert light prog to frame sequence
     state->drv_lights = driver_light_program(prog.lights);
@@ -221,20 +222,39 @@ bool xbows_send(xbows_state* state, program& prog, layercode layer) {
 
 // Send next frame of driver animation.
 bool xbows_update(xbows_state* state) {
-  if (state->drv_lights.empty()) {
+  cout << "xbows_update\n" << flush;
+  if (state->drv_lights.empty() && state->drv_kmap_default) {
     send_packets(state->dev, state->suppress, drv_idle);
+    cout << "idle\n" << flush;
     usleep(300000);
     return false;
   }
 
   // send next frame
-  send_packets(state->dev, state->suppress,
-	       state->drv_lights, state->drv_frame,
-	       state->drv_frame + drv_frame_packets);
+  if (state->drv_lights.size()) {
+    cout << "update lights\n" << flush;
+    send_packets(state->dev, state->suppress,
+		 state->drv_lights, state->drv_frame,
+		 state->drv_frame + drv_frame_packets);
 
-  // Advance counter and timestamp.  Driver light frame is 13 packets.
-  state->drv_frame = (state->drv_frame+drv_frame_packets) % state->drv_lights.size();
-  state->lastcmd = now();
+    // Advance counter and timestamp.  Driver light frame is 13 packets.
+    state->drv_frame = (state->drv_frame+drv_frame_packets) % state->drv_lights.size();
+  }
+  else
+    cout << "lights " << state->drv_lights.size() << endl;
+
+  // Refresh keymap if needed (if not the default)
+  timestamp n = now();
+  timestamp gap = (n - state->lastcmd);
+  if (state->drv_kmap_default==false && gap.millis() > 200) {
+    cout << "Updating keymap\n" << flush;
+    send_packets(state->dev, state->suppress, drv_idle);
+    send_packets(state->dev, state->suppress, drv_attn);
+    send_packets(state->dev, state->suppress, state->drv_kmap);
+    state->lastcmd = now();
+  }
+  else
+    cout << "kmap dflt " << state->drv_kmap_default << " gap " << gap.millis() << endl;
 
   return true;
 }

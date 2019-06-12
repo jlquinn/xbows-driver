@@ -45,6 +45,7 @@ struct xbows_state {
   std::vector<packet> drv_lights; // driver light program
   int drv_frame;		// last driver frame sent to keyboard
   timestamp lastcmd;		// how long since last command was sent
+  bool drv_kmap_default;	// True if drv_kmap is the default map
   bool drv_kmap_sent;		// if we haven't timed out, we can send the
 				// keymap once and keep sending light frames
  

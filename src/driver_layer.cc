@@ -277,8 +277,7 @@ rgb_lights make_trail() {
 
 
 //////////////////////
-
-vector<packet> driver_keymap_program(keymap& kmap) {
+vector<packet> driver_keymap_program(const keymap& kmap) {
   // For each key, we want an RGB value.  Convert to a sequence of packets.
   // Sequence must start with 0x0b05
   // Sequence must next have 0x0109
@@ -358,3 +357,6 @@ vector<packet> driver_keymap_program(keymap& kmap) {
 
   return program;
 }
+
+// Set up a default driver keymap
+vector<packet> driver_default_keymap(driver_keymap_program(keymap()));

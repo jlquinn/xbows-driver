@@ -12,6 +12,7 @@ extern int keymap_assign[];
 struct keymap {
 public:
   uint32_t keys[MAX_KEYMAP];
+  bool dflt;			// true if this is the default keymap
 
   int size() const { return MAX_KEYMAP; }
 
@@ -24,6 +25,9 @@ public:
   void assign_layer_switch(keycodes key, layercode layer);
 
   void clear();
+
+  // Return true if this keymap is the default map
+  bool is_default() { return dflt; }
 
   // Return true if key is assigned a macro
   bool is_macro(keycodes key);

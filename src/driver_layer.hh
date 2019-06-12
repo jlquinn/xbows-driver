@@ -44,6 +44,8 @@ extern int drv_light_assign[MAX_KEYCODE];
 
 
 // Build a driver mode keymap program
-vector<packet> driver_keymap_program(keymap& kmap);
+vector<packet> driver_keymap_program(const keymap& kmap);
+
+extern vector<packet> driver_default_keymap;
 
 #endif
