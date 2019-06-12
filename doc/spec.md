@@ -1053,6 +1053,10 @@ being held.
 NOTE: this behavior cannot be combined with a macro on the same key or other
 remapping.
 
+IMPORTANT: In driver mode, Fnx appears to fire once.  It will require
+restoring after it is used!  This requires monitoring the key for a keypress
+and reinstalling the keymap after the key is released.
+
 
 
 ## Driver Mode flashlight
