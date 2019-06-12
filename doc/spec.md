@@ -1057,6 +1057,14 @@ IMPORTANT: In driver mode, Fnx appears to fire once.  It will require
 restoring after it is used!  This requires monitoring the key for a keypress
 and reinstalling the keymap after the key is released.
 
+Further investigation indicates that the keyboard gives us the signal to
+reinstall driver layer settings.  Normally when we send 0c to the keyboard, it
+returns 0c.  When FnX is pressed and switches us to a different layer, we see
+something like 0c/0b03, indicating a switch to layer 03.  When the FnX key is
+released, we see 0c/0b05, indicating a return to driver layer.  This is the
+cue to reinstall driver layer settings.
+
+
 
 
 ## Driver Mode flashlight
