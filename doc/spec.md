@@ -2870,6 +2870,8 @@ The first lighting packet contains 0x1a * frame count + 0x200.  0x1a
 represents the number of bytes in an animation frame.  0x200 is the number of
 bytes to the first frame byte.
 
+Each animation frame lasts roughly 0.1 second.  For custom lighting this is a
+loop.  For flashlights, the frames play once.
 
 
 ### Simulating driver style lighting program
