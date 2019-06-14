@@ -3,13 +3,15 @@ layer: driver
 # id: 1 (only for custom)
 
 # defines light program.  Just a sequence of color frames
+# It alternates between a green and red calculator pattern
 lights:
   colormap:
-#    - {8: green, 9: green, U: green, I: green, O: green, P: green,
-#    J: green, K: green, L: green, Semicolon: green,
-#    M: green, Comma: green, Period: green, Slash: green,
-#    Space_R: green, Alt_R: green }
-#    - 500
+    - 500
+    - {8: green, 9: green, U: green, I: green, O: green, P: green,
+    J: green, K: green, L: green, Semicolon: green,
+    M: green, Comma: green, Period: green, Slash: green,
+    Space_R: green, Alt_R: green }
+    - 500
     - {8: red, 9: red, U: red, I: red, O: red, P: red,
         J: red, K: red, L: red, Semicolon: red,
         M: red, Comma: red, Period: red, Slash: red,
