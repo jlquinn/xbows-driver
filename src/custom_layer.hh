@@ -84,6 +84,8 @@ struct pattern_frame {
   void enable(keycodes key);
   // Turn off all keys for this frame.
   void clear();
+  // Turn on all keys for this frame.
+  void all();
 
   // Set lighting for keys in keymap to be fixed at RGB.
   void monochrome(uint8_t red, uint8_t green, uint8_t blue) {

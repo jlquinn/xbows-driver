@@ -283,6 +283,9 @@ void pattern_frame::enable(keycodes key) { enable_key(keymap, key); }
 // Clear the bitmap
 void pattern_frame::clear() { memset(keymap, 0, 22); }
 
+// Enable all keys for frame
+void pattern_frame::all() { memset(keymap, 0xff, 22); }
+
 
 // Store a single custom light program into packets
 void custom_light_program(vector<packet>& program,

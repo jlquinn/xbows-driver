@@ -478,11 +478,14 @@ custom_light_prog parse_custom_lights(YAML::Node anim, YAML::Node lite) {
 
     // Parse the keymap
     auto knode = lite[i]["keys"];
-    if (!knode.IsSequence())
-      throw runtime_error("Bad format for animation frame keys");
-    for (auto keynode : knode) {
-      keycodes key = string_to_key(keynode.as<string>());
-      frame.enable(key);
+    if (!knode) { frame.all(); }
+    else {
+      if (!knode.IsSequence())
+	throw runtime_error("Bad format for pattern frame keys");
+      for (auto keynode : knode) {
+	keycodes key = string_to_key(keynode.as<string>());
+	frame.enable(key);
+      }
     }
 
     // Parse the color
