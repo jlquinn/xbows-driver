@@ -221,6 +221,14 @@ bool xbows_send(xbows_state* state, program& prog, layercode layer) {
 
 // Send next frame of driver animation.
 bool xbows_update(xbows_state* state) {
+  // XXX hack keep trying to reset keyboard to driver layer.  Looking for
+  // keyboard return info
+  // while (true) {
+  //   usleep(2000000);
+  //   xbows_switch_layer(state, DRIVER);
+  // }
+
+  
   if (state->drv_lights.empty()) {
     send_packets(state->dev, state->suppress, drv_idle);
     usleep(300000);
@@ -251,7 +259,7 @@ void xbows_factory_reset(xbows_state* state) {
 
 
 void xbows_switch_layer(xbows_state* state, layercode layer) {
-  if (layer < CUSTOM1 || layer > DRIVER)
+  if (layer < STATIC || layer > DRIVER)
     throw runtime_error("Attempt to switch to invalid layer - must be DRIVER or CUSTOM1-3\n");
   // Get keyboard attention
   send_packets(state->dev, state->suppress, drv_idle);
