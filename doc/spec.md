@@ -771,6 +771,14 @@ The response is the same as the command.
 0b04 enables layer 3.
 0b05 enables driver mode layer.
 
+I think that there is actually a static layer as well.  Evidence is that
+keyboard reset uses 0x2701 to send lighting commands.  I suspect that this is
+used to create the lighting program that plays when the keyboard first wakes
+up.
+
+I also think this is used to set up the flashlight programs on F6.
+
+
 
 # Driver Mode Programming
 
