@@ -156,9 +156,24 @@ For example:
 
 lights: !include effect-rgb-light-wave.yaml
 
-This will load the file effect-rgb-light-wave.yaml and insert the contents
-under the lights node.
+This will load the file effect-white.yaml and insert the contents
+under the lights node.  In effect-white.yaml, you might have
+
+#lights:
+animation:  # list of frames
+- all
+- all
+- all
+pattern:
+- color: [ff,ff,ff]
+  type: monochrome
+  duration: 1
+
+where all the content under the lights map label is present in that file.
 
 In yaml terms, a scalar can be replaced by the contents of another file.  This
 provides a means of inserting a complex structure into the structure of the
 current file.
+
+Simple substitution is supported.  Each file is loaded separately so must be a
+valid yaml file by itself.
