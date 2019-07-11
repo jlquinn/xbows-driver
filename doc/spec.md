@@ -673,10 +673,10 @@ At the very front, we have:
 210105
 210106
 
-0109 is the recurring attention signal.
-I'm not sure, but I think 21010x defines what kind of data shows up next.  In
-custom programming, 210306 indicates that light programming comes next.  And
-that seems to hold here with 210106.
+0109 is the recurring attention signal.  I'm not sure, but I think 21010x
+defines what kind of data shows up next.  In custom programming, 210306
+indicates that light programming comes next for custom layer 2.  And that
+seems to hold here with 210106.
 
 It does suggest that 210104 and 210105 could be used similar to custom layer
 programming.
@@ -724,6 +724,69 @@ starts running the RGB lighting program.
 
 F6 appears to enable different flashlight patterns that emanate out from
 whatever key is pressed.  I haven't yet found a way to program these effectively.
+
+
+More on reset
+
+There is a sequence of programming different layers.  We have:
+
+0109		kbd attn
+210104		layer 1 section 4 (no content follows)
+210105		layer 1 section 5 (no content follows)
+210106		layer 1 section 6
+2701		layer 1 lighting followed by 9 patterns (lighting and flashlight?)
+0c
+1a01		one round driver lighting
+1a0201		end of driver lighting
+0109		kbd attn
+210201		layer 2 section 1
+2202		layer 2 kmap
+210204		layer 2 section 4 (no content)
+210205		layer 2 section 5
+2602		default setup
+210206		layer 2 section 6
+2702		layer 2 lighting
+0b02		finish layer 2
+0c
+0109
+210301
+2203
+210304
+210305
+2603		default
+210306
+2703		layer 3 lighting
+0b03		finish layer 3
+0c
+0109
+210401
+2204
+210404
+210405
+2604
+210406
+2704
+0b04
+0c
+0b05
+0109
+1601
+1603		driver flashlight?
+1701
+1a01		driver lighting loop
+0c
+0b02		switch to layer 2 (manually from windows driver)
+
+Q: does 210101 allow changing base keymap?
+Q: does 210105 allow changing base flashlight setups?
+Q: can we change poweron lighting?
+
+If this is long, it hangs the whole computer waiting for xbows animation
+before releasing lockscreen. Somewhat annoying.  It would be good to alter
+this.
+
+
+
 
 
 # Device info
