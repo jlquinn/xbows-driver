@@ -49,6 +49,8 @@ struct animation_frame {
   
   // Turn on key for this frame.
   void enable(keycodes key);
+  // Turn on all keys for this frame.
+  void all();
   // Turn off all keys for this frame.
   void clear();
 };

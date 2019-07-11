@@ -274,6 +274,9 @@ void enable_key(uint8_t* keymap, keycodes key) {
 // Enable the bit associated with key in keymap.  keymap is a 22 char bitmap.
 void animation_frame::enable(keycodes key) { enable_key(keymap, key); }
 
+// Enable all keys for frame
+void animation_frame::all() { memset(keymap, 0xff, 22); }
+
 // Clear the bitmap
 void animation_frame::clear() { memset(keymap, 0, 22); }
 
