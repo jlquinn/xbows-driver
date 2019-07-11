@@ -61,20 +61,20 @@ specification of an event looks like the following:
   - id: 1
     mode: once/release/loop    # default to once
 	steps:
-	  - down: Control_L
-	  - delay: 10
-	  - down: X
-	  - delay: 5
-	  - up: X
-	  - delay: 6
-	  - up: Control_L
+	  - Control_L down
+	  - 10 ms
+	  - X down
+	  - 5 ms
+	  - X up
+	  - 6 ms
+	  - Control_L up
 	
   - id: 2		# sequence of steps for the macro
-	steps: [ down: K, delay: 5, up: K, delay: 6 ]
+	steps: [ K down, 5 ms, K up, 6 ms ]
 ```
 
-A key up or down event is down or up followed by keyname.  A delay is an
-integer in milliseconds.
+A key up or down event is the keyname followed by 'down' or 'up'.  A delay is an
+integer in milliseconds followed by 'ms'.
 
 
 ## Defining layers
@@ -105,7 +105,7 @@ driver:
   # define key mapping
   keymap:
 	Z: Q            # assign Q to the Z key
-	C: macro: 1		# assign macro 1 to C key
+	C: { macro: 1 }		# assign macro 1 to C key
 	
   macros:
   - id: 1
@@ -137,18 +137,28 @@ custom:
 	
   keymap:
 	Z: Q            # assign Q to the Z key
-	C: macro: 1		# assign macro 1 to C key
+	C: { macro: 1 }		# assign macro 1 to C key
   macros:
   - id: 1
     mode: once/release/loop    # default to once
-	steps:
-	  - down: Q
-	  - delay: 5
-	  - up: Q
-	  - delay: 6
+	steps: [ Q down, 5 ms, Q up, 6 ms]
 	
   - id: 2		# sequence of steps for the macro
-	steps: [ down: K, delay: 5, up: K, delay: 6 ]
+	steps: [ K down, 5 ms, K up, 6 ms ]
   
   flashlight:
 	# same as light program  
+
+# Including from the shared library
+
+An include mechanism is supported by specifying a filename with the tag !include.
+For example:
+
+lights: !include effect-rgb-light-wave.yaml
+
+This will load the file effect-rgb-light-wave.yaml and insert the contents
+under the lights node.
+
+In yaml terms, a scalar can be replaced by the contents of another file.  This
+provides a means of inserting a complex structure into the structure of the
+current file.
