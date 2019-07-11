@@ -458,13 +458,16 @@ custom_light_prog parse_custom_lights(YAML::Node anim, YAML::Node lite) {
   // Parse a set of animation frames
   for (size_t i=0; i < anim.size(); i++) {
     animation_frame frame;
-    if (!anim[i].IsSequence())
+    if (anim[i].IsScalar() && anim[i].Scalar() == "all")
+      frame.all();
+    else if (anim[i].IsSequence())
+      // build a key bitmap
+      for (auto keynode : anim[i]) {
+	keycodes key = string_to_key(keynode.as<string>());
+	frame.enable(key);
+      }
+    else
       throw runtime_error("Bad format for animation frame");
-    // build a key bitmap
-    for (auto keynode : anim[i]) {
-      keycodes key = string_to_key(keynode.as<string>());
-      frame.enable(key);
-    }
     custom_lights.aframes.push_back(frame);
   }
 
@@ -630,13 +633,66 @@ void validate(program& prog) {
   }
 }
 
+// Expand any included files
+void do_includes(YAML::Node node) {
+  if (node.Type() == YAML::NodeType::Scalar
+      && node.Tag() == "!include") {
+    // Include file
+    // TODO look in install dir as well as current dir for relative
+
+    // cout << "INCLUDE: " << node.Scalar() << endl;
+
+    // XXX finish loader and include and error handling.  abs path vs curdir vs library
+    // perhaps explicitly ref stdlib?
+    ifstream ifs(node.Scalar());
+    if (!ifs)
+      throw runtime_error("Unable to include file " + node.Scalar());
+
+    YAML::Node inc = YAML::Load(ifs);
+    node = inc;
+    // cout << "reassign node to ";
+    // dump(node);
+    return;
+  }
+  
+  switch (node.Type()) {
+  case YAML::NodeType::Null: // ...
+    // cout << "node null" << endl;
+    break;
+  case YAML::NodeType::Scalar: // ...
+    // cout << "node scalar " << node.Scalar() << endl;
+    break;
+  case YAML::NodeType::Sequence: // ...
+    // cout << "node seq len " << node.size() << endl;
+    for (unsigned i=0; i < node.size(); i++)
+      do_includes(node[i]);
+    break;
+  case YAML::NodeType::Map: // ...
+    // cout << "node map " << node.size() << endl;
+    for (auto it: node) {
+      // cout << " key "; 
+      do_includes(it.first); // cout << endl;
+      // cout << " val "; 
+      do_includes(it.second); // cout << endl;
+    }
+    break;
+  case YAML::NodeType::Undefined: // ...
+    // cout << "node undefined " << endl;
+    break;
+  default:
+    cout << "AACK what is this node?" << endl;
+    break;
+  }
+}
+
 // Treat driver mode and custom mode configs as separate streams
 program read_config(istream& is) {
   YAML::Node cfg = YAML::Load(is);
-
-  program prog;
+  do_includes(cfg);
 
   // Set program layer from cfg file
+  program prog;
+
   prog.layer = NONE;
   if (cfg["layer"].as<string>() == "driver")
     prog.layer = DRIVER;
