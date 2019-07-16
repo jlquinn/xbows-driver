@@ -688,7 +688,7 @@ the F5 patterns.
 
 
 
-This sequence defines 9 static patterns stored under F5 and F6 in driver mode.
+This sequence defines 5 static patterns stored under F5 and F6 in driver mode.
 
 4e02 01 indicates that there are 3 animation frames and 1 lighting frame.  The
 lighting frame starts 0x24e bytes from start of data.
@@ -734,13 +734,13 @@ There is a sequence of programming different layers.  We have:
 210104		layer 1 section 4 (no content follows)
 210105		layer 1 section 5 (no content follows)
 210106		layer 1 section 6
-2701		layer 1 lighting followed by 9 patterns (lighting and flashlight?)
+2701		layer 1 lighting followed by 5 light programs (see next sec for detail)
 0c
 1a01		one round driver lighting
 1a0201		end of driver lighting
 0109		kbd attn
 210201		layer 2 section 1
-2202		layer 2 kmap
+2202		layer 2 kmap  (standard)
 210204		layer 2 section 4 (no content)
 210205		layer 2 section 5
 2602		default setup
@@ -786,7 +786,78 @@ before releasing lockscreen. Somewhat annoying.  It would be good to alter
 this.
 
 
+## Reset keyboard layer 1 light programs
 
+prog 1
+anim:
+- ffffffff ffffffff ffffffff ffffffff 0f000000 0000
+- ffff ffffffff ffffffff ffffffff ffff0f00 00000000
+- ffffffff ffffffff ffffffff ffffffff 0f000000 0000
+patt:
+- 0020 ffffffff ffffffff ffffffff ffffffff 0f000000 0000 00ff 00000000 8c00
+
+prog 2
+anim:
+- ffff ffffffff ffffffff ffffffff ffff0f00 00000000
+patt:
+- 0120 ffff ffffffff ffffffff ffffffff ffff0f00 00000000 ff000000 03008c00
+
+prog 3
+anim:
+- ffffffff ffffffff ffffffff ffffffff 0f000000 0000
+patt:
+- 0120 00000000 00000000 00000000 00c0d9ff 05000000 0000ff00 00000300 8c00
+- 0120 00000000 00000000 000000ff 7f3d0000 00000000 0000ff00 55000300 8c00
+- 0120 00000000 00000000 fcff7b00 00000000 00000000 0000ff00 aa000300 8c00
+- 0120 00000000	00f0ffff 03000000 00000000 00000000 0000ff00 ff000300 8c00
+- 0120 0000c0ff ff0f0000 00000000 00000000 00000000 0000aa00 ff000300 8c00
+- 0120 ffff0300 00000000 00000000 00000000 00000000 00005500 ff000300 8c00
+
+prog 4
+anim:
+- ffff ffffffff ffffffff ffffffff ffff0f00 00000000
+patt:
+- 01200000 00000000 02007000 000f00c0 00000000 00000000 ff000000 06008c00
+- 01200000 c00000f0 03000c00 00000000 00000000 00000000 ff009900 06008c00
+- 01203f00 001f0000 04000000 00000000 00000000 00000000 cc00ff00 06008c00
+- 0120c007 00e00000 00000000 00000000 00000000 00000000 3300ff00 06008c00
+- 012000f8 0f000700 18000000 00000000 00000000 00000000 0066ff00 06008c00
+- 01200000 3000f80f f0ff0100 00000000 00000000 00000000 00ffff00 06008c00
+- 01200000 00000000 000002f8 7b000020 00000000 00000000 00ff6600 06008c00
+- 01200000 00000000 00000008 00007c1d 00e00500 00000000 33ff0000 06008c00
+- 01200000 00000000 00000004 00000600 001f0000 00000000 ccff0000 06008c00
+- 01200000 00000000 00000003 00800100 c0000000 00000000 ff990000 06008c00
+- 01200000 00000000 0000c000 00700000 1b000000 00000000 ff000000 06008c00
+
+prog 5
+anim:
+- ffffffff ffffffff ffffffff ffffffff 0f000000 0000
+patt:
+- 0120 01004000 00100000 04000001 00400000 00000000 0000ff00 00000c00 8c00
+- 0120 06008000 00200000 08000002 00800000 00000000 0000ff40 00000c00 8c00
+- 0120 08000001 00400000 1000000c 00000100 00000000 0000ff99 00000c00 8c00
+- 0120 10000004 00000100 40000010 00000100 00000000 0000ffe5 00000c00 8c00
+- 0120 20000008 00000200 80000020 00000800 00000000 0000ccff 00000c00 8c00
+- 0120 40000010 00000400 00010040 00000800 00000000 000080ff 00000c00 8c00
+- 0120 00010000 00000000 00020080 00005000 00000000 000033ff 00000c00 8c00
+- 0120 80010060 00001800 00040000 01008000 00000000 000000ff 19000c00 8c00
+- 0120 00020080 00002000 00080000 02008000 00000000 000000ff 66000c00 8c00
+- 0120 000c0000 01004000 00100000 04000002 00000000 000000ff b3000c00 8c00
+- 0120 00100000 04000001 00400000 18000005 00000000 000000ff ff000c00 8c00
+- 0120 00200000 0a008002 00a00000 20000008 00000000 000000b2 ff000c00 8c00
+- 0120 00400000 10000004 00000100 40000010 00000000 00000066 ff000c00 8c00
+- 0120 00c00000 20000008 00000200 00000020 00000000 00000019 ff000c00 8c00
+- 0120 00000100 40000010 00000200 00010040 00000000 00003300 ff000c00 8c00
+- 0120 00000200 80000020 00000800 00000080 00000000 00008000 ff000c00 8c00
+
+## Reset keyboard layer 2 (custom1 ) light program
+
+anim:
+- ffffffff ffffffff ffffffff ffffffff 0f000000 0000
+patt:
+- 0020 ffffffff ffffffff 0f000000 000000ff 00000000 1400
+
+XXX Something is off about this pattern sequence.  It seems too short.
 
 
 # Device info
@@ -2552,12 +2623,18 @@ byte 6 bits 0-7     E    R    T    Xbow Y    U    I    ??
 byte 7 bits 0-7     O    P    [    ]    \    PgUp ??   ??
 byte 8 bits 0-7     ??   ??   Caps A    S    ??   D    F
 byte 9 bits 0-7     G    MBk  H    J    K    ??   L    ;
-byte 10 bits 0-7    '    Entr ??   PgDn ??   ??   ??   ??
-byte 11 bits 0-7    LShf Z    X    ??   C    V    B    REnt
+byte 10 bits 0-7    '    REnt ??   PgDn ??   ??   ??   ??
+byte 11 bits 0-7    LShf Z    X    ??   C    V    B    MEnt
 byte 12 bits 0-7    N    M    ,    ??   .    /    RShf ??
 byte 13 bits 0-7    Up   ??   ??   ??   ??   ??   LCtl Win
 byte 14 bits 0-7    LAlt ??   ??   LSpc MCtl ??   MShf RSpc
 byte 15 bits 0-7    RAlt ??   ??   Fn   RCtl Left Down Rght
+byte 16 bits 0-7    Unknown.  Windows driver sets bit 4-7.
+byte 17
+byte 18
+byte 19
+byte 22
+byte 21
 ```
 
 
@@ -2565,7 +2642,8 @@ This is 16 bytes, 4 ints.  After this comes 0x00000000 0x00000020.  I assume
 this is a required separator.  The first int might be more keymap bits though.
 
 Based on other info, I think the bitmap is 22 bytes and the separator is
-actually 0x0020.
+actually 0x0020.  I suspect that bytes 16-21 are there to support the keypad
+and possibly other keys.
 
 Command 27033002000a contains 10 bytes that are valid (see the 0x0a at the end of
 the command).
@@ -2896,6 +2974,9 @@ Breathing change relationship:
 
 Q: since mono is 00 duration and 0x79 stop, is there a consistent pattern to
 how these numbers are specified?
+
+OK, I *think* that the bytes after duration are don't care.  I.e. any value is
+OK and the keyboard will still be happy.
 
 
 
