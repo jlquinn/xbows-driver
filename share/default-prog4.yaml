@@ -1,3 +1,4 @@
+# This is the same as windmill, but faster cycling.
 animation:
   - all
 pattern:
@@ -20,7 +21,7 @@ pattern:
     color: [ff,00,99]
     type: cycle
     duration: 16
-  # Frame 3
+# Frame 3
   - keys: [
     Escape, F1, F2, F3, F4, F5,
     2, 3, 4, 5,
@@ -48,7 +49,7 @@ pattern:
     duration: 16
   # Frame 6
   - keys: [
-    0, Dash, Equal, BackSpace,
+    0, Minus, Equal, BackSpace,
     Y, U, I, O, P, LeftBracket, RightBracket, BackSlash, PageUp
     ]
     color: [00,ff,ff]
