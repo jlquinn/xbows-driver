@@ -1,0 +1,99 @@
+# Yes this is water waves (plural)
+
+animation:
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+
+pattern:
+
+pattern:
+  - color: [ff,00,00]
+    type: cycle
+    duration: 30
+    keys: [XBows]
+  - color: [ff,00,5e]
+    type: cycle
+    duration: 30
+    keys: [5, 6, T, Y, G, BackSpace_M, H]
+  - color: [ff,00,e1]
+    type: cycle
+    duration: 30
+    keys: [F5, F6, F7, F8, 4, 7, R, U, F, J, V, B, Enter_M, N, M]
+  - color: [84,00,ff]
+    type: cycle
+    duration: 30
+    keys: [F4, 3, E, D, C, Space_L, Control_M, Shift_M, Space_R, F9, 8, I, E, Comma]
+  - color: [33,00,ff]
+    type: cycle
+    duration: 30
+    keys: [F3, 2, W, S, X, Alt_L, F10, 9, O, L, Period, Alt_R]
+  - color: [0d,00,ff]
+    type: cycle
+    duration: 30
+    keys: [F1, F2, 1, Q, A, Z, Windows, F11, F12, 0, P, Semicolon, Slash, Fn]
+  - color: [00,ae,ff]
+    type: cycle
+    duration: 30
+    keys: [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+    Delete, Minus, LeftBracket, Quote, Shift_R, Control_R]
+  - color: [00,ff,dd]
+    type: cycle
+    duration: 30
+    keys: [Equal, RightBracket, Enter_R, Left]
+  - color: [00,ff,77]
+    type: cycle
+    duration: 30
+    keys: [BackSlash, Up, Down]
+  - color: [48,ff,00]
+    type: cycle
+    duration: 30
+    keys: [PrintScreen, BackSpace_R, BackSlash, Up, Down]
+  

@@ -1,0 +1,42 @@
+animation:
+  - [F1,F2,F3,F4,F5,F6,F9,F10,F11,F12,Delete,
+  2,3,4,8,9,0, Minus,Equal,
+  W, E, I, O, P, PageUp,
+  S, XBows, K, L, Quote, Enter_R,
+  Period, Slash,
+  Space_L, Shift_M, Space_R, Fn, Right
+  ]
+  - [Escape,F1,F6,F7,F8,PrintScreen,
+  BackQuote,1,5,6,7,0,Equal,BackSpace_R,
+  Tab,Q,R,T,Y,U,P,LeftBracket,RightBracket,BackSlash,PageUp,
+  CapsLock,A,D,F,G,BackSpace_M,
+      H,J,Semicolon, Quote, Enter_R, PageDown,
+  Shift_L,X,C,V,B,Enter_M,N,M,Comma,Period, Shift_R,Up,
+  Control_L,Windows,Alt_L,Space_L,Control_M,
+      Shift_M,Space_R,Alt_R,Fn, Control_R,Left,Down
+  ]
+
+pattern:
+  - color: [ff,00,00]
+    type: cycle
+    duration: 10
+    keys: [F1,F2,F3,F4,F5,F6,F10,F11,F12,Delete,PrintScreen,
+  2,3,4,9,0, Minus,Equal,BackSpace_R,
+  W, E, O, P, LeftBracket, PageUp,
+  S, XBows, L, Semicolon, Quote, Enter_R, PageDown,
+  Period, Slash, Shift_R,
+  Space_L, Shift_M, Space_R, Fn
+  ]
+  
+  - color: [00,ff,26]
+    type: cycle
+    duration: 10
+    keys: [Escape,F1,F6,F7,F8,F9,
+  BackQuote,1,5,6,7,8,0,Equal,BackSpace_R,
+  Tab,Q,R,T,Y,U,I,P,RightBracket,BackSlash,
+  CapsLock,A,D,F,G,BackSpace_M,
+      H,J,K,L, Quote, Enter_R,
+  Shift_L,X,C,V,B,Enter_M,N,M,Comma,Period, Slash,Up,
+  Control_L,Windows,Alt_L,Space_L,Control_M,
+      Shift_M,Space_R,Alt_R,Fn, Control_R,Left,Down
+  ]

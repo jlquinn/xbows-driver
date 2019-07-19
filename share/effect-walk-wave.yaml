@@ -1,0 +1,286 @@
+animation:
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L]
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+  F1, 1, Q, A, Z, Windows]
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+  F1, 1, Q, A, Z, Windows,
+  F2, 2, W, S, X, Alt_L]
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+  F1, 1, Q, A, Z, Windows,
+  F2, 2, W, S, X, Alt_L,
+  F3
+  ]
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+  F1, 1, Q, A, Z, Windows,
+  F2, 2, W, S, X, Alt_L,
+  F3, F4, 3, E, D, C
+  ]
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+  F1, 1, Q, A, Z, Windows,
+  F2, 2, W, S, X, Alt_L,
+  F3, F4, 3, E, D, C,
+  F5, 4, R, F, V, Space_L
+  ]
+  # frame 6
+  - [F1, 1, Q, A, Z, Windows,
+  F2, 2, W, S, X, Alt_L,
+  F3, F4, 3, E, D, C,
+  F5, 4, R, F, V, Space_L,
+  F6, 5, T, G, B
+  ]
+  - [F2, 2, W, S, X, Alt_L,
+  F3, F4, 3, E, D, C,
+  F5, 4, R, F, V, Space_L,
+  F6, 5, T, G, B,
+  F7, XBows, BackSpace_M, Enter_M, Control_M, Shift_M,
+  PageDown
+  ]
+  - [F3, F4, 3, E, D, C, Alt_L,
+  F5, 4, R, F, V, Space_L,
+  F6, 5, T, G, B,
+  F7, XBows, BackSpace_M, Enter_M, Control_M, Shift_M,
+  F8, 6, Y, H, N,
+  PageDown
+  ]
+  - [F4, 3, E, D, C, Alt_L,
+  F5, 4, R, F, V, Space_L,
+  F6, 5, T, G, B,
+  F7, XBows, BackSpace_M, Enter_M, Control_M, Shift_M,
+  F8, 6, Y, H, N,
+  F9, 7, U, J, M, Space_R
+  ]
+  # Frame 10
+  - [F4, 3, E, D, C,
+  F5, 4, R, F, V, Space_L,
+  F6, 5, T, G, B,
+  F7, XBows, BackSpace_M, Enter_M, Control_M, Shift_M,
+  F8, 6, Y, H, N,
+  F9, 7, U, J, M, Space_R,
+  8, I, K, Comma, Alt_R
+  ]
+  - [F5, 4, R, F, V, Space_L,
+  F6, 5, T, G, B,
+  F7, XBows, BackSpace_M, Enter_M, Control_M, Shift_M,
+  F8, 6, Y, H, N,
+  F9, 7, U, J, M, Space_R,
+  F10, 8, I, K, Comma, Alt_R,
+  F11, 9, O, L, Period
+  ]
+  - [F7, XBows, BackSpace_M, Enter_M, Control_M, Shift_M,
+  F8, 6, Y, H, N,
+  F9, 7, U, J, M, Space_R,
+  F10, 8, I, K, Comma, Alt_R,
+  F11, 9, O, L, Period,
+  F12, 0, O, Semicolon, Slash, Fn,
+  Delete, Minus, LeftBracket, Quote, Shift_R, Control_R,
+  Equal, RightBracket, Enter_R, Left
+  ]
+  - [F9, 7, U, J, M, Space_R,
+  F10, 8, I, K, Comma, Alt_R,
+  F11, 9, O, L, Period,
+  F12, 0, O, Semicolon, Slash, Fn,
+  Delete, Minus, LeftBracket, Quote, Shift_R, Control_R,
+  Equal, RightBracket, Enter_R, Left,
+  PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, PageDown, Right
+  ]
+  # frame 14
+  - [F10, 8, I, K, Comma, Alt_R,
+  F11, 9, O, L, Period,
+  F12, 0, O, Semicolon, Slash, Fn,
+  Delete, Minus, LeftBracket, Quote, Shift_R, Control_R,
+  Equal, RightBracket, Enter_R, Left,
+  PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, PageDown, Right
+  ]
+  - [F11, 9, O, L, Period, Alt_R,
+  F12, 0, O, Semicolon, Slash, Fn,
+  Delete, Minus, LeftBracket, Quote, Shift_R, Control_R,
+  Equal, RightBracket, Enter_R, Left,
+  PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, PageDown, Right
+  ]
+  - [Delete, Minus, LeftBracket, Quote, Shift_R, Control_R,
+  Equal, RightBracket, Enter_R, Left,
+  PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, PageDown, Right
+  ]
+  - [PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, PageDown, Right
+  ]
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+  PageUp, Right
+  ]
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+  F1, 1, Q, A, Z, Windows]
+  # frame 20
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+  F1, 1, Q, A, Z, Windows,
+  F2, 2, W, S, X, Alt_L]
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+  F1, 1, Q, A, Z, Windows,
+  F2, 2, W, S, X, Alt_L,
+  F3
+  ]
+  - [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L,
+  F1, 1, Q, A, Z, Windows,
+  F2, 2, W, S, X, Alt_L,
+  F3, F4, 3, E, D, C
+  ]
+  - [1, Q, A, Z, Windows,
+  F2, 2, W, S, X, Alt_L,
+  F3, F4, 3, E, D, C,
+  F5, 4, R, F, V
+  ]
+  # frame 24
+  - [F2, 2, W, S, X, Alt_L,
+  F3, F4, 3, E, D, C,
+  F5, 4, R, F, V, Space_L,
+  F6, 5, T, G, B,
+  Control_M
+  ]
+  - [2, W, S, X, Alt_L,
+  F3, F4, 3, E, D, C,
+  F5, 4, R, F, V,
+  5, T, G, B,
+  F7, XBows, BackSpace_M, Enter_M, Control_M
+  ]
+  - [F4, 3, E, D, C, Alt_L,
+  F5, 4, R, F, V, Space_L,
+  F6, 5, T, G, B,
+  F7, XBows, BackSpace_M, Enter_M, Control_M, Shift_M,
+  F8, 6, Y, H, N
+  ]
+  - [F4, 3, E, D, C, Alt_L,
+  F5, 4, R, F, V, Space_L,
+  F6, 5, T, G, B,
+  F7, XBows, BackSpace_M, Enter_M, Control_M, Shift_M,
+  F8, 6, Y, H, N,
+  F9, 7, U, J, M, Space_R,
+  PageDown
+  ]
+  # frame 28
+  - [F5, 4, R, F, V, Space_L,
+  F6, 5, T, G, B,
+  F7, XBows, BackSpace_M, Enter_M, Control_M, Shift_M,
+  F8, 6, Y, H, N,
+  F9, 7, U, J, M, Space_R,
+  8, I, K, Comma, Alt_R,
+  PageDown
+  ]
+  - [Space_L,
+  F6, 5, T, G, B,
+  F7, XBows, BackSpace_M, Enter_M, Control_M, Shift_M,
+  F8, 6, Y, H, N,
+  F9, 7, U, J, M,
+  F10, 8, I, K, Comma, Alt_R,
+  PageDown
+  ]
+  - [XBows, BackSpace_M, Enter_M, Shift_M,
+  F8, 6, Y, H, N,
+  F9, 7, U, J, M, Space_R,
+  F10, 8, I, K, Comma, Alt_R,
+  F11, 9, O, L, Period,
+  F12, 0, O, Semicolon, Slash, Fn,
+  ]
+  - [F9, 7, U, J, M,
+  F10, 8, I, K, Comma, Alt_R,
+  F11, 9, O, L, Period,
+  F12, 0, O, Semicolon, Slash, Fn,
+  Delete, Minus, LeftBracket, Quote, Shift_R,
+  Equal, RightBracket, Enter_R, Left
+  ]
+  - [F10, 8, I, K, Comma, Alt_R,
+  F11, 9, O, L, Period,
+  F12, 0, O, Semicolon, Slash, Fn,
+  Delete, Minus, LeftBracket, Quote, Shift_R, Control_R,
+  Equal, RightBracket, Enter_R, Left,
+  PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, PageDown, Right
+  ]
+  # frame 32
+  - [Alt_R, F11, 9, O, L, Period,
+  F12, 0, O, Semicolon, Slash, Fn,
+  Delete, Minus, LeftBracket, Quote, Shift_R, Control_R,
+  Equal, RightBracket, Enter_R, Left,
+  PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, PageDown, Right
+  ]
+  - [F12, 0, O, Semicolon, Slash, Fn,
+  Delete, Minus, LeftBracket, Quote, Shift_R, Control_R,
+  Equal, RightBracket, Enter_R, Left,
+  PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, PageDown, Right
+  ]
+  - [Delete, Minus, LeftBracket, Quote, Shift_R, Control_R,
+  Equal, RightBracket, Enter_R, Left,
+  PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, PageDown, Right
+  ]
+  - [Equal, RightBracket, Enter_R, Left,
+  PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, Right
+  ]
+  - [PrintScreen, BackSpace_R, BackSlash, Up, Down,
+  PageUp, PageDown, Right
+  ]
+
+pattern:
+  - color: [ff,00,00]
+    type: cycle
+    duration: 30
+    keys: [Escape, BackQuote, Tab, CapsLock, Shift_L, Control_L]
+  - color: [33,ff,00]
+    type: cycle
+    duration: 30
+    keys: [F1, 1, Q, A, Z, Windows, F2, 2, W, S, X, Alt_L, F3]
+  - color: [00,91,ff]
+    type: cycle
+    duration: 30
+    keys: [F4, 3, E, D, C]
+  - color: [8c,00,ff]
+    type: cycle
+    duration: 30
+    keys: [F5, 4, R, F, V]
+  - color: [d9,ff,00]
+    type: cycle
+    duration: 30
+    keys: [F6, 5, T, G, B, Alt_L, F7, XBows]
+  - color: [00,ff,ea]
+    type: cycle
+    duration: 30
+    keys: [F7, BackSpace_M, Enter_M, Control_M, Shift_M, PageDown]
+  - color: [0d,ff,00]
+    type: cycle
+    duration: 30
+    keys: [F8, 6, Y, H, N, Space_R]
+  - color: [ff,00,d9]
+    type: cycle
+    duration: 30
+    keys: [F9, 7, U, J, M, Space_R]
+  - color: [ff,99,00]
+    type: cycle
+    duration: 30
+    keys: [F10, 8, I, K, Comma, Alt_R]
+  - color: [26,ff,00]
+    type: cycle
+    duration: 30
+    keys: [F11, 9, O, L, Period]
+  - color: [ff,59,00]
+    type: cycle
+    duration: 30
+    keys: [F12, 0, P, Semicolon, Slash, Fn]
+  - color: [00,e1,ff]
+    type: cycle
+    duration: 30
+    keys: [Delete, Minus, LeftBracket, Quote, Shift_R, Control_R]
+  - color: [ff,00,7b]
+    type: cycle
+    duration: 30
+    keys: [Delete, Equal, RightBracket, Enter_R, Left]
+  - color: [f7,ff,00]
+    type: cycle
+    duration: 30
+    keys: [PrintScreen, BackSpace_R, BackSlash, Up, Down,
+    PageUp, PageDown, Right]
+    

@@ -1,0 +1,59 @@
+# Mostly sends wiggle across kbd, but a few strange flashes
+animation:
+  - [Escape, F7, F12, Delete,
+  1, 4, 6, 9,
+  Q, E, Y, RightBracket,
+  A, H, K,
+  X, M, Comma, Up]
+  - [Escape, F7, F12, Delete,
+  2, 5, 6, 9,
+  W, R, Y,
+  S, D, H, K,
+  C, M, Comma, Up]
+  - [F2, F7, F8, Delete,
+  BackQuote, 7, Minus, BackSpace_R,
+  T, U, O, PageUp,
+  F, J,
+  C, V, Comma
+  ]
+  - [Escape, F7, F12, Delete,
+  1, 4, 6, 9,
+  Q, E, Y, RightBracket,
+  A, H, K,
+  X, M, Comma, Up]
+  - [F3, F4, F9, F10, PrintScreen,
+  2, 4, 7, Equal,
+  Q, R, Y, RightBracket,
+  CapsLock, F, BackSpace_M,
+  B, Enter_M, Shift_R]
+  - [F4, F5, F10, F11,
+  5, 8, 9,
+  W, T, U, O, Backslash,
+  A, G, H, Semicolon,
+  Shift_L, Enter_M, N]
+  - [F5, F11, F12,
+  3, Minus,
+  Tab, XBows, I, LeftBracket, PageUp,
+  CapsLock, S, BackSpace_M, J,
+  Shift_L, X, N, M, Up]
+  - [Escape, F7, F12, Delete,
+  1, 4, 6, 9,
+  Q, E, Y, RightBracket,
+  A, H, K,
+  X, M, Comma, Up]
+  
+
+  # most but not all keys
+pattern:
+  - color: [ff,00,00]         # red
+    type: cycle
+    duration: 30
+    keys: [Escape, F2, F3, F4, F5, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, LeftBracket, RightBracket,
+Backslash, PageUp,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, Semicolon,
+Shift_L, X, C, V, B, Enter_M, N, M, Comma, Shift_R, Up,
+Control_L, Windows, Alt_L, Control_M, Alt_R,
+Control_R, Left, Down, Right]

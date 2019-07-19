@@ -1,0 +1,34 @@
+#lights:
+animation:  # list of frames
+- [J]
+- [U,I,H,K,M,Comma]
+- [7,8,Y,BackSpace_M,N,Alt_R]
+- [F8,F9,F10,6,9,XBows,O,G,Semicolon,Enter_M,Alt_R,Shift_R]
+- [F7,F11,F12,Minus,T,LeftBracket,F,B,Control_M,Control_R]
+- [Delete,Equal,5,RightBracket,D,V,Up,Control_M,Left]
+- [F5,PrintScreen,4,E,PageUp,C,Down]
+- [F4,3,Alt_L,Right]
+- [F3,W,S,X,Alt_L]
+- [F2,2,Q,A,Windows]
+- [Escape,BackQuote,1,Tab,CapsLock,Shift_L,Control_L]
+- [F2,1,Q,A,X,Windows]
+- [F3,2,W,S,Alt_L]
+- [F4,C,Right]
+- [F5,PrintScreen,3,E,PageUp,D,V,Control_M,Left,Up]
+- [4,R,F,B,Control_M,BackSpace_R,BackSlash,Enter_R,Control_R]
+- [F7,F12,Delete,Equal,T,G,Enter_M,RightBracket,Shift_R]
+- [F9,F10,F11,F12,XBows,6,BackSpace_M,N,Alt_R,Minus,LeftBracket,Semicolon,Slash,Shift_R]
+- [7,8,9,Y,O,H,M,Comma]
+- [8,U,J,K]
+- [I]
+
+pattern:   # list of lighting pattern commands
+- color: [ff,00,00]  #rgb in hex
+  keys: [Escape,F1,F2,F3,F4,F5,F7,F8,F9,F10,F11,F12,Delete,PrintScreen,
+  BackQuote,1,2,3,4,5,6,7,8,9,0,Dash,Equal,BackSpace_R,
+  Tab,Q,W,E,R,T,XBows,Y,U,I,O,LeftBracket,RightBracket,BackSlash,PageUp,
+  CapsLock,A,S,D,F,G,BackSpace_M,H,J,K,Semicolon,
+  Shift_L,X,C,V,B,Enter_M,N,M,Comma,Shift_R,Up,
+  Control_L,Windows,Alt_L,Control_M,Alt_R,Control_R,Left,Down,Right]
+  type: cycle
+  duration: 60

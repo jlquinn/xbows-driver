@@ -1,0 +1,148 @@
+#lights:
+animation:  # list of frames
+# CHECK THIS F1 is missing
+- [Escape, F2,
+BackQuote, 1, 2,
+Tab, Q,
+CapsLock, A,
+Shift_L, Z, X,
+Control_L, Windows,
+]
+- [Escape, F2,
+BackQuote, 1, 2,
+Tab, Q,
+CapsLock, A,
+Shift_L, Z, X,
+Control_L, Windows,
+]
+- [Escape, F2, F3, F4, F5, F6,
+BackQuote, 1, 2, 3, 4, 5,
+Tab, Q, W, E, R, T,
+CapsLock, A, S, D, F, G, BackSpace_M,
+Shift_L, Z, X, C, V, B, Enter_M,
+Control_L, Windows, Alt_L, Space_L, Control_M,
+]
+- [Escape, F2, F3, F4, F5, F6,
+BackQuote, 1, 2, 3, 4, 5,
+Tab, Q, W, E, R, T,
+CapsLock, A, S, D, F, G, BackSpace_M,
+Shift_L, Z, X, C, V, B, Enter_M,
+Control_L, Windows, Alt_L, Space_L, Control_M,
+]
+# CHECK THIS missing space_L and F1
+- [Escape, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L,
+Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period,
+Control_L, Windows, Alt_L, Control_M, Shift_M, Alt_R,
+]
+- [Escape, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L,
+Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period,
+Control_L, Windows, Alt_L, Control_M, Shift_M, Alt_R,
+]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R,
+Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period, Slash, Shift_R,
+Control_L, Windows, Alt_L, Space_L, Control_M, Shift_M, Alt_R, Fn,
+Control_R, Left,
+]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R,
+Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period, Slash, Shift_R,
+Control_L, Windows, Alt_L, Space_L, Control_M, Shift_M, Alt_R, Fn,
+Control_R, Left,
+]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R, PageDown,
+Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period, Slash, Shift_R, Up,
+Control_L, Windows, Alt_L, Space_L, Control_M, Shift_M, Alt_R, Fn,
+Control_R, Left, Down, Right
+]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R, PageDown,
+Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period, Slash, Shift_R, Up,
+Control_L, Windows, Alt_L, Space_L, Control_M, Shift_M, Alt_R, Fn,
+Control_R, Left, Down, Right
+]
+
+pattern:
+  # color keys inconsistent with animation keys
+  - color: [ff,00,00]
+    type: cycle
+    duration: 20
+    keys: [Escape, F1, F2, F3,
+BackQuote, 1, 2,
+Tab, Q, W,
+CapsLock, A, S,
+Shift_L, Z, X,
+Control_L, Windows, Alt_L
+]
+
+  - color: [ae,ff,00]
+    type: cycle
+    duration: 20
+    keys: [F3, F4, F5, F6, F7,
+3, 4, 5, 6,
+E, R, T, XBows,
+D, F, G, BackSpace_M,
+C, V, B, Enter_M, N,
+Alt_L, Space_L, Control_M, Shift_M
+]
+      
+  - color: [00,ff,00]
+    type: cycle
+    duration: 20
+    keys: [F8, F9, F10, F11,
+6, 7, 8, 9,
+Y, U, I, O,
+BackSpace_M, H, J, K, L,
+N, M, Comma, Period,
+Space_R, Alt_R
+]
+
+  - color: [00,bb,ff]
+    type: cycle
+    duration: 20
+    keys: [F12, Delete,
+0, Minus, Equal,
+P, LeftBracket, RightBracket,
+Semicolon, Quote, Enter_R,
+Slash, Shift_R,
+Fn, Control_R, Left
+]
+      
+  - color: [6f,00,ff]
+    type: cycle
+    duration: 20
+    keys: [PrintScreen,
+BackSpace_R,
+Backslash, PageUp,
+PageDown,
+Up,
+Down, Right
+]
+      

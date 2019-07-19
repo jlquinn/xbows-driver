@@ -1,0 +1,9 @@
+# gradual change RGB
+animation:
+  - all
+  - all
+  - all
+
+pattern:
+  - color: [ff,ff,00]
+    type: monochrome

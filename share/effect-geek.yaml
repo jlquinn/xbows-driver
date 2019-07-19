@@ -1,0 +1,24 @@
+animation:
+  - [Escape, 2, W, S, X, Control_L, Windows]
+  - [F2, Windows, Alt_L]
+  - [F3, 3, E, D, C, Alt_L,
+  PageUp]
+  - [F3, F4, 4, R, F, V, Alt_L,
+  BackSlash]
+  - [F4, F5, 5, T, G, B, Control_M,
+  BackSpace, RightBracket, Up, Right]
+  - [XBows, BackSpace_M, Enter_M, Control_M,
+  PrintScreen, Equal, LeftBracket, Down]
+  - [F7, 6, Y, H, N, Control_M,
+  O, Minus, Semicolon, Left]
+  - [F9, F11, 8, I, K, Comma, Alt_R]
+  - [F9, F10, 8, U, J, Comma, Alt_R]
+  - [F9, F10, 8, U, J, Comma, Alt_R]
+  - [F9, F10, 8, U, J, Comma, Alt_R]
+  - [F9, F10, 8, U, J, Comma, Alt_R]
+  - [F9, F10, 8, U, J, Comma, Alt_R]
+
+pattern:
+  - color: [ff,00,00]
+    type: cycle
+    duration: 30

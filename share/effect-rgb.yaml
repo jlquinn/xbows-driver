@@ -1,0 +1,8 @@
+# gradual change RGB
+animation:
+  - all
+
+pattern:
+  - color: [ff,00,00]
+    type: cycle
+    duration: 360

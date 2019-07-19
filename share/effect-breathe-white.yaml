@@ -1,0 +1,30 @@
+# gradual change RGB
+animation:
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+  - all
+
+pattern:
+  - color: [ff,ff,ff]
+    type: breathe
+    duration: 10
+    gap: 2

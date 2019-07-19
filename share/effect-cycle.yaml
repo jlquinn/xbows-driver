@@ -1,0 +1,189 @@
+animation:
+  - all
+
+pattern:
+  # Frame 1
+  - keys: [
+    Escape,
+    BackQuote,
+    Tab,
+    CapsLock,
+    Shift_L,
+    Control_L
+    ]
+    color: [ff,00,00]
+    type: cycle
+    duration: 30
+  # Frame 2
+  - keys: [
+    F1, F2,
+    1,
+    Q,
+    A,
+    Z,
+    Windows
+    ]
+    color: [ff,40,00]
+    type: cycle
+    duration: 30
+  # Frame 3
+  - keys: [
+    F3,
+    2,
+    W,
+    S,
+    X,
+    Alt_L
+    ]
+    color: [ff,99,00]
+    type: cycle
+    duration: 30
+  # Frame 4
+  - keys: [
+    F4,
+    3,
+    E,
+    D,
+    C,
+    Alt_L
+    ]
+    color: [ff,e6,00]
+    type: cycle
+    duration: 30
+  # Frame 5
+  - keys: [
+    F5,
+    4,
+    R,
+    F,
+    V,
+    Space_L
+    ]
+    color: [cc,ff,00]
+    type: cycle
+    duration: 30
+  # Frame 6
+  - keys: [
+    F6,
+    5,
+    T,
+    G,
+    B,
+    Space_L
+    ]
+    color: [80,ff,00]
+    type: cycle
+    duration: 30
+  # Frame 7
+  - keys: [
+    XBows,
+    BackSpace_M,
+    Enter_M,
+    Control_M, Shift_M
+    ]
+    color: [33,ff,00]
+    type: cycle
+    duration: 30
+  # Frame 8
+  - keys: [
+    F7,
+    6,
+    Y,
+    H,
+    N,
+    Space_R
+    ]
+    color: [00,ff,1a]
+    type: cycle
+    duration: 30
+  # Frame 9
+  - keys: [
+    F8,
+    7,
+    U,
+    J,
+    M,
+    Space_R
+    ]
+    color: [00,ff,66]
+    type: cycle
+    duration: 30
+  # Frame 10  IMPORTANT CHECK THIS - spec is B15b0 Alt_R
+  - keys: [
+    F9, F10,
+    8,
+    I,
+    K,
+    Comma,
+    ]
+    color: [00,ff,b3]
+    type: cycle
+    duration: 30
+  # Frame 11  IMPORTANT CHECK THIS - spec is B15b0 Alt_R
+  - keys: [
+    F11,
+    9,
+    O,
+    L,
+    Period,
+    Alt_R
+    ]
+    color: [00,ff,ff]
+    type: cycle
+    duration: 30
+  # Frame 12
+  - keys: [
+    F12,
+    0,
+    P,
+    Semicolon,
+    Slash,
+    Fn
+    ]
+    color: [00,b3,ff]
+    type: cycle
+    duration: 30
+  # Frame 13
+  - keys: [
+    Delete,
+    Dash,
+    LeftBracket,
+    Quote,
+    Shift_R,
+    Control_R
+    ]
+    color: [00,66,ff]
+    type: cycle
+    duration: 30
+  # Frame 14
+  - keys: [
+    Delete,
+    Equal,
+    RightBracket,
+    Enter_R,
+    Left
+    ]
+    color: [00,1a,ff]
+    type: cycle
+    duration: 30
+  # Frame 15
+  - keys: [
+    PrintScreen,
+    BackSpace_R,
+    BackSlash,
+    Enter_R,
+    Up,
+    Down
+    ]
+    color: [33,00,ff]
+    type: cycle
+    duration: 30
+  # Frame 16
+  - keys: [
+    PageUp,
+    PageDown,
+    Right
+    ]
+    color: [80,00,ff]
+    type: cycle
+    duration: 30

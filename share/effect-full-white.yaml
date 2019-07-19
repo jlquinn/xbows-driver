@@ -1,0 +1,9 @@
+#lights:
+animation:  # list of frames
+- all
+- all
+- all
+pattern:
+- color: [ff,ff,ff]
+  type: monochrome
+  duration: 1

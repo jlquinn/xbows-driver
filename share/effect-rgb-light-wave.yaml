@@ -1,0 +1,27 @@
+#lights:
+animation:  # list of frames
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen]
+- [BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Dash, Equal, BackSpace_R]
+- [BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Dash, Equal, BackSpace_R]
+- [Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp]
+- [Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp]
+- [CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R, PageDown]
+- [CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R, PageDown]
+- [Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period, Slash, Shift_R, Up]
+- [Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period, Slash, Shift_R, Up]
+- [Control_L, Windows, Alt_L, Space_L, Control_M, Shift_M, Alt_R, Fn,
+Control_R, Left, Down, Right]
+- [Control_L, Windows, Alt_L, Space_L, Control_M, Shift_M, Alt_R, Fn,
+Control_R, Left, Down, Right]
+
+pattern:
+  - color: [ff,00,00]         # red
+    type: monochrome
+    duration: 20

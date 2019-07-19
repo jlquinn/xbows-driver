@@ -1,0 +1,109 @@
+#lights:
+animation:  # list of frames
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R, PageDown
+]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R, PageDown
+]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R, PageDown,
+Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period, Slash, Shift_R, Up,
+]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R, PageDown,
+Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period, Slash, Shift_R, Up,
+]
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R, PageDown,
+Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period, Slash, Shift_R, Up,
+Control_L, Windows, Alt_L, Space_L, Control_M, Shift_M, Alt_R, Fn,
+Control_R, Left, Down, Right
+]
+# CHECK THIS missing space_R
+- [Escape, F1, F2, F3, F4, F5, F6, F7, F8,
+F9, F10, F11, F12, Delete, PrintScreen,
+BackQuote, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, Minus, Equal, BackSpace_R,
+Tab, Q, W, E, R, T, XBows, Y, U, I, O, P, LeftBracket, RightBracket,
+Backslash, PageUp,
+CapsLock, A, S, D, F, G, BackSpace_M, H, J, K, L, Semicolon, Quote,
+Enter_R, PageDown,
+Shift_L, Z, X, C, V, B, Enter_M, N, M, Comma, Period, Slash, Shift_R, Up,
+Control_L, Windows, Alt_L, Space_L, Control_M, Shift_M, Alt_R, Fn,
+Control_R, Left, Down, Right
+]
+- []
+- []
+
+
+pattern:
+  - color: [ff,00,00]
+    keys: [Escape,F1,F2,F3,F4,F5,F6, F7,F8,F9,F10,F11,F12,Delete,PrintScreen]
+    type: monochrome
+  - color: [ff,a2,00]
+    keys: [BackQuote,1,2,3,4,5,6,7,8,9,0, Dash,Equal,BackSpace_R]
+    type: monochrome
+  - color: [00,ff,09]
+    keys:
+      [Tab,Q,W,E,R,T,XBows,Y,U,I,O,P,LeftBracket,RightBracket,BackSlash,PageUp]
+    type: monochrome
+  - color: [00,ff,bf]
+    keys:
+      [CapsLock,A,S,D,F,G,BackSpace_M,
+      H,J,K,Semicolon, Quote, Enter_R, PageDown]
+    type: monochrome
+  - color: [00,00,ff]
+    keys: [Shift_L,X,C,V,B,Enter_M,N,M,Comma,Period, Shift_R,Up]
+    type: monochrome
+  - color: [d5,00,ff]
+    keys:
+      [Control_L,Windows,Alt_L,Space_L,Control_M,
+      Shift_M,Space_R,Alt_R,Fn, Control_R,Left,Down,Right]
+    type: monochrome
