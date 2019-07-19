@@ -14,7 +14,8 @@
 * parse flashlight cfg
 * parse light sequence (driver mode)
 * library of light programs
-
+* works on Ubuntu 18.04
+Untested on other OS version so far.
 
 
 
