@@ -15,5 +15,4 @@ link_libraries(xbows)
 
 add_executable(kbdtest kbdtest.cc)
 add_executable(testparse testparse.cc)
-add_executable(crap crap.cc)
 add_executable(kbdtest2 kbdtest2.cc)
