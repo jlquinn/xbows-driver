@@ -1,23 +1,24 @@
 cmake_minimum_required(VERSION 3.5)
 
+project(xbows)
+
 include(ExternalProject)
 
 # Set up hidapi library
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_subdirectory(hidapi)
 set(HIDAPI_PATH "${CMAKE_SOURCE_DIR}/hidapi")
-find_library(HIDAPI_LIBRARY hidapi PATHS "${HIDAPI_PATH}/linux")
+set(HIDAPI_LIBRARY hidapi)
 
 # Set up crc library
+set(CRC_PATH "${CMAKE_SOURCE_DIR}/libcrc")
 ExternalProject_Add(crc
-  SOURCE_DIR libcrc
+  SOURCE_DIR ${CRC_PATH}
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make
   BUILD_IN_SOURCE 1
   INSTALL_COMMAND ""
   )
-set(CRC_PATH "${CMAKE_SOURCE_DIR}/libcrc")
-find_library(CRC_LIBRARY crc PATHS "${CRC_PATH}/lib")
+set(CRC_LIBRARY "${CRC_PATH}/lib/libcrc${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
 # Set up yaml-cpp
 find_library(YAML_LIBRARY yaml-cpp)
