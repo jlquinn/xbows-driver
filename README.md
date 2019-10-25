@@ -1,4 +1,4 @@
-# Linux xbows Driver
+# Linux X-Bows Driver
 
 [Quick start](docs/quick-start.md)
 [Configuration](docs/config.md)
