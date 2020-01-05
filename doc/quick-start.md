@@ -15,6 +15,7 @@ work with 4.9 or newer but you'll have to set the std=c++11 flag.
 sudo apt-get install cmake g++ libyaml-cpp-dev
 sudo apt-get install autotools-dev autoconf automake libtool
 sudo apt-get install libudev-dev libusb-1.0-0-dev
+sudo apt-get install libboost-all-dev
 ```
 
 1. Obtain the source code
