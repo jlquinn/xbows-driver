@@ -56,7 +56,7 @@ assigns F1 a purple color.  The Equal key is assigned a white color.
 Macros are a combination of events, one of key down, key up, or delays.  The
 specification of an event looks like the following:
 
-```
+```yaml
   macros:
   - id: 1
     mode: once/release/loop    # default to once
@@ -89,7 +89,7 @@ We have maps of key to color, key to key, key to macro, key to flashlight.
 
 # Yaml config file syntax
 
-
+```yaml
 driver:
   # defines light program.  Just a sequence of color frames
   lights:
@@ -148,18 +148,21 @@ custom:
   
   flashlight:
 	# same as light program  
+```
 
 # Including from the shared library
 
 An include mechanism is supported by specifying a filename with the tag !include.
 For example:
 
+```
 lights: !include effect-rgb-light-wave.yaml
+```
 
 This will load the file effect-white.yaml and insert the contents
 under the lights node.  In effect-white.yaml, you might have
 
-#lights:
+```yaml
 animation:  # list of frames
 - all
 - all
@@ -168,6 +171,7 @@ pattern:
 - color: [ff,ff,ff]
   type: monochrome
   duration: 1
+```
 
 where all the content under the lights map label is present in that file.
 

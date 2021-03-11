@@ -57,7 +57,10 @@ int keymap_assign[MAX_KEYCODE] = {
 
 void keymap::assign(keycodes key, keycodes emits) {
   // XXX CHECK THIS!  It should probably be htole16
-  keys[keymap_assign[key]] = htobe16(keyid[emits]) | 0x02000000;
+  if(keyid[emits] > 0xffff)
+    keys[keymap_assign[key]] = htobe32(keyid[emits]) | 0x02000000;
+  else
+    keys[keymap_assign[key]] = htobe16(keyid[emits]) | 0x02000000;
 }
 
 void keymap::assign_macro(keycodes key, int n) {
