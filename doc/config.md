@@ -60,17 +60,17 @@ specification of an event looks like the following:
 macros:
   - id: 1
     mode: once/release/loop    # default to once
-	steps:
-	  - Control_L down
-	  - 10 ms
-	  - X down
-	  - 5 ms
-	  - X up
-	  - 6 ms
-	  - Control_L up
-	
+    steps:
+      - Control_L down
+      - 10 ms
+      - X down
+      - 5 ms
+      - X up
+      - 6 ms
+      - Control_L up
+    
   - id: 2		# sequence of steps for the macro
-	steps: [ K down, 5 ms, K up, 6 ms ]
+    steps: [ K down, 5 ms, K up, 6 ms ]
 ```
 
 A key up or down event is the keyname followed by 'down' or 'up'.  A delay is an
