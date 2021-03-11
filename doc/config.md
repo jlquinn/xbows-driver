@@ -57,7 +57,7 @@ Macros are a combination of events, one of key down, key up, or delays.  The
 specification of an event looks like the following:
 
 ```yaml
-  macros:
+macros:
   - id: 1
     mode: once/release/loop    # default to once
 	steps:
@@ -95,30 +95,30 @@ driver:
   lights:
   - frame:
     colormap:
-	  {8: green, 9: green, U: green, I: green, O: green, P: green,
-	  J: green, K: green, L: green, Semicolon: green,
-	  M: green, Comma: green, Period: green, Slash: green,
-	  Space_R: green, Alt_R: green }
+      {8: green, 9: green, U: green, I: green, O: green, P: green,
+      J: green, K: green, L: green, Semicolon: green,
+      M: green, Comma: green, Period: green, Slash: green,
+      Space_R: green, Alt_R: green }
   - frame: keymap
   
   
   # define key mapping
   keymap:
-	Z: Q            # assign Q to the Z key
-	C: { macro: 1 }		# assign macro 1 to C key
-	
+    Z: Q            # assign Q to the Z key
+    C: { macro: 1 }		# assign macro 1 to C key
+
   macros:
   - id: 1
-	steps: []	
+    steps: []	
   - id: 2
-	steps: []	
-	  
+    steps: []	
+      
   flashlight:
     - id: 1			# unique id for the flashlight program
-	  - colormap: {...}
-	  - colormap: {...}
-	
-	
+      - colormap: {...}
+      - colormap: {...}
+    
+    
 ---
 
 custom:
@@ -129,25 +129,25 @@ custom:
    - [M, N, O]
    lighting:   # list of lighting commands
    - color: RGB/name
-	 keys: [Q, K, Space]   # list of active keys
-	 pattern: monochrome/cycle/breathe
-	 duration: # only for breathe and cycle
-	 gap: 5    # only used for breathe
+     keys: [Q, K, Space]   # list of active keys
+     pattern: monochrome/cycle/breathe
+     duration: # only for breathe and cycle
+     gap: 5    # only used for breathe
    COLORMAP: ????  # Is it possible to specify custom as a sequence of colormaps?
-	
+    
   keymap:
-	Z: Q            # assign Q to the Z key
-	C: { macro: 1 }		# assign macro 1 to C key
+    Z: Q            # assign Q to the Z key
+    C: { macro: 1 }		# assign macro 1 to C key
   macros:
   - id: 1
     mode: once/release/loop    # default to once
-	steps: [ Q down, 5 ms, Q up, 6 ms]
-	
+    steps: [ Q down, 5 ms, Q up, 6 ms]
+    
   - id: 2		# sequence of steps for the macro
-	steps: [ K down, 5 ms, K up, 6 ms ]
+    steps: [ K down, 5 ms, K up, 6 ms ]
   
   flashlight:
-	# same as light program  
+    # same as light program  
 ```
 
 # Including from the shared library
