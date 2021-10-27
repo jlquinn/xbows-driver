@@ -56,21 +56,21 @@ assigns F1 a purple color.  The Equal key is assigned a white color.
 Macros are a combination of events, one of key down, key up, or delays.  The
 specification of an event looks like the following:
 
-```
-  macros:
+```yaml
+macros:
   - id: 1
     mode: once/release/loop    # default to once
-	steps:
-	  - Control_L down
-	  - 10 ms
-	  - X down
-	  - 5 ms
-	  - X up
-	  - 6 ms
-	  - Control_L up
-	
+    steps:
+      - Control_L down
+      - 10 ms
+      - X down
+      - 5 ms
+      - X up
+      - 6 ms
+      - Control_L up
+    
   - id: 2		# sequence of steps for the macro
-	steps: [ K down, 5 ms, K up, 6 ms ]
+    steps: [ K down, 5 ms, K up, 6 ms ]
 ```
 
 A key up or down event is the keyname followed by 'down' or 'up'.  A delay is an
@@ -89,36 +89,36 @@ We have maps of key to color, key to key, key to macro, key to flashlight.
 
 # Yaml config file syntax
 
-
+```yaml
 driver:
   # defines light program.  Just a sequence of color frames
   lights:
   - frame:
     colormap:
-	  {8: green, 9: green, U: green, I: green, O: green, P: green,
-	  J: green, K: green, L: green, Semicolon: green,
-	  M: green, Comma: green, Period: green, Slash: green,
-	  Space_R: green, Alt_R: green }
+      {8: green, 9: green, U: green, I: green, O: green, P: green,
+      J: green, K: green, L: green, Semicolon: green,
+      M: green, Comma: green, Period: green, Slash: green,
+      Space_R: green, Alt_R: green }
   - frame: keymap
   
   
   # define key mapping
   keymap:
-	Z: Q            # assign Q to the Z key
-	C: { macro: 1 }		# assign macro 1 to C key
-	
+    Z: Q            # assign Q to the Z key
+    C: { macro: 1 }		# assign macro 1 to C key
+
   macros:
   - id: 1
-	steps: []	
+    steps: []	
   - id: 2
-	steps: []	
-	  
+    steps: []	
+      
   flashlight:
     - id: 1			# unique id for the flashlight program
-	  - colormap: {...}
-	  - colormap: {...}
-	
-	
+      - colormap: {...}
+      - colormap: {...}
+    
+    
 ---
 
 custom:
@@ -129,37 +129,40 @@ custom:
    - [M, N, O]
    lighting:   # list of lighting commands
    - color: RGB/name
-	 keys: [Q, K, Space]   # list of active keys
-	 pattern: monochrome/cycle/breathe
-	 duration: # only for breathe and cycle
-	 gap: 5    # only used for breathe
+     keys: [Q, K, Space]   # list of active keys
+     pattern: monochrome/cycle/breathe
+     duration: # only for breathe and cycle
+     gap: 5    # only used for breathe
    COLORMAP: ????  # Is it possible to specify custom as a sequence of colormaps?
-	
+    
   keymap:
-	Z: Q            # assign Q to the Z key
-	C: { macro: 1 }		# assign macro 1 to C key
+    Z: Q            # assign Q to the Z key
+    C: { macro: 1 }		# assign macro 1 to C key
   macros:
   - id: 1
     mode: once/release/loop    # default to once
-	steps: [ Q down, 5 ms, Q up, 6 ms]
-	
+    steps: [ Q down, 5 ms, Q up, 6 ms]
+    
   - id: 2		# sequence of steps for the macro
-	steps: [ K down, 5 ms, K up, 6 ms ]
+    steps: [ K down, 5 ms, K up, 6 ms ]
   
   flashlight:
-	# same as light program  
+    # same as light program  
+```
 
 # Including from the shared library
 
 An include mechanism is supported by specifying a filename with the tag !include.
 For example:
 
+```
 lights: !include effect-rgb-light-wave.yaml
+```
 
 This will load the file effect-white.yaml and insert the contents
 under the lights node.  In effect-white.yaml, you might have
 
-#lights:
+```yaml
 animation:  # list of frames
 - all
 - all
@@ -168,6 +171,7 @@ pattern:
 - color: [ff,ff,ff]
   type: monochrome
   duration: 1
+```
 
 where all the content under the lights map label is present in that file.
 

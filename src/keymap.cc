@@ -2,7 +2,7 @@
 
 // Map from keycode to key id.  This is used to build driver keymap and custom
 // keymap.
-uint16_t keyid[MAX_KEYCODE] = {
+uint32_t keyid[MAX_KEYCODE] = {
   0xffff,					  // None
   4, 5, 6, 7, 8, 9, 0xa, 0xb,			  // A B C D E F G H
   0xc, 0xd, 0xe, 0xf, 0x10, 0x11, 0x12, 0x13,	  // I J K L M N O P
@@ -32,13 +32,13 @@ uint16_t keyid[MAX_KEYCODE] = {
   0x5e, 0x5f, 0x60, 0x61, 0x62,			  // N6 N7 N8 N9 N0 N.
   0x63, 0x56, 0x57,				  // N. N- N+
   // Media (03 suffix for custom)
-  0x8301, 0xcd00, 0xb700, 0xb600, 0xb500,	  // play pause stop last next
-  0xea00, 0xe900, 0xe200,			  // volup voldown mute
+  0x83010003, 0xcd000003, 0xb7000003, 0xb6000003, 0xb5000003,	  // play pause stop last next
+  0xea000003, 0xe9000003, 0xe2000003,			  // volup voldown mute
   // Mouse (0101 suffix for custom)
-  0x0100, 0x0400, 0x0200, 0x0800, 0x1000, // lclk mclk rclk bkclk fwclk
+  0x01000101, 0x04000101, 0x02000101, 0x08000101, 0x10000101, // lclk mclk rclk bkclk fwclk
   // Sys/Net (03 suffix for custom
-  0x2402, 0x2502, 0x2702, 0x2a02, 0x2302, // back, fwd, refrsh, collect, home,
-  0x8a01, 0x9401, 0x9201, 0x0106, 0x0119, 0x46, // email mycomp calc copy paste prtsc
+  0x24020003, 0x25020003, 0x27020003, 0x2a020003, 0x23020003, // back, fwd, refrsh, collect, home,
+  0x8a010003, 0x94010003, 0x92010003, 0x01060003, 0x01190003, 0x460003, // email mycomp calc copy paste prtsc
 
   0xffff, 0xffff, 0xffff,	// Home, End, Insert
   0xffff			// Fn

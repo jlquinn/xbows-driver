@@ -60,7 +60,7 @@ enum keycodes {
 };
 
 // Map from keycode to key id.  Used to build driver keymap and custom keymap.
-extern uint16_t keyid[MAX_KEYCODE];
+extern uint32_t keyid[MAX_KEYCODE];
 
 
 #endif
