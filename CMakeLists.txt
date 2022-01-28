@@ -2,13 +2,23 @@ cmake_minimum_required(VERSION 3.5)
 
 project(xbows)
 
+# XXX FIX THIS
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
 include(ExternalProject)
 
-# Set up hidapi library
+find_package(HIDAPI REQUIRED)
+
+### Set up hidapi library
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-add_subdirectory(hidapi)
-set(HIDAPI_PATH "${CMAKE_SOURCE_DIR}/hidapi")
-set(HIDAPI_LIBRARY hidapi)
+
+# Support NixOS
+find_library(HIDAPI_LIBRARY hidapi-libusb)
+if (HIDAPI_LIBRARY-NOTFOUND)
+  add_subdirectory(hidapi)
+  set(HIDAPI_PATH "${CMAKE_SOURCE_DIR}/hidapi")
+  set(HIDAPI_LIBRARY hidapi)
+endif()
 
 # Set up crc library
 set(CRC_PATH "${CMAKE_SOURCE_DIR}/libcrc")
