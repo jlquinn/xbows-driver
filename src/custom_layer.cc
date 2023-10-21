@@ -237,7 +237,7 @@ int animation_assign[MAX_KEYCODE] = {
   0xe3, 0xe7,		      // LSpace RSpace
   0xd7,			      // Windows
   0x75, 0xa3,		      // PageUp PageDown
-  0xf6, 0xf7, 0xd0, 0xf6,     // Left Right Up Down
+  0xf5, 0xf7, 0xd0, 0xf6,     // Left Right Up Down
   0x20, 0x16,		      // PrtScrn Delete
   0x63,			      // XBows
   // Numpad
