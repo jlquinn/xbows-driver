@@ -55,6 +55,7 @@ enum keycodes {
   K_NetBack=117, K_NetFwd, K_NetRefresh, K_NetCollection, K_NetHome,
   K_NetEmail=122, K_NetComp, K_NetCalc, K_NetCopy, K_NetPaste, K_NetPrtScrn,
   K_Home=128, K_End, K_Ins,		// Not on xbows kbd
+  K_102ND=131,
   K_Fn,
   MAX_KEYCODE
 };
