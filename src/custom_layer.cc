@@ -256,6 +256,7 @@ int animation_assign[MAX_KEYCODE] = {
   0xff, 0xff, 0xff,		// NetCopy NetPaste NetPrtScrn
   // Not on xbows kbd
   0xff, 0xff, 0xff,		// Home End Insert
+  0xff,  // 102nd
   // Function key
   0xf3				// Fn
 };
