@@ -10,7 +10,7 @@
 #include <vector>
 #include <unistd.h>
 
-#include <hidapi.h>
+#include <hidapi/hidapi.h>
 
 #include "custom_layer.hh"
 #include "driver_layer.hh"

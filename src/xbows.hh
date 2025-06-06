@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include <hidapi.h>
+#include <hidapi/hidapi.h>
 #include "packet.hh"
 #include "driver_layer.hh"
 #include "custom_layer.hh"
