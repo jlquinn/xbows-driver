@@ -40,6 +40,6 @@ uint32_t keyid[MAX_KEYCODE] = {
   0x24020003, 0x25020003, 0x27020003, 0x2a020003, 0x23020003, // back, fwd, refrsh, collect, home,
   0x8a010003, 0x94010003, 0x92010003, 0x01060003, 0x01190003, 0x460003, // email mycomp calc copy paste prtsc
 
-  0xffff, 0xffff, 0xffff,	// Home, End, Insert
+  0x4a, 0x4d, 0xffff,	// Home, End, Insert
   0xffff			// Fn
 };
